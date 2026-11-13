@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><title>BEST MEDIA ダッシュボード かんたん操作ガイド</title>
+<style>
+@page { size: A4 landscape; margin: 12mm 14mm; }
+* { box-sizing: border-box; }
+body { font-family: "Noto Sans JP", "Yu Gothic UI", "Meiryo", sans-serif; color: #1c2321; margin: 0; font-size: 11.5pt; line-height: 1.6; }
+.page { page-break-after: always; break-after: page; min-height: 180mm; display: flex; flex-direction: column; }
+.page:last-child { page-break-after: auto; }
+h1 { font-size: 26pt; margin: 0 0 6mm; color: #1f5c4a; }
+h2 { font-size: 16pt; margin: 0 0 3mm; color: #1f5c4a; border-left: 6px solid #2a7a62; padding-left: 8px; }
+h2 small { font-size: 10pt; color: #5b6763; font-weight: normal; margin-left: 8px; }
+.cover { justify-content: center; }
+.cover .sub { font-size: 14pt; color: #3f4a46; margin-bottom: 10mm; }
+.box { border: 1px solid #cfd8d4; border-radius: 8px; padding: 4mm 6mm; background: #f5f8f7; margin: 2mm 0; }
+.row { display: flex; gap: 6mm; align-items: flex-start; flex: 1; }
+.shot { position: relative; flex: 0 0 62%; }
+.shot img { width: 100%; border: 1px solid #c9d2ce; border-radius: 6px; display: block; }
+.shot.full { flex-basis: 100%; }
+.mk { position: absolute; width: 22px; height: 22px; border-radius: 50%; background: #e03b2f; color: #fff; font-weight: 700; font-size: 11pt; display: grid; place-items: center; transform: translate(-50%, -50%); box-shadow: 0 0 0 3px rgba(255,255,255,.9); }
+.txt { flex: 1; font-size: 11pt; }
+.txt ol, .txt ul { margin: 0; padding-left: 1.3em; }
+.txt li { margin-bottom: 2.2mm; }
+.num { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: #e03b2f; color: #fff; font-size: 9pt; font-weight: 700; margin-right: 4px; vertical-align: 1px; }
+.note { color: #5b6763; font-size: 9.5pt; }
+.pt { color: #b4361f; font-weight: 700; }
+table { border-collapse: collapse; width: 100%; font-size: 10.5pt; }
+th, td { border: 1px solid #cfd8d4; padding: 2mm 3mm; text-align: left; vertical-align: top; }
+th { background: #e8f0ed; width: 26%; }
+.two { display: flex; gap: 5mm; }
+.two > div { flex: 1; }
+.two img { width: 100%; border: 1px solid #c9d2ce; border-radius: 6px; }
+.cap { font-weight: 700; margin: 1mm 0; }
+</style></head>
+<body>
+
+<section class="page cover">
+  <h1>BEST MEDIA ダッシュボード<br>かんたん操作ガイド</h1>
+  <div class="sub">業務委託ディレクター・アシスタントディレクター・アシスタント兼ライターの方へ</div>
+  <div class="box">
+    <b>ダッシュボードのURL</b><br>
+    https://best-media-dashboard-812117426134.asia-northeast1.run.app/<br><br>
+    <b>このダッシュボードでできること</b>
+    <ul>
+      <li>担当メディアの数値（PV・CV・記事数など）とシミュレーションを見る</li>
+      <li>記事の進行管理（KWの追加、進行状況・担当・URLの入力）</li>
+      <li>ご自身の報酬の確認と請求</li>
+      <li>半期の記事目標の申請と、目標に対する進み具合の確認</li>
+    </ul>
+  </div>
+  <p class="note">※ このガイドの画面はテスト用のデータです。実際の画面では、ご担当のメディアの数値が表示されます。<br>※ 画面の各ページにある「マニュアル」ボタンから、くわしい説明も読めます。</p>
+</section>
+
+<section class="page">
+  <h2>1. ログインする</h2>
+  <div class="row">
+    <div class="shot"><img src="img/00_login.png"><span class="mk" style="left:50%;top:55.5%">1</span></div>
+    <div class="txt"><ol>
+      <li>上のURLを開きます（ブックマークしておくと便利です）。</li>
+      <li><span class="num">1</span>「Googleアカウントでログイン」を押し、<span class="pt">ご案内したメールアドレスの Googleアカウント</span>を選びます。</li>
+      <li>はじめてログインしたときは、管理者が利用を許可すると使えるようになります。</li>
+    </ol>
+    <p class="note">別のGoogleアカウントでログインすると「権限がありません」と出ます。その場合は一度ログアウトして、ご案内したアカウントでログインし直してください。</p></div>
+  </div>
+</section>
+
+<section class="page">
+  <h2>2. 画面の見方</h2>
+  <div class="row">
+    <div class="shot"><img src="img/01_summary.png">
+      <span class="mk" style="left:17.3%;top:11.4%">1</span><span class="mk" style="left:17.3%;top:30%">2</span><span class="mk" style="left:30.5%;top:3.9%">3</span><span class="mk" style="left:87.2%;top:12%">4</span><span class="mk" style="left:61.6%;top:3.9%">5</span></div>
+    <div class="txt"><ol style="list-style:none;padding-left:0">
+      <li><span class="num">1</span><b>ダッシュボードの切り替え</b>：「メディア数値」「コンテンツ作成」「報酬管理」「目標・工数」を切り替えます。</li>
+      <li><span class="num">2</span><b>画面のメニュー</b>：選んだダッシュボードの中の画面です。</li>
+      <li><span class="num">3</span><b>メディアの選択</b>：見たいメディア（とディレクトリ）を選びます。「メディア累計」は担当メディアの合計です。</li>
+      <li><span class="num">4</span><b>機能改善依頼</b>：使いにくい点・ほしい機能を、その画面から送れます。</li>
+      <li><span class="num">5</span><b>ブックマーク</b>：よく使う画面を登録できます。</li>
+    </ol>
+    <p class="note">表示されるのは、ご担当（契約）のメディアの分だけです。</p></div>
+  </div>
+</section>
+
+<section class="page">
+  <h2>3. メディア数値を見る <small>ダッシュボード「メディア数値」</small></h2>
+  <div class="two">
+    <div><div class="cap">サマリ：今月・半期・年間の進み具合</div><img src="img/01_summary.png"></div>
+    <div><div class="cap">月次：月ごとの数値とグラフ</div><img src="img/02_monthly.png"></div>
+  </div>
+  <table style="margin-top:3mm">
+    <tr><th>サマリ</th><td>PV・CV・記事数・コール数・成約数などを、今月／BEST半期／年間で比べます。緑は前年より良い、赤は下がっている数字です。</td></tr>
+    <tr><th>月次・日次・前年比・前月比・期間比較</th><td>見たい期間や比べ方で数値を確かめます。右上で「各メディア比較」にすると、メディアを並べて比べられます。</td></tr>
+    <tr><th>エリア</th><td>どの地域から見られているかを見ます。</td></tr>
+  </table>
+</section>
+
+<section class="page">
+  <h2>4. シミュレーションを見る <small>ダッシュボード「メディア数値」</small></h2>
+  <div class="two">
+    <div><div class="cap">シミュレーション：今後12か月の見込み</div><img src="img/03_sim.png"></div>
+    <div><div class="cap">シミュレーション比較：見込みと実績の比較</div><img src="img/04_simcmp.png"></div>
+  </div>
+  <table style="margin-top:3mm">
+    <tr><th>シミュレーション</th><td>記事目標の本数どおりに記事を作ったときの、今後12か月の PV・CV・成約数・収支の見込みです。「単月で黒字になる月」「累計で収益が上回る月」もわかります。</td></tr>
+    <tr><th>シミュレーション比較</th><td>見込み（シミュレーション）に対して、実績がどこまで届いたかを月ごとに色で見ます。</td></tr>
+  </table>
+</section>
+
+<section class="page">
+  <h2>5. 記事の進行を管理する <small>コンテンツ作成 →「コンテンツ進行管理」</small></h2>
+  <div class="row">
+    <div class="shot"><img src="img/05_progress.png">
+      <span class="mk" style="left:18.3%;top:42.7%">1</span><span class="mk" style="left:73%;top:42.7%">2</span><span class="mk" style="left:44%;top:54.3%">3</span><span class="mk" style="left:85.3%;top:28%">4</span></div>
+    <div class="txt"><ol style="list-style:none;padding-left:0">
+      <li><span class="num">1</span><b>KWを追加</b>：新規・リライト・簡易リライトのボタンから記事の行を足します（右上でメディアを選んでから）。</li>
+      <li><span class="num">2</span><b>説明</b>：変更は<span class="pt">すぐに保存</span>されます。保存ボタンはありません。</li>
+      <li><span class="num">3</span><b>進行状況・担当・URLなど</b>：表の中のプルダウンや入力欄で直します。</li>
+      <li><span class="num">4</span><b>マニュアル</b>：列の意味など、くわしい説明です。</li>
+    </ol>
+    <p class="note">上の絞り込み（進行状況・担当など）とキーワードで、記事をしぼれます。見出しを押すと並び替えられます。</p></div>
+  </div>
+</section>
+
+<section class="page">
+  <h2>6. 月ごとの割り振りを見る <small>コンテンツ作成 →「月次進行管理」</small></h2>
+  <div class="row">
+    <div class="shot"><img src="img/06_amonthly.png"></div>
+    <div class="txt"><ul>
+      <li>アップロード目標月ごとに、執筆担当の割り振り・執筆完了・アップロード済みの本数を見ます。</li>
+      <li>「前の月」「次の月」で月を切り替えます。</li>
+      <li>割り振りは、コンテンツ進行管理で<b>執筆担当</b>と<b>アップロード目標月</b>を入れると、ここに出ます。</li>
+      <li>報酬・請求は、実際のアップロード日の月で数えます。</li>
+    </ul></div>
+  </div>
+</section>
+
+<section class="page">
+  <h2>7. そのほかのコンテンツ作成の画面</h2>
+  <div class="two">
+    <div><div class="cap">制作状況</div><img src="img/07_status.png"></div>
+    <div><div class="cap">プレスリリース進行管理（見るだけ）</div><img src="img/08_press.png"></div>
+    <div><div class="cap">KW追従</div><img src="img/09_kw.png"></div>
+  </div>
+  <table style="margin-top:3mm">
+    <tr><th>制作状況</th><td>月ごとの記事の本数と、記事目標に対する進み具合です。</td></tr>
+    <tr><th>プレスリリース進行管理</th><td>担当メディアのプレスリリースの予定と状態を見られます（入力は BEST の担当者が行います）。</td></tr>
+    <tr><th>KW追従</th><td>記事のKWの検索順位の動きを見ます。</td></tr>
+  </table>
+</section>
+
+<section class="page">
+  <h2>8. 報酬を確認して請求する <small>ダッシュボード「報酬管理」→「報酬」</small></h2>
+  <div class="row">
+    <div class="shot"><img src="img/10_reward.png"></div>
+    <div class="txt"><ul>
+      <li>月ごとに、担当した記事の本数・文字数・報酬額（税抜き）が見られます。</li>
+      <li><b>請求は月に1回</b>です。<span class="pt">その月の3日〜翌月2日</span>に、上の「請求」から請求書を作って請求してください。</li>
+      <li>翌月3日・4日は理由を入れれば受け付けます。5日以降は受け付けません。</li>
+      <li>担当記事は、その月に完了した（アップロード日が入った）記事のうち、あなたが担当した記事です。</li>
+    </ul>
+    <p class="note">請求の状態は「請求確認中 → 経理部確認中 → 請求完了」と進みます。差し戻しになったときは、理由を確かめて直してから出し直してください。</p></div>
+  </div>
+</section>
+
+<section class="page">
+  <h2>9. 記事目標を申請する・進み具合を見る <small>ダッシュボード「目標・工数」</small></h2>
+  <div class="row">
+    <div class="shot"><img src="img/11_goal.png"></div>
+    <div class="txt"><ol>
+      <li>「目標・稼働工数設定」で半期を選びます。</li>
+      <li>担当メディア・ディレクトリごとに、月ごとの<b>新規</b>と<b>リライト</b>の本数を入れます。</li>
+      <li>「記事目標を下書き保存」で途中まで保存、<span class="pt">「記事目標を申請する」</span>で管理者に申請します。</li>
+      <li>管理者が承認すると、記事目標として使われます（申請中は変更できません）。</li>
+    </ol>
+    <p class="note">「記事作成進捗」で記事目標に対する本数を、「担当メディア数値進捗」で担当メディアの数値の進み具合を見られます。</p></div>
+  </div>
+</section>
+
+<section class="page">
+  <h2>10. 困ったときは</h2>
+  <table>
+    <tr><th>ログインできない</th><td>ご案内したメールアドレスの Googleアカウントでログインしているか確かめてください。それでも入れないときは、BEST の担当者にご連絡ください。</td></tr>
+    <tr><th>担当のメディアが出ない</th><td>担当（契約）の登録が終わっていない可能性があります。BEST の担当者にご連絡ください。</td></tr>
+    <tr><th>使い方がわからない</th><td>各画面の「マニュアル」ボタンから、くわしい説明を読めます。</td></tr>
+    <tr><th>こうしてほしい・おかしい</th><td>画面右上の「機能改善依頼」から送ってください。どの画面からの依頼かも一緒に届きます。</td></tr>
+  </table>
+  <p class="note" style="margin-top:6mm">※ 画面はよりよくするために少しずつ変わります。最新の画面と違うところがあれば、画面の表示を優先してください。</p>
+</section>
+</body></html>

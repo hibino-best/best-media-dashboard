@@ -1,0 +1,1070 @@
+<title>BESTメディア ダッシュボード</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+<style>
+/* Layout: 左に固定ナビ（分析タブ＋管理）、右に「操作バー → KPI → グラフ → 表」の順で縦に積む業務ダッシュボード */
+:root {
+  --bg: #f3f5f4;
+  --surface: #ffffff;
+  --surface-2: #eef2f0;
+  --fg: #17211d;
+  --muted: #5d6b65;
+  --line: #d9e0dc;
+  --nav: #13302a;
+  --nav-fg: #d6e4de;
+  --nav-active: #2f7d68;
+  --accent: #1f6f5c;
+  --accent-soft: #dcefe8;
+  --good: #1d7a4a;
+  --good-soft: #def3e6;
+  --bad: #b23a3a;
+  --bad-soft: #f8e1e0;
+  --warn: #9a6a00;
+  --warn-soft: #fbf0d4;
+  --grid: rgba(23, 33, 29, .08);
+  --font-display: "Zen Kaku Gothic New", "Noto Sans JP", system-ui, sans-serif;
+  --font-body: "Noto Sans JP", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --s1: #1f6f5c; --s2: #d0743c; --s3: #3d6fb6; --s4: #a4507e; --s5: #7a8f2e;
+  --s6: #b8912a; --s7: #4d9aa6; --s8: #8a5a3c; --s9: #6b5fb5; --s10: #c25469;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1513; --surface: #161e1b; --surface-2: #1c2622; --fg: #e3ebe7; --muted: #95a59e; --line: #2a3632;
+    --nav: #0a110f; --nav-fg: #b9cbc3; --nav-active: #2f7d68; --accent: #5cc3a3; --accent-soft: #1d3a31;
+    --good: #5fcf8f; --good-soft: #17352a; --bad: #f08a83; --bad-soft: #3d1f1e; --warn: #e6b84d; --warn-soft: #3a2f14;
+    --grid: rgba(227, 235, 231, .08);
+    --s1: #5cc3a3; --s2: #f0a06c; --s3: #7fa8e6; --s4: #d88ab4; --s5: #b5cc63;
+    --s6: #e6c35c; --s7: #7cc9d4; --s8: #c99a77; --s9: #a69ae6; --s10: #ec8fa1;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1513; --surface: #161e1b; --surface-2: #1c2622; --fg: #e3ebe7; --muted: #95a59e; --line: #2a3632;
+  --nav: #0a110f; --nav-fg: #b9cbc3; --nav-active: #2f7d68; --accent: #5cc3a3; --accent-soft: #1d3a31;
+  --good: #5fcf8f; --good-soft: #17352a; --bad: #f08a83; --bad-soft: #3d1f1e; --warn: #e6b84d; --warn-soft: #3a2f14;
+  --grid: rgba(227, 235, 231, .08);
+  --s1: #5cc3a3; --s2: #f0a06c; --s3: #7fa8e6; --s4: #d88ab4; --s5: #b5cc63;
+  --s6: #e6c35c; --s7: #7cc9d4; --s8: #c99a77; --s9: #a69ae6; --s10: #ec8fa1;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14px; line-height: 1.6; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+
+.app { display: grid; grid-template-columns: 236px minmax(0, 1fr); min-height: 100%; }
+.nav { background: var(--nav); color: var(--nav-fg); padding-block: 18px; padding-inline: 12px; display: flex; flex-direction: column; gap: 18px; position: sticky; top: env(safe-area-inset-top, 0px); height: 100vh; overflow-y: auto; }
+.brand { display: flex; flex-direction: column; gap: 2px; padding-inline: 8px; }
+.brand b { font-family: var(--font-display); font-size: 17px; color: #fff; letter-spacing: .02em; }
+.brand span { font-size: 11px; opacity: .7; }
+.nav h3 { font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; opacity: .55; padding-inline: 8px; margin: 0 0 6px; font-weight: 500; }
+.nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.nav button { width: 100%; text-align: left; background: none; border: 0; color: inherit; padding: 8px 10px; border-radius: 8px; display: flex; align-items: center; gap: 10px; font-size: 13.5px; }
+.nav button:hover { background: rgba(255,255,255,.06); }
+.nav button[aria-current="page"] { background: var(--nav-active); color: #fff; }
+.nav .ico { width: 18px; height: 18px; flex: none; opacity: .9; }
+.nav .tag { margin-left: auto; font-size: 10px; padding: 1px 6px; border-radius: 99px; background: rgba(255,255,255,.12); }
+.nav-foot { margin-top: auto; font-size: 11.5px; padding-inline: 8px; display: flex; flex-direction: column; gap: 6px; }
+.nav-foot .status { display: flex; align-items: center; gap: 6px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); display: inline-block; }
+
+.main { min-width: 0; display: flex; flex-direction: column; }
+.topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding-block: 14px; padding-inline: 24px; border-bottom: 1px solid var(--line); background: var(--surface); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; }
+.topbar h1 { font-family: var(--font-display); font-size: 19px; margin: 0; margin-right: auto; text-wrap: balance; }
+.proto { font-size: 11px; color: var(--warn); background: var(--warn-soft); padding: 2px 8px; border-radius: 99px; }
+.field { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.field select, .field input { background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font-size: 13px; color: var(--fg); max-width: 100%; }
+.seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 9px; padding: 2px; }
+.seg button { border: 0; background: none; padding: 5px 12px; border-radius: 7px; font-size: 12.5px; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--fg); box-shadow: 0 1px 2px rgba(0,0,0,.12); font-weight: 500; }
+.user-chip { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-weight: 700; font-size: 12px; }
+.linkbtn { background: none; border: 0; color: var(--accent); font-size: 12px; padding: 0; }
+
+.content { padding-block: 22px 48px; padding-inline: 24px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.note { font-size: 12.5px; color: var(--muted); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; min-width: 0; }
+.panel h2 { font-family: var(--font-display); font-size: 15px; margin: 0 0 4px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.panel h2 small { font-family: var(--font-body); font-weight: 400; font-size: 12px; color: var(--muted); }
+.panel-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; justify-content: space-between; margin-bottom: 10px; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 18px; }
+.grid2.even { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.chart-box { position: relative; height: 280px; }
+.chart-box.sm { height: 220px; }
+.chart-box.tall { height: 340px; }
+
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.kpi .lbl { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 6px; }
+.kpi .src { font-size: 10px; letter-spacing: .06em; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+.kpi .val { font-family: var(--font-num); font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1.25; }
+.kpi .val small { font-size: 12px; color: var(--muted); margin-left: 2px; font-family: var(--font-body); }
+.kpi .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { font-size: 11px; padding: 1px 7px; border-radius: 99px; font-family: var(--font-num); white-space: nowrap; }
+.chip.up { background: var(--good-soft); color: var(--good); }
+.chip.down { background: var(--bad-soft); color: var(--bad); }
+.chip.flat { background: var(--surface-2); color: var(--muted); }
+.chip .k { font-family: var(--font-body); opacity: .75; margin-right: 3px; }
+.spark { width: 100%; height: 30px; display: block; }
+
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface); }
+thead th { font-size: 11.5px; color: var(--muted); font-weight: 500; background: var(--surface); }
+tbody tr:hover td { background: var(--surface-2); }
+td.num, th.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+tr.total td { font-weight: 700; background: var(--surface-2); }
+td .bar { display: inline-block; height: 6px; border-radius: 3px; background: var(--accent); vertical-align: middle; margin-right: 6px; opacity: .75; }
+.pill { font-size: 11px; padding: 2px 8px; border-radius: 99px; display: inline-block; }
+.pill.ok { background: var(--good-soft); color: var(--good); }
+.pill.ng { background: var(--bad-soft); color: var(--bad); }
+.pill.wait { background: var(--warn-soft); color: var(--warn); }
+.pill.off { background: var(--surface-2); color: var(--muted); }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 12px; font-size: 13px; }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+:root[data-theme="dark"] .btn.primary { color: #0f1513; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #0f1513; } }
+.btn.sm { padding: 3px 9px; font-size: 12px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.card-kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 14px; font-size: 13px; margin-top: 8px; }
+.card-kv dt { color: var(--muted); }
+.card-kv dd { margin: 0; overflow-wrap: anywhere; }
+.drop { border: 1.5px dashed var(--line); border-radius: 10px; padding: 18px; text-align: center; color: var(--muted); font-size: 13px; }
+.progress { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; min-width: 80px; }
+.progress span { display: block; height: 100%; background: var(--accent); }
+.progress span.over { background: var(--good); }
+.progress span.under { background: var(--warn); }
+.legend-inline { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.legend-inline i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+
+.modal-back { position: fixed; inset: 0; background: rgba(10, 20, 16, .5); display: grid; place-items: center; padding: 16px; z-index: 20; }
+.modal { background: var(--surface); border-radius: 14px; width: min(640px, 100%); max-height: 90vh; overflow-y: auto; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; }
+.modal h2 { font-family: var(--font-display); margin: 0; font-size: 18px; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.form-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.form-grid label.full { grid-column: 1 / -1; }
+.form-grid input, .form-grid select, .form-grid textarea { background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; font-size: 13px; color: var(--fg); font-family: var(--font-body); }
+.test-result { font-size: 12.5px; display: flex; flex-direction: column; gap: 4px; }
+
+.login { position: fixed; inset: 0; background: var(--bg); display: grid; place-items: center; padding: 16px; z-index: 30; }
+.login-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 28px; width: min(400px, 100%); display: flex; flex-direction: column; gap: 14px; }
+.login-card h1 { font-family: var(--font-display); font-size: 22px; margin: 0; }
+.login-card label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.login-card input { background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; font-size: 14px; color: var(--fg); }
+
+.kpis.wide { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.dash-switch { display: flex; flex-direction: column; gap: 4px; padding-inline: 4px; }
+.dash-switch label { font-size: 10.5px; letter-spacing: .14em; opacity: .55; padding-inline: 4px; }
+.dash-switch select { background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.18); border-radius: 8px; padding: 7px 8px; font-size: 13px; font-family: var(--font-display); }
+.dash-switch select option { color: #17211d; background: #fff; }
+.tilemap { display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 3px; max-width: 520px; }
+.tile { aspect-ratio: 1; border-radius: 4px; font-size: 9.5px; display: grid; place-items: center; text-align: center; line-height: 1.1; color: var(--fg); background: var(--surface-2); max-width: 100%; overflow: hidden; }
+.tile.hot { color: #fff; }
+.scale { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+.scale i { width: 90px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--surface-2), var(--accent)); display: inline-block; }
+.pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+.pipeline div { background: var(--surface-2); border-radius: 8px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; }
+.pipeline b { font-family: var(--font-num); font-size: 18px; font-weight: 500; }
+.pipeline span { font-size: 11.5px; color: var(--muted); }
+.placeholder { display: grid; place-items: center; text-align: center; padding-block: 48px; gap: 10px; }
+.placeholder ul { text-align: left; color: var(--muted); font-size: 13px; }
+@media (max-width: 1400px) { .kpis.wide { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 1100px) {
+  .kpis, .kpis.wide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pipeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid2, .grid2.even, .cards { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .nav { position: static; height: auto; flex-direction: row; overflow-x: auto; padding-inline: 16px; gap: 14px; align-items: flex-start; }
+  .nav ul { flex-direction: row; }
+  .nav button { white-space: nowrap; }
+  .nav h3, .nav-foot, .brand span { display: none; }
+  .topbar, .content { padding-inline: 16px; }
+  .form-grid { grid-template-columns: minmax(0, 1fr); }
+  .kpis, .kpis.wide { grid-template-columns: minmax(0, 1fr); }
+  .dash-switch { min-width: 180px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="app">
+  <nav class="nav" aria-label="メインメニュー">
+    <div class="brand"><b>BEST MEDIA</b></div>
+    <div class="dash-switch">
+      <label for="dash-select">ダッシュボード</label>
+      <select id="dash-select">
+        <option value="media">メディア数値</option>
+        <option value="revenue">収益管理（開発予定）</option>
+      </select>
+    </div>
+    <div>
+      <h3>分析</h3>
+      <ul id="nav-analysis"></ul>
+    </div>
+    <div id="nav-admin-wrap">
+      <h3>管理</h3>
+      <ul id="nav-admin"></ul>
+    </div>
+    <div class="nav-foot">
+      <div class="status"><span class="dot"></span>最終収集 10/08 03:00 正常</div>
+      <div>データ保存先：BigQuery</div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <header class="topbar">
+      <h1 id="page-title">サマリ</h1>
+      <span class="proto">プロトタイプ・数値はダミー</span>
+      <label class="field" id="media-field">メディア
+        <select id="media-select"></select>
+      </label>
+      <div class="seg" id="mode-seg" role="group" aria-label="表示切替">
+        <button type="button" data-mode="single" aria-pressed="true">選択メディア</button>
+        <button type="button" data-mode="compare" aria-pressed="false">各メディア比較</button>
+      </div>
+      <div class="seg" id="role-seg" role="group" aria-label="権限の表示切替（試作用）">
+        <button type="button" data-role="user" aria-pressed="false">一般</button>
+        <button type="button" data-role="admin" aria-pressed="true">管理者</button>
+      </div>
+      <div class="user-chip"><span class="avatar">管</span><span id="user-name">管理者ユーザー</span><button class="linkbtn" id="logout" type="button">ログアウト</button></div>
+    </header>
+    <main class="content" id="content"></main>
+  </div>
+</div>
+
+<div class="modal-back" id="modal" hidden></div>
+<div class="login" id="login" hidden>
+  <form class="login-card" id="login-form">
+    <h1>BEST MEDIA ダッシュボード</h1>
+    <p class="note">登録済みのアカウントでログインしてください。新規登録した場合は、管理者の承認後に利用できます。</p>
+    <label>メールアドレス<input id="login-email" type="email" placeholder="name@best-24.jp" autocomplete="username"></label>
+    <label>パスワード<input id="login-pass" type="password" autocomplete="current-password"></label>
+    <button class="btn primary" type="submit">ログイン</button>
+    <div class="row" style="justify-content: space-between;">
+      <button class="linkbtn" type="button" id="login-google">Googleアカウントでログイン</button>
+      <button class="linkbtn" type="button" id="login-register">新規登録</button>
+    </div>
+  </form>
+</div>
+
+<script>
+(() => {
+'use strict';
+
+// ---------- 乱数（毎回同じダミーデータにする） ----------
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+// ---------- メディア定義（base = 月間PVの目安） ----------
+const MEDIA = [
+  { id: 'seikatsu', name: '生活お助け本舗', base: 900, season: 'flat' },
+  { id: 'gaiju', name: '害獣お助け本舗', base: 6900, season: 'spring' },
+  { id: 'hachi', name: 'ハチお助け本舗', base: 46000, season: 'summer' },
+  { id: 'mizu', name: '水まわりお助け本舗', base: 21000, season: 'winter' },
+  { id: 'kagi', name: 'カギお助け本舗', base: 11700, season: 'flat' },
+  { id: 'glass', name: 'ガラスお助け本舗', base: 17900, season: 'flat' },
+  { id: 'roof', name: '屋根外壁お助け本舗', base: 700, season: 'flat' },
+  { id: 'shiroari', name: 'シロアリお助け本舗', base: 11200, season: 'spring' },
+  { id: 'best365', name: 'BEST365', base: 3200, season: 'flat' },
+  { id: 'concierge', name: '害虫害獣コンシェルジュ', base: 10900, season: 'summer' },
+];
+const DIRS = [
+  { id: 'c-gaichu', parent: 'concierge', name: '害虫', group: true, kids: ['c-cockroach', 'c-termite', 'c-wasp', 'c-other-i'] },
+  { id: 'c-cockroach', parent: 'concierge', name: 'ゴキブリ', share: .006 },
+  { id: 'c-termite', parent: 'concierge', name: 'シロアリ', share: .004 },
+  { id: 'c-wasp', parent: 'concierge', name: 'ハチ', share: .29 },
+  { id: 'c-other-i', parent: 'concierge', name: 'その他害虫', share: .002 },
+  { id: 'c-gaiju', parent: 'concierge', name: '害獣', group: true, kids: ['c-bat', 'c-rat', 'c-other-a'] },
+  { id: 'c-bat', parent: 'concierge', name: 'コウモリ', share: .54 },
+  { id: 'c-rat', parent: 'concierge', name: 'ネズミ', share: .042 },
+  { id: 'c-other-a', parent: 'concierge', name: 'その他害獣', share: .085 },
+];
+const ALL = 'all';
+
+// ---------- 日付 ----------
+const DAY = 86400000;
+const START = Date.UTC(2024, 8, 1);         // 2024-09-01
+const END = Date.UTC(2026, 9, 7);           // 2026-10-07（昨日まで収集済み）
+const NDAYS = Math.round((END - START) / DAY) + 1;
+const iso = i => new Date(START + i * DAY).toISOString().slice(0, 10);
+const idxOf = s => Math.round((Date.parse(s + 'T00:00:00Z') - START) / DAY);
+const MONTHS = [];
+for (let y = 2024, m = 9; y < 2026 || (y === 2026 && m <= 9); m++) { if (m > 12) { m = 1; y++; } if (y === 2026 && m > 9) break; MONTHS.push(y + '-' + String(m).padStart(2, '0')); }
+const LAST_MONTH = MONTHS[MONTHS.length - 1];   // 2026-09
+function monthSpan(key) {
+  const [y, m] = key.split('-').map(Number);
+  const s = Math.round((Date.UTC(y, m - 1, 1) - START) / DAY);
+  const e = Math.min(Math.round((Date.UTC(y, m, 0) - START) / DAY), NDAYS - 1);
+  return [s, e];
+}
+const shiftMonth = (key, n) => { const [y, m] = key.split('-').map(Number); const d = new Date(Date.UTC(y, m - 1 + n, 1)); return d.toISOString().slice(0, 7); };
+const mLabel = key => { const [y, m] = key.split('-'); return y + '/' + m; };
+const mShort = key => { const [y, m] = key.split('-'); return y.slice(2) + '/' + m; };
+
+// ---------- ダミーデータ生成（日次） ----------
+function seasonFactor(kind, month) {
+  if (kind === 'summer') return 0.55 + 0.9 * Math.exp(-Math.pow((month - 8) / 1.9, 2));
+  if (kind === 'spring') return 0.8 + 0.45 * Math.exp(-Math.pow((month - 5) / 1.6, 2));
+  if (kind === 'winter') return 0.85 + 0.35 * Math.exp(-Math.pow(((month + 5) % 12 - 6) / 1.5, 2));
+  return 1;
+}
+const DATA = {};   // id -> { pv:[], sessions:[], ... } 日次の生値
+function genMedia(m, idx) {
+  const r = rng(1000 + idx * 77);
+  const keys = ['pv', 'sessions', 'users', 'active', 'newUsers', 'engSum', 'call', 'form', 'imp', 'clicks', 'posSum', 'kCalls', 'visits', 'contracts', 'revenue',
+    'ch_os', 'ch_direct', 'ch_ref', 'ch_social', 'ch_ai', 'ch_other', 'posts', 'rewrites'];
+  const d = {}; keys.forEach(k => d[k] = new Float64Array(NDAYS));
+  for (let i = 0; i < NDAYS; i++) {
+    const dt = new Date(START + i * DAY);
+    const growth = 0.62 + 0.38 * (i / NDAYS) + (m.id === 'concierge' ? 0.5 * (i / NDAYS) : 0);
+    const wd = [0.88, 1.05, 1.04, 1.02, 1.0, 0.97, 0.9][dt.getUTCDay()];
+    const pv = Math.max(0, Math.round(m.base / 30 * seasonFactor(m.season, dt.getUTCMonth() + 1) * growth * wd * (0.85 + r() * 0.3)));
+    const ses = Math.round(pv * (0.84 + r() * 0.06));
+    const users = Math.round(ses * (0.86 + r() * 0.05));
+    d.pv[i] = pv; d.sessions[i] = ses; d.users[i] = users; d.active[i] = Math.round(users * 0.994); d.newUsers[i] = Math.round(users * (0.96 + r() * 0.03));
+    d.engSum[i] = ses * (55 + r() * 40);
+    const aiShare = i > NDAYS - 160 ? 0.002 + r() * 0.004 : 0;
+    d.ch_os[i] = Math.round(pv * (0.84 + r() * 0.05)); d.ch_direct[i] = Math.round(pv * 0.09); d.ch_ref[i] = Math.round(pv * 0.025);
+    d.ch_social[i] = Math.round(pv * 0.002); d.ch_ai[i] = Math.round(pv * aiShare); d.ch_other[i] = Math.max(0, pv - d.ch_os[i] - d.ch_direct[i] - d.ch_ref[i] - d.ch_social[i] - d.ch_ai[i]);
+    const callRate = 0.0055 + r() * 0.002;
+    d.call[i] = Math.round(pv * callRate + (r() < 0.3 ? 1 : 0)); d.form[i] = r() < pv / 9000 ? 1 : 0;
+    const imp = Math.round(pv * (26 + r() * 10)); d.imp[i] = imp; d.clicks[i] = Math.round(imp * (0.009 + r() * 0.004));
+    d.posSum[i] = imp * (5 + r() * 3 + (m.id === 'best365' ? 8 : 0));
+    d.kCalls[i] = r() < (pv / 3000) ? 1 : 0; d.visits[i] = d.kCalls[i] && r() < 0.6 ? 1 : 0; d.contracts[i] = d.visits[i] && r() < 0.5 ? 1 : 0;
+    d.revenue[i] = d.contracts[i] ? Math.round(18000 + r() * 40000) : (r() < 0.05 ? Math.round(r() * 2000) : 0);
+    const postRate = m.base > 20000 ? 0.32 : m.base > 5000 ? 0.24 : 0.12;
+    d.posts[i] = dt.getUTCDay() % 6 && r() < postRate ? 1 : 0;
+    d.rewrites[i] = r() < postRate * 0.25 ? 1 : 0;
+  }
+  DATA[m.id] = d;
+}
+MEDIA.forEach(genMedia);
+// コンシェルジュのディレクトリは親の値を按分
+DIRS.filter(x => !x.group).forEach((x, j) => {
+  const p = DATA[x.parent], r = rng(5000 + j), d = {};
+  Object.keys(p).forEach(k => {
+    d[k] = new Float64Array(NDAYS);
+    for (let i = 0; i < NDAYS; i++) {
+      d[k][i] = (k === 'posts' || k === 'rewrites')
+        ? (p[k][i] && r() < Math.min(1, x.share * 2.5 + 0.05) ? 1 : 0)
+        : Math.round(p[k][i] * x.share * (0.85 + r() * 0.3));
+    }
+  });
+  DATA[x.id] = d;
+});
+
+// ---------- 指標 ----------
+const METRICS = [
+  { k: 'pv', l: 'PV', src: 'GA4' },
+  { k: 'sessions', l: 'セッション', src: 'GA4' },
+  { k: 'users', l: 'ユーザー', src: 'GA4' },
+  { k: 'newUsers', l: '新規ユーザー', src: 'GA4' },
+  { k: 'active', l: 'アクティブユーザー', src: 'GA4' },
+  { k: 'vpa', l: 'アクティブユーザーあたりのビュー', src: 'GA4', fmt: 'dec2' },
+  { k: 'eng', l: '平均エンゲージメント時間', src: 'GA4', unit: '秒', fmt: 'int' },
+  { k: 'cv', l: 'CV（CALL＋FORM）', src: 'GA4' },
+  { k: 'cvr', l: 'CV率', src: 'GA4', fmt: 'pct' },
+  { k: 'call', l: 'CALL', src: 'GA4' },
+  { k: 'form', l: 'FORM', src: 'GA4' },
+  { k: 'imp', l: '表示回数', src: 'SC' },
+  { k: 'clicks', l: 'クリック数', src: 'SC' },
+  { k: 'ctr', l: '平均CTR', src: 'SC', fmt: 'pct' },
+  { k: 'pos', l: '平均掲載順位', src: 'SC', fmt: 'dec1', lowerBetter: true },
+  { k: 'kCalls', l: 'コール数', src: 'kintone' },
+  { k: 'visits', l: '訪問確定数', src: 'kintone' },
+  { k: 'contracts', l: '成約数', src: 'kintone' },
+  { k: 'revenue', l: '収益（税抜）', src: 'kintone', fmt: 'yen' },
+  { k: 'posts', l: '記事公開数', src: 'WordPress' },
+  { k: 'rewrites', l: 'リライト数', src: 'WordPress' },
+];
+const M = Object.fromEntries(METRICS.map(x => [x.k, x]));
+const KPI_KEYS = ['pv', 'sessions', 'users', 'vpa', 'cv', 'cvr', 'imp', 'clicks', 'pos', 'posts', 'contracts', 'revenue'];
+
+function leafIds(id) {
+  if (id === ALL) return MEDIA.map(m => m.id);
+  const g = DIRS.find(x => x.id === id && x.group);
+  return g ? g.kids : [id];
+}
+function agg(id, s, e) {
+  const ids = leafIds(id), t = {};
+  const sum = k => { let v = 0; ids.forEach(x => { const a = DATA[x][k]; for (let i = s; i <= e; i++) v += a[i]; }); return v; };
+  ['pv', 'sessions', 'users', 'active', 'newUsers', 'call', 'form', 'imp', 'clicks', 'kCalls', 'visits', 'contracts', 'revenue', 'ch_os', 'ch_direct', 'ch_ref', 'ch_social', 'ch_ai', 'ch_other', 'posts', 'rewrites'].forEach(k => t[k] = sum(k));
+  t.cv = t.call + t.form;
+  t.cvr = t.sessions ? t.cv / t.sessions : 0;
+  t.vpa = t.active ? t.pv / t.active : 0;
+  t.eng = t.sessions ? Math.floor(sum('engSum') / t.sessions) : 0;
+  t.ctr = t.imp ? t.clicks / t.imp : 0;
+  t.pos = t.imp ? sum('posSum') / t.imp : 0;
+  return t;
+}
+const aggMonth = (id, key) => { const [s, e] = monthSpan(key); return agg(id, s, e); };
+function dailySeries(id, k, s, e) { const out = []; for (let i = s; i <= e; i++) out.push(agg(id, i, i)[k]); return out; }
+
+// ---------- 表示用 ----------
+const nf = new Intl.NumberFormat('ja-JP');
+function fmt(k, v) {
+  const f = M[k] && M[k].fmt;
+  if (f === 'pct') return (v * 100).toFixed(2) + '%';
+  if (f === 'dec1') return v.toFixed(1);
+  if (f === 'dec2') return v.toFixed(2);
+  if (f === 'yen') return '¥' + nf.format(Math.round(v));
+  return nf.format(Math.round(v));
+}
+function rate(a, b) { return b ? (a - b) / b : null; }
+function chip(k, cur, prev, label) {
+  const r = rate(cur, prev);
+  if (r === null) return `<span class="chip flat"><span class="k">${label}</span>—</span>`;
+  const better = M[k] && M[k].lowerBetter ? r < 0 : r > 0;
+  const cls = Math.abs(r) < 0.005 ? 'flat' : better ? 'up' : 'down';
+  return `<span class="chip ${cls}"><span class="k">${label}</span>${r > 0 ? '▲' : r < 0 ? '▼' : ''}${Math.abs(r * 100).toFixed(1)}%</span>`;
+}
+function rateCell(k, cur, prev) {
+  const r = rate(cur, prev);
+  if (r === null) return '<td class="num">—</td>';
+  const better = M[k] && M[k].lowerBetter ? r < 0 : r > 0;
+  const cls = Math.abs(r) < 0.005 ? 'flat' : better ? 'up' : 'down';
+  return `<td class="num"><span class="chip ${cls}">${r > 0 ? '+' : ''}${(r * 100).toFixed(1)}%</span></td>`;
+}
+function spark(vals) {
+  const w = 160, h = 30, mx = Math.max(...vals), mn = Math.min(...vals), sp = mx - mn || 1;
+  const pts = vals.map((v, i) => [i / (vals.length - 1) * w, h - 3 - (v - mn) / sp * (h - 6)]);
+  const d = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  const last = pts[pts.length - 1];
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><path d="${d} L${w} ${h} L0 ${h} Z" fill="var(--accent-soft)" stroke="none"/><path d="${d}" fill="none" stroke="var(--accent)" stroke-width="1.6" vector-effect="non-scaling-stroke"/><circle cx="${last[0]}" cy="${last[1]}" r="2.6" fill="var(--accent)"/></svg>`;
+}
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const seriesColor = i => css('--s' + ((i % 10) + 1));
+function mediaName(id) { if (id === ALL) return 'メディア累計'; const m = MEDIA.find(x => x.id === id); if (m) return m.name; const d = DIRS.find(x => x.id === id); return 'コンシェルジュ／' + d.name; }
+
+// ---------- 状態 ----------
+const state = { dash: 'media', view: 'summary', media: ALL, mode: 'single', role: 'admin', metric: 'pv', areaMetric: 'sessions',
+  dailyFrom: iso(NDAYS - 30), dailyTo: iso(NDAYS - 1),
+  aFrom: '2026-09-01', aTo: '2026-09-30', bFrom: '2026-08-01', bTo: '2026-08-31', ymMonth: LAST_MONTH };
+try { const saved = JSON.parse(localStorage.getItem('bm-proto') || '{}'); Object.assign(state, saved); } catch (e) { /* 保存なしで表示 */ }
+const save = () => { try { localStorage.setItem('bm-proto', JSON.stringify({ dash: state.dash, view: state.view, media: state.media, mode: state.mode, role: state.role })); } catch (e) { /* 保存できなくても表示は続ける */ } };
+
+const VIEWS = [
+  { id: 'summary', l: 'サマリ', ico: 'M3 3h7v7H3zM14 3h7v4h-7zM14 10h7v11h-7zM3 13h7v8H3z' },
+  { id: 'monthly', l: '月次', ico: 'M4 20V10M10 20V4M16 20v-8M22 20H2' },
+  { id: 'daily', l: '日次', ico: 'M3 17l5-6 4 3 5-7 4 4M3 21h18' },
+  { id: 'yoy', l: '前年比', ico: 'M4 12h16M4 6h10M4 18h7M18 4l3 3-3 3' },
+  { id: 'mom', l: '前月比', ico: 'M5 12h14M12 5l7 7-7 7' },
+  { id: 'range', l: '期間比較', ico: 'M3 5h8v14H3zM13 5h8v14h-8z' },
+  { id: 'area', l: 'エリア', ico: 'M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z' },
+  { id: 'articles', l: '記事進捗', ico: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h5' },
+  { id: 'kw', l: 'KW追従', ico: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5', tag: '仮' },
+  { id: 'plan', l: 'プランニング比', ico: 'M4 4h16v16H4zM8 15l3-3 2 2 4-5', tag: '次期' },
+];
+const ADMIN_VIEWS = [
+  { id: 'users', l: 'ユーザー管理', ico: 'M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0zM4 21c1-4 4-6 8-6s7 2 8 6' },
+  { id: 'logs', l: 'アクセスログ', ico: 'M5 4h14v16H5zM8 8h8M8 12h8M8 16h5' },
+  { id: 'media', l: 'メディア管理', ico: 'M4 6h16M4 12h16M4 18h10M18 16v6M15 19h6' },
+  { id: 'api', l: 'API・連携設定', ico: 'M9 7L4 12l5 5M15 7l5 5-5 5' },
+  { id: 'jobs', l: '収集ジョブ', ico: 'M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z' },
+];
+const ANALYSIS_IDS = VIEWS.map(v => v.id);
+const icon = d => `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+
+function renderNav() {
+  const item = v => `<li><button type="button" data-view="${v.id}" ${state.view === v.id ? 'aria-current="page"' : ''}>${icon(v.ico)}<span>${v.l}</span>${v.tag ? `<span class="tag">${v.tag}</span>` : ''}</button></li>`;
+  document.getElementById('nav-analysis').innerHTML = (state.dash === 'revenue' ? REVENUE_VIEWS : VIEWS).map(item).join('');
+  document.getElementById('dash-select').value = state.dash;
+  document.getElementById('nav-admin').innerHTML = ADMIN_VIEWS.map(item).join('');
+  document.getElementById('nav-admin-wrap').hidden = state.role !== 'admin';
+}
+function renderMediaSelect() {
+  const sel = document.getElementById('media-select');
+  let h = `<option value="${ALL}">メディア累計（全${MEDIA.length}メディア）</option>`;
+  MEDIA.forEach(m => {
+    h += `<option value="${m.id}">${m.name}</option>`;
+    if (m.id === 'concierge') DIRS.forEach(d => { h += `<option value="${d.id}">${d.group ? '　└ ' : '　　・'}${d.name}</option>`; });
+  });
+  sel.innerHTML = h; sel.value = state.media;
+}
+
+// ---------- グラフ ----------
+let charts = [];
+function clearCharts() { charts.forEach(c => c.destroy()); charts = []; }
+function baseOpts(extra = {}) {
+  const fg = css('--muted'), grid = css('--grid');
+  return Object.assign({
+    responsive: true, maintainAspectRatio: false, animation: { duration: 250 },
+    interaction: { mode: 'index', intersect: false },
+    plugins: { legend: { labels: { color: fg, boxWidth: 10, boxHeight: 10, font: { size: 11 } } },
+      tooltip: { callbacks: {} } },
+    scales: {
+      x: { ticks: { color: fg, font: { size: 11 }, maxRotation: 0, autoSkipPadding: 12 }, grid: { color: grid } },
+      y: { ticks: { color: fg, font: { size: 11 } }, grid: { color: grid }, beginAtZero: true },
+    },
+  }, extra);
+}
+function chart(id, cfg) { const el = document.getElementById(id); if (!el || !window.Chart) return; charts.push(new Chart(el, cfg)); }
+const yFmt = k => ({ callback: v => M[k] && M[k].fmt === 'pct' ? (v * 100).toFixed(1) + '%' : M[k] && M[k].fmt === 'yen' ? '¥' + nf.format(v) : nf.format(v) });
+
+// ---------- 共通パーツ ----------
+function metricSelect(id = 'metric-sel') {
+  return `<label class="field">指標<select id="${id}">${METRICS.map(x => `<option value="${x.k}" ${x.k === state.metric ? 'selected' : ''}>${x.l}（${x.src}）</option>`).join('')}</select></label>`;
+}
+function bindMetric(id = 'metric-sel') { const el = document.getElementById(id); if (el) el.onchange = () => { state.metric = el.value; render(); }; }
+function compareTargets() { return MEDIA.map(m => m.id); }
+
+// ---------- 画面：サマリ ----------
+function viewSummary() {
+  const cur = LAST_MONTH, prev = shiftMonth(cur, -1), ly = shiftMonth(cur, -12);
+  const months13 = MONTHS.slice(-13);
+  if (state.mode === 'compare') return summaryCompare(cur, prev, ly);
+  const a = aggMonth(state.media, cur), p = aggMonth(state.media, prev), y = aggMonth(state.media, ly);
+  const kpis = KPI_KEYS.map(k => {
+    const series = months13.map(mm => aggMonth(state.media, mm)[k]);
+    return `<div class="kpi"><div class="lbl"><span>${M[k].l}</span><span class="src">${M[k].src}</span></div>
+      <div class="val">${fmt(k, a[k])}</div>
+      <div class="chips">${chip(k, a[k], p[k], '前月')}${chip(k, a[k], y[k], '前年')}</div>${spark(series)}</div>`;
+  }).join('');
+  const ub = ubersuggest(state.media, cur);
+  const html = `
+    <p class="note">${mediaName(state.media)}／${mLabel(cur)}（確定値）。カードの小さなグラフは直近13か月の推移です。</p>
+    <section class="kpis wide">${kpis}</section>
+    <section class="grid2">
+      <div class="panel"><div class="panel-head"><h2>PV・セッションの推移 <small>直近13か月</small></h2></div><div class="chart-box"><canvas id="c-trend"></canvas></div></div>
+      <div class="panel"><div class="panel-head"><h2>流入チャネル <small>${mLabel(cur)}のPV</small></h2></div><div class="chart-box"><canvas id="c-ch"></canvas></div></div>
+    </section>
+    <section class="grid2 even">
+      <div class="panel"><div class="panel-head"><h2>CVと成約 <small>GA4のCV／kintoneの成約</small></h2></div><div class="chart-box sm"><canvas id="c-cv"></canvas></div></div>
+      <div class="panel"><div class="panel-head"><h2>検索順位の分布 <small>Ubersuggest・${mLabel(cur)}</small></h2></div><div class="chart-box sm"><canvas id="c-ub"></canvas></div>
+        <p class="note">追跡KW ${nf.format(ub.total)}件のうち、TOP10以内 ${nf.format(ub.top3 + ub.top10)}件</p></div>
+    </section>
+    <section class="grid2 even">
+      <div class="panel"><div class="panel-head"><h2>記事進捗 <small>${mLabel(CUR_MONTH)}・${CUR_DAY}日時点</small></h2><button class="linkbtn" type="button" data-goto="articles">記事進捗を開く →</button></div>${articleProgressBlock(state.media)}</div>
+      <div class="panel"><div class="panel-head"><h2>エリア別セッション <small>${mLabel(cur)}・上位8都道府県</small></h2><button class="linkbtn" type="button" data-goto="area">エリアを開く →</button></div><div class="chart-box sm"><canvas id="c-area"></canvas></div></div>
+    </section>`;
+  return { html, after: () => {
+    const rows = months13.map(mm => aggMonth(state.media, mm));
+    chart('c-trend', { type: 'line', data: { labels: months13.map(mShort), datasets: [
+      { label: 'PV', data: rows.map(r => r.pv), borderColor: seriesColor(0), backgroundColor: seriesColor(0) + '22', fill: true, tension: .3, pointRadius: 2 },
+      { label: 'セッション', data: rows.map(r => r.sessions), borderColor: seriesColor(2), tension: .3, pointRadius: 2 },
+    ] }, options: baseOpts() });
+    chart('c-ch', { type: 'doughnut', data: { labels: ['Organic Search', 'Direct', 'Referral', 'Social', 'AI Assistant', 'その他'],
+      datasets: [{ data: [a.ch_os, a.ch_direct, a.ch_ref, a.ch_social, a.ch_ai, a.ch_other], backgroundColor: [0, 1, 2, 3, 4, 5].map(seriesColor), borderColor: css('--surface'), borderWidth: 2 }] },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom', labels: { color: css('--muted'), boxWidth: 10, font: { size: 11 } } } } } });
+    chart('c-cv', { type: 'bar', data: { labels: months13.map(mShort), datasets: [
+      { label: 'CALL', data: rows.map(r => r.call), backgroundColor: seriesColor(0), stack: 'cv' },
+      { label: 'FORM', data: rows.map(r => r.form), backgroundColor: seriesColor(1), stack: 'cv' },
+      { label: '成約数', data: rows.map(r => r.contracts), type: 'line', borderColor: seriesColor(3), backgroundColor: seriesColor(3), pointRadius: 2, yAxisID: 'y' },
+    ] }, options: baseOpts({ scales: { x: { stacked: true, ticks: { color: css('--muted'), font: { size: 11 } }, grid: { display: false } }, y: { stacked: true, ticks: { color: css('--muted') }, grid: { color: css('--grid') } } } }) });
+    const ubRows = months13.map(mm => ubersuggest(state.media, mm));
+    chart('c-ub', { type: 'bar', data: { labels: months13.map(mShort), datasets: [
+      { label: 'TOP3', data: ubRows.map(r => r.top3), backgroundColor: seriesColor(0) },
+      { label: 'TOP10', data: ubRows.map(r => r.top10), backgroundColor: seriesColor(6) },
+      { label: 'TOP100', data: ubRows.map(r => r.top100), backgroundColor: seriesColor(5) },
+      { label: 'ランク外', data: ubRows.map(r => r.out), backgroundColor: css('--line') },
+    ] }, options: baseOpts({ scales: { x: { stacked: true, ticks: { color: css('--muted'), font: { size: 11 } }, grid: { display: false } }, y: { stacked: true, ticks: { color: css('--muted') }, grid: { color: css('--grid') } } } }) });
+    const top = areaRows(state.media, ...monthSpan(cur)).sort((x, y) => y.sessions - x.sessions).slice(0, 8);
+    chart('c-area', { type: 'bar', data: { labels: top.map(x => x.pref), datasets: [{ label: 'セッション', data: top.map(x => x.sessions), backgroundColor: seriesColor(0), borderRadius: 3 }] },
+      options: baseOpts({ indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { ticks: { color: css('--muted') }, grid: { color: css('--grid') } }, y: { ticks: { color: css('--muted'), font: { size: 11 } }, grid: { display: false } } } }) });
+    bindGoto();
+  } };
+}
+function bindGoto() { document.querySelectorAll('[data-goto]').forEach(b => b.onclick = () => { state.view = b.dataset.goto; render(); }); }
+function summaryCompare(cur, prev, ly) {
+  const ids = compareTargets();
+  const rows = ids.map(id => ({ id, a: aggMonth(id, cur), p: aggMonth(id, prev), y: aggMonth(id, ly) }));
+  const tot = { a: aggMonth(ALL, cur), p: aggMonth(ALL, prev), y: aggMonth(ALL, ly) };
+  const maxPv = Math.max(...rows.map(r => r.a.pv));
+  const body = rows.map(r => `<tr><td>${mediaName(r.id)}</td><td class="num"><span class="bar" style="width:${Math.round(r.a.pv / maxPv * 60)}px"></span>${fmt('pv', r.a.pv)}</td>${rateCell('pv', r.a.pv, r.p.pv)}${rateCell('pv', r.a.pv, r.y.pv)}
+    <td class="num">${fmt('vpa', r.a.vpa)}</td><td class="num">${fmt('cv', r.a.cv)}</td><td class="num">${fmt('cvr', r.a.cvr)}</td><td class="num">${fmt('clicks', r.a.clicks)}</td><td class="num">${fmt('pos', r.a.pos)}</td><td class="num">${fmt('posts', r.a.posts)}</td><td class="num">${fmt('contracts', r.a.contracts)}</td><td class="num">${fmt('revenue', r.a.revenue)}</td></tr>`).join('');
+  const html = `
+    <p class="note">全メディアの${mLabel(cur)}の数値を並べています。行をクリックするとそのメディアのサマリへ移動します。</p>
+    <section class="grid2">
+      <div class="panel"><div class="panel-head"><h2>メディア別 PV <small>${mLabel(cur)}</small></h2></div><div class="chart-box tall"><canvas id="c-cmp"></canvas></div></div>
+      <div class="panel"><div class="panel-head"><h2>PV構成比</h2></div><div class="chart-box tall"><canvas id="c-share"></canvas></div></div>
+    </section>
+    <section class="panel"><div class="panel-head"><h2>各メディア比較 <small>${mLabel(cur)}</small></h2></div>
+      <div class="table-wrap"><table><thead><tr><th>メディア</th><th class="num">PV</th><th class="num">前月比</th><th class="num">前年比</th><th class="num">ビュー/人</th><th class="num">CV</th><th class="num">CV率</th><th class="num">クリック</th><th class="num">掲載順位</th><th class="num">記事公開</th><th class="num">成約</th><th class="num">収益</th></tr></thead>
+      <tbody>${body}<tr class="total"><td>メディア累計</td><td class="num">${fmt('pv', tot.a.pv)}</td>${rateCell('pv', tot.a.pv, tot.p.pv)}${rateCell('pv', tot.a.pv, tot.y.pv)}<td class="num">${fmt('vpa', tot.a.vpa)}</td><td class="num">${fmt('cv', tot.a.cv)}</td><td class="num">${fmt('cvr', tot.a.cvr)}</td><td class="num">${fmt('clicks', tot.a.clicks)}</td><td class="num">${fmt('pos', tot.a.pos)}</td><td class="num">${fmt('posts', tot.a.posts)}</td><td class="num">${fmt('contracts', tot.a.contracts)}</td><td class="num">${fmt('revenue', tot.a.revenue)}</td></tr></tbody></table></div></section>`;
+  return { html, after: () => {
+    const sorted = [...rows].sort((x, y) => y.a.pv - x.a.pv);
+    chart('c-cmp', { type: 'bar', data: { labels: sorted.map(r => mediaName(r.id)), datasets: [
+      { label: mLabel(cur), data: sorted.map(r => r.a.pv), backgroundColor: seriesColor(0) },
+      { label: mLabel(ly) + '（前年）', data: sorted.map(r => r.y.pv), backgroundColor: css('--line') },
+    ] }, options: baseOpts({ indexAxis: 'y', scales: { x: { ticks: { color: css('--muted') }, grid: { color: css('--grid') } }, y: { ticks: { color: css('--muted'), font: { size: 11 } }, grid: { display: false } } } }) });
+    chart('c-share', { type: 'doughnut', data: { labels: rows.map(r => mediaName(r.id)), datasets: [{ data: rows.map(r => r.a.pv), backgroundColor: rows.map((r, i) => seriesColor(i)), borderColor: css('--surface'), borderWidth: 2 }] },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '58%', plugins: { legend: { position: 'bottom', labels: { color: css('--muted'), boxWidth: 10, font: { size: 10.5 } } } } } });
+    document.querySelectorAll('tbody tr').forEach((tr, i) => { if (rows[i]) { tr.style.cursor = 'pointer'; tr.onclick = () => { state.media = rows[i].id; state.mode = 'single'; render(); }; } });
+  } };
+}
+
+// ---------- 画面：月次 ----------
+function viewMonthly() {
+  const months13 = MONTHS.slice(-13), k = state.metric;
+  if (state.mode === 'compare') {
+    const ids = compareTargets();
+    const body = ids.map(id => `<tr><td>${mediaName(id)}</td>${months13.map(mm => `<td class="num">${fmt(k, aggMonth(id, mm)[k])}</td>`).join('')}</tr>`).join('');
+    return { html: `<div class="row">${metricSelect()}</div>
+      <section class="panel"><div class="panel-head"><h2>${M[k].l}の月次推移 <small>メディア別・直近13か月</small></h2></div><div class="chart-box tall"><canvas id="c-m"></canvas></div></section>
+      <section class="panel"><h2>メディア別 月次表</h2><div class="table-wrap"><table><thead><tr><th>メディア</th>${months13.map(mm => `<th class="num">${mShort(mm)}</th>`).join('')}</tr></thead><tbody>${body}
+      <tr class="total"><td>メディア累計</td>${months13.map(mm => `<td class="num">${fmt(k, aggMonth(ALL, mm)[k])}</td>`).join('')}</tr></tbody></table></div></section>`,
+      after: () => { bindMetric(); chart('c-m', { type: 'line', data: { labels: months13.map(mShort), datasets: ids.map((id, i) => ({ label: mediaName(id), data: months13.map(mm => aggMonth(id, mm)[k]), borderColor: seriesColor(i), backgroundColor: seriesColor(i), tension: .25, pointRadius: 1.5 })) }, options: baseOpts({ scales: { x: { ticks: { color: css('--muted') }, grid: { color: css('--grid') } }, y: { ticks: Object.assign({ color: css('--muted') }, yFmt(k)), grid: { color: css('--grid') }, beginAtZero: !M[k].lowerBetter, reverse: !!M[k].lowerBetter } } }) }); } };
+  }
+  const rows = months13.map(mm => ({ mm, t: aggMonth(state.media, mm) }));
+  const show = ['pv', 'sessions', 'users', 'active', 'newUsers', 'vpa', 'eng', 'call', 'form', 'cv', 'cvr', 'imp', 'clicks', 'ctr', 'pos', 'posts', 'rewrites', 'kCalls', 'visits', 'contracts', 'revenue'];
+  return { html: `<div class="row">${metricSelect()}<span class="note">月の数値は毎月2日に確定（Search Consoleは4日に確定値で更新）</span></div>
+    <section class="panel"><div class="panel-head"><h2>${M[state.metric].l}の月次推移 <small>${mediaName(state.media)}</small></h2></div><div class="chart-box"><canvas id="c-m"></canvas></div></section>
+    <section class="panel"><h2>月次一覧 <small>${mediaName(state.media)}</small></h2><div class="table-wrap"><table><thead><tr><th>指標</th>${rows.map(r => `<th class="num">${mShort(r.mm)}</th>`).join('')}</tr></thead>
+    <tbody>${show.map(k2 => `<tr><td>${M[k2].l}</td>${rows.map(r => `<td class="num">${fmt(k2, r.t[k2])}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>`,
+    after: () => { bindMetric(); chart('c-m', { type: 'bar', data: { labels: rows.map(r => mShort(r.mm)), datasets: [{ label: M[state.metric].l, data: rows.map(r => r.t[state.metric]), backgroundColor: rows.map((r, i) => i === rows.length - 1 ? seriesColor(0) : seriesColor(0) + '88'), borderRadius: 4 }] }, options: baseOpts({ plugins: { legend: { display: false } }, scales: { x: { ticks: { color: css('--muted') }, grid: { display: false } }, y: { ticks: Object.assign({ color: css('--muted') }, yFmt(state.metric)), grid: { color: css('--grid') } } } }) }); } };
+}
+
+// ---------- 画面：日次 ----------
+function clampIdx(s) { return Math.min(Math.max(idxOf(s), 0), NDAYS - 1); }
+function viewDaily() {
+  const s = clampIdx(state.dailyFrom), e = Math.max(clampIdx(state.dailyTo), s), k = state.metric;
+  const labels = []; for (let i = s; i <= e; i++) labels.push(iso(i).slice(5).replace('-', '/'));
+  const controls = `<div class="row">${metricSelect()}<label class="field">期間<input type="date" id="d-from" value="${iso(s)}" min="${iso(0)}" max="${iso(NDAYS - 1)}"></label><label class="field">〜<input type="date" id="d-to" value="${iso(e)}" min="${iso(0)}" max="${iso(NDAYS - 1)}"></label>
+    <div class="seg" role="group" aria-label="期間プリセット"><button type="button" data-preset="7">7日</button><button type="button" data-preset="30">30日</button><button type="button" data-preset="90">90日</button></div>
+    <span class="note">昨日（${iso(NDAYS - 1).replace(/-/g, '/')}）分まで反映</span></div>`;
+  const bind = () => {
+    bindMetric();
+    document.getElementById('d-from').onchange = ev => { state.dailyFrom = ev.target.value; render(); };
+    document.getElementById('d-to').onchange = ev => { state.dailyTo = ev.target.value; render(); };
+    document.querySelectorAll('[data-preset]').forEach(b => b.onclick = () => { state.dailyTo = iso(NDAYS - 1); state.dailyFrom = iso(NDAYS - Number(b.dataset.preset)); render(); });
+  };
+  if (state.mode === 'compare') {
+    const ids = compareTargets();
+    const body = ids.map(id => { const t = agg(id, s, e); return `<tr><td>${mediaName(id)}</td><td class="num">${fmt(k, t[k])}</td><td class="num">${fmt('pv', t.pv / (e - s + 1))}</td><td class="num">${fmt('cv', t.cv)}</td></tr>`; }).join('');
+    return { html: controls + `<section class="panel"><div class="panel-head"><h2>${M[k].l}の日次推移 <small>メディア別</small></h2></div><div class="chart-box tall"><canvas id="c-d"></canvas></div></section>
+      <section class="panel"><h2>期間合計 <small>${iso(s)} 〜 ${iso(e)}</small></h2><div class="table-wrap"><table><thead><tr><th>メディア</th><th class="num">${M[k].l}</th><th class="num">1日平均PV</th><th class="num">CV</th></tr></thead><tbody>${body}</tbody></table></div></section>`,
+      after: () => { bind(); chart('c-d', { type: 'line', data: { labels, datasets: ids.map((id, i) => ({ label: mediaName(id), data: dailySeries(id, k, s, e), borderColor: seriesColor(i), backgroundColor: seriesColor(i), tension: .2, pointRadius: 0, borderWidth: 1.5 })) }, options: baseOpts({ scales: { x: { ticks: { color: css('--muted'), maxTicksLimit: 10 }, grid: { color: css('--grid') } }, y: { ticks: Object.assign({ color: css('--muted') }, yFmt(k)), grid: { color: css('--grid') }, reverse: !!M[k].lowerBetter, beginAtZero: !M[k].lowerBetter } } }) }); } };
+  }
+  const rows = []; for (let i = e; i >= s && rows.length < 31; i--) rows.push({ d: iso(i), t: agg(state.media, i, i) });
+  return { html: controls + `<section class="panel"><div class="panel-head"><h2>${M[k].l}の日次推移 <small>${mediaName(state.media)}</small></h2></div><div class="chart-box"><canvas id="c-d"></canvas></div></section>
+    <section class="panel"><h2>日次一覧 <small>新しい順・最大31日</small></h2><div class="table-wrap"><table><thead><tr><th>日付</th><th class="num">PV</th><th class="num">セッション</th><th class="num">ユーザー</th><th class="num">CALL</th><th class="num">FORM</th><th class="num">表示回数</th><th class="num">クリック</th><th class="num">掲載順位</th><th class="num">コール（kintone）</th></tr></thead>
+    <tbody>${rows.map(r => `<tr><td>${r.d.replace(/-/g, '/')}（${'日月火水木金土'[new Date(r.d).getUTCDay()]}）</td><td class="num">${fmt('pv', r.t.pv)}</td><td class="num">${fmt('sessions', r.t.sessions)}</td><td class="num">${fmt('users', r.t.users)}</td><td class="num">${r.t.call}</td><td class="num">${r.t.form}</td><td class="num">${fmt('imp', r.t.imp)}</td><td class="num">${fmt('clicks', r.t.clicks)}</td><td class="num">${fmt('pos', r.t.pos)}</td><td class="num">${r.t.kCalls}</td></tr>`).join('')}</tbody></table></div></section>`,
+    after: () => { bind(); chart('c-d', { type: 'line', data: { labels, datasets: [{ label: M[k].l, data: dailySeries(state.media, k, s, e), borderColor: seriesColor(0), backgroundColor: seriesColor(0) + '22', fill: true, tension: .2, pointRadius: 0, borderWidth: 1.8 }] }, options: baseOpts({ plugins: { legend: { display: false } }, scales: { x: { ticks: { color: css('--muted'), maxTicksLimit: 12 }, grid: { color: css('--grid') } }, y: { ticks: Object.assign({ color: css('--muted') }, yFmt(k)), grid: { color: css('--grid') }, reverse: !!M[k].lowerBetter, beginAtZero: !M[k].lowerBetter } } }) }); } };
+}
+
+// ---------- 画面：前年比・前月比・期間比較（共通の比較表） ----------
+function compareTable(curT, baseT, curLabel, baseLabel) {
+  return `<div class="table-wrap"><table><thead><tr><th>指標</th><th class="num">${curLabel}</th><th class="num">${baseLabel}</th><th class="num">増減</th><th class="num">増減率</th></tr></thead><tbody>
+    ${METRICS.map(x => { const d = curT[x.k] - baseT[x.k]; return `<tr><td>${x.l} <span class="note">${x.src}</span></td><td class="num">${fmt(x.k, curT[x.k])}</td><td class="num">${fmt(x.k, baseT[x.k])}</td><td class="num">${d >= 0 ? '+' : '−'}${fmt(x.k, Math.abs(d))}</td>${rateCell(x.k, curT[x.k], baseT[x.k])}</tr>`; }).join('')}
+  </tbody></table></div>`;
+}
+function compareMediaTable(k, getCur, getBase, curLabel, baseLabel) {
+  const ids = compareTargets();
+  const rows = ids.map(id => ({ id, c: getCur(id)[k], b: getBase(id)[k] }));
+  const tc = getCur(ALL)[k], tb = getBase(ALL)[k];
+  return { rows, html: `<div class="table-wrap"><table><thead><tr><th>メディア</th><th class="num">${curLabel}</th><th class="num">${baseLabel}</th><th class="num">増減率</th></tr></thead><tbody>
+    ${rows.map(r => `<tr><td>${mediaName(r.id)}</td><td class="num">${fmt(k, r.c)}</td><td class="num">${fmt(k, r.b)}</td>${rateCell(k, r.c, r.b)}</tr>`).join('')}
+    <tr class="total"><td>メディア累計</td><td class="num">${fmt(k, tc)}</td><td class="num">${fmt(k, tb)}</td>${rateCell(k, tc, tb)}</tr></tbody></table></div>` };
+}
+function rateBarChart(id, k, rows) {
+  const vals = rows.map(r => r.b ? (r.c - r.b) / r.b * 100 : 0);
+  const good = css('--good'), bad = css('--bad');
+  chart(id, { type: 'bar', data: { labels: rows.map(r => mediaName(r.id)), datasets: [{ label: '増減率（%）', data: vals, backgroundColor: vals.map(v => (M[k].lowerBetter ? v < 0 : v >= 0) ? good : bad), borderRadius: 3 }] },
+    options: baseOpts({ indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { ticks: { color: css('--muted'), callback: v => v + '%' }, grid: { color: css('--grid') } }, y: { ticks: { color: css('--muted'), font: { size: 11 } }, grid: { display: false } } } }) });
+}
+function monthPicker() {
+  return `<label class="field">対象月<select id="ym-sel">${MONTHS.slice(12).reverse().map(mm => `<option value="${mm}" ${mm === state.ymMonth ? 'selected' : ''}>${mLabel(mm)}</option>`).join('')}</select></label>`;
+}
+function bindMonthPicker() { const el = document.getElementById('ym-sel'); if (el) el.onchange = () => { state.ymMonth = el.value; render(); }; }
+
+function viewPeriodCompare(kind) {
+  const cur = state.ymMonth, base = kind === 'yoy' ? shiftMonth(cur, -12) : shiftMonth(cur, -1);
+  const curL = mLabel(cur), baseL = mLabel(base) + (kind === 'yoy' ? '（前年同月）' : '（前月）');
+  const k = state.metric;
+  if (state.mode === 'compare') {
+    const t = compareMediaTable(k, id => aggMonth(id, cur), id => aggMonth(id, base), curL, baseL);
+    return { html: `<div class="row">${monthPicker()}${metricSelect()}</div>
+      <section class="grid2"><div class="panel"><div class="panel-head"><h2>${M[k].l}の${kind === 'yoy' ? '前年比' : '前月比'} <small>メディア別</small></h2></div><div class="chart-box tall"><canvas id="c-r"></canvas></div></div>
+      <div class="panel"><h2>メディア別 ${M[k].l}</h2>${t.html}</div></section>`,
+      after: () => { bindMonthPicker(); bindMetric(); rateBarChart('c-r', k, t.rows); } };
+  }
+  const a = aggMonth(state.media, cur), b = aggMonth(state.media, base);
+  let chartHtml, after;
+  if (kind === 'yoy') {
+    const thisY = MONTHS.slice(-12), lastY = thisY.map(mm => shiftMonth(mm, -12));
+    chartHtml = `<div class="panel"><div class="panel-head"><h2>${M[k].l}：今年と前年の重ね合わせ <small>${mediaName(state.media)}</small></h2></div><div class="chart-box"><canvas id="c-r"></canvas></div></div>`;
+    after = () => chart('c-r', { type: 'line', data: { labels: thisY.map(mm => Number(mm.slice(5)) + '月'), datasets: [
+      { label: '直近12か月', data: thisY.map(mm => aggMonth(state.media, mm)[k]), borderColor: seriesColor(0), backgroundColor: seriesColor(0) + '22', fill: true, tension: .3, pointRadius: 2 },
+      { label: 'その前年', data: lastY.map(mm => MONTHS.includes(mm) ? aggMonth(state.media, mm)[k] : null), borderColor: css('--muted'), borderDash: [5, 4], tension: .3, pointRadius: 0 },
+    ] }, options: baseOpts({ scales: { x: { ticks: { color: css('--muted') }, grid: { color: css('--grid') } }, y: { ticks: Object.assign({ color: css('--muted') }, yFmt(k)), grid: { color: css('--grid') }, reverse: !!M[k].lowerBetter, beginAtZero: !M[k].lowerBetter } } }) });
+  } else {
+    const [s1, e1] = monthSpan(cur), [s0, e0] = monthSpan(base), len = Math.max(e1 - s1, e0 - s0) + 1;
+    chartHtml = `<div class="panel"><div class="panel-head"><h2>${M[k].l}：日別の重ね合わせ <small>${curL} と ${mLabel(base)}</small></h2></div><div class="chart-box"><canvas id="c-r"></canvas></div></div>`;
+    after = () => chart('c-r', { type: 'line', data: { labels: Array.from({ length: len }, (_, i) => (i + 1) + '日'), datasets: [
+      { label: curL, data: dailySeries(state.media, k, s1, e1), borderColor: seriesColor(0), tension: .25, pointRadius: 0, borderWidth: 1.8 },
+      { label: mLabel(base), data: dailySeries(state.media, k, s0, e0), borderColor: css('--muted'), borderDash: [5, 4], tension: .25, pointRadius: 0 },
+    ] }, options: baseOpts({ scales: { x: { ticks: { color: css('--muted'), maxTicksLimit: 10 }, grid: { color: css('--grid') } }, y: { ticks: Object.assign({ color: css('--muted') }, yFmt(k)), grid: { color: css('--grid') } } } }) });
+  }
+  return { html: `<div class="row">${monthPicker()}${metricSelect()}</div>
+    <section class="grid2">${chartHtml}<div class="panel"><h2>主要指標 <small>${curL} ÷ ${baseL}</small></h2>
+      <div class="kpis" style="grid-template-columns: repeat(2, minmax(0,1fr)); margin-top: 8px;">${['pv', 'cv', 'clicks', 'revenue'].map(x => `<div class="kpi"><div class="lbl"><span>${M[x].l}</span></div><div class="val">${fmt(x, a[x])}</div><div class="chips">${chip(x, a[x], b[x], kind === 'yoy' ? '前年' : '前月')}</div></div>`).join('')}</div></div></section>
+    <section class="panel"><h2>全指標の比較</h2>${compareTable(a, b, curL, baseL)}</section>`,
+    after: () => { bindMonthPicker(); bindMetric(); after(); } };
+}
+
+function viewRange() {
+  const sA = clampIdx(state.aFrom), eA = Math.max(clampIdx(state.aTo), sA), sB = clampIdx(state.bFrom), eB = Math.max(clampIdx(state.bTo), sB);
+  const k = state.metric, la = `期間A（${iso(sA).slice(5).replace('-', '/')}〜${iso(eA).slice(5).replace('-', '/')}）`, lb = `期間B（${iso(sB).slice(5).replace('-', '/')}〜${iso(eB).slice(5).replace('-', '/')}）`;
+  const dInput = (id, v) => `<input type="date" id="${id}" value="${v}" min="${iso(0)}" max="${iso(NDAYS - 1)}">`;
+  const controls = `<div class="panel"><div class="row"><span class="field"><b style="color: var(--fg)">期間A</b>${dInput('ra-from', iso(sA))}〜${dInput('ra-to', iso(eA))}</span>
+    <span class="field"><b style="color: var(--fg)">期間B</b>${dInput('rb-from', iso(sB))}〜${dInput('rb-to', iso(eB))}</span>${metricSelect()}</div>
+    <p class="note" style="margin: 8px 0 0;">日数が違う期間でも比較できます（期間A ${eA - sA + 1}日／期間B ${eB - sB + 1}日）。</p></div>`;
+  const bind = () => { bindMetric(); [['ra-from', 'aFrom'], ['ra-to', 'aTo'], ['rb-from', 'bFrom'], ['rb-to', 'bTo']].forEach(([id, key]) => { document.getElementById(id).onchange = ev => { state[key] = ev.target.value; render(); }; }); };
+  if (state.mode === 'compare') {
+    const t = compareMediaTable(k, id => agg(id, sA, eA), id => agg(id, sB, eB), '期間A', '期間B');
+    return { html: controls + `<section class="grid2"><div class="panel"><h2>${M[k].l}の増減率 <small>A ÷ B・メディア別</small></h2><div class="chart-box tall"><canvas id="c-r"></canvas></div></div><div class="panel"><h2>メディア別 ${M[k].l}</h2>${t.html}</div></section>`,
+      after: () => { bind(); rateBarChart('c-r', k, t.rows); } };
+  }
+  const a = agg(state.media, sA, eA), b = agg(state.media, sB, eB), len = Math.max(eA - sA, eB - sB) + 1;
+  return { html: controls + `<section class="panel"><div class="panel-head"><h2>${M[k].l}：経過日数で重ね合わせ <small>${mediaName(state.media)}</small></h2></div><div class="chart-box"><canvas id="c-r"></canvas></div></section>
+    <section class="panel"><h2>全指標の比較 <small>${la} ÷ ${lb}</small></h2>${compareTable(a, b, '期間A', '期間B')}</section>`,
+    after: () => { bind(); chart('c-r', { type: 'line', data: { labels: Array.from({ length: len }, (_, i) => (i + 1) + '日目'), datasets: [
+      { label: la, data: dailySeries(state.media, k, sA, eA), borderColor: seriesColor(0), tension: .25, pointRadius: 0, borderWidth: 1.8 },
+      { label: lb, data: dailySeries(state.media, k, sB, eB), borderColor: seriesColor(1), borderDash: [5, 4], tension: .25, pointRadius: 0 },
+    ] }, options: baseOpts({ scales: { x: { ticks: { color: css('--muted'), maxTicksLimit: 10 }, grid: { color: css('--grid') } }, y: { ticks: Object.assign({ color: css('--muted') }, yFmt(k)), grid: { color: css('--grid') } } } }) }); } };
+}
+
+// ---------- Ubersuggest（月次・ダミー） ----------
+function ubersuggest(id, mm) {
+  if (id === ALL) { const t = { total: 0, top3: 0, top10: 0, top100: 0, out: 0 }; MEDIA.forEach(m => { const u = ubersuggest(m.id, mm); Object.keys(t).forEach(x => t[x] += u[x]); }); return t; }
+  const g = DIRS.find(x => x.id === id && x.group);
+  if (g) { const t = { total: 0, top3: 0, top10: 0, top100: 0, out: 0 }; g.kids.forEach(c => { const u = ubersuggest(c, mm); Object.keys(t).forEach(x => t[x] += u[x]); }); return t; }
+  const seed = [...id].reduce((a, c) => a + c.charCodeAt(0), 0);
+  const total = id.startsWith('c-') ? 20 + seed % 40 : 150 + seed % 200;
+  const prog = MONTHS.indexOf(mm) / MONTHS.length, r = rng(seed * 31 + MONTHS.indexOf(mm));
+  const top3 = Math.round(total * (0.02 + 0.06 * prog + r() * 0.02)), top10 = Math.round(total * (0.04 + 0.07 * prog + r() * 0.02)), top100 = Math.round(total * (0.12 + 0.18 * prog + r() * 0.04));
+  return { total, top3, top10, top100, out: total - top3 - top10 - top100 };
+}
+const KW_WORDS = {
+  hachi: ['ハチの巣 駆除', 'スズメバチ 駆除 費用', 'アシナガバチ 巣', 'ハチ 駆除 業者', '蜂の巣 自分で'],
+  gaiju: ['ハクビシン 駆除', 'アライグマ 屋根裏', 'イタチ 駆除 費用', '害獣 駆除 業者', 'ネズミ 駆除'],
+  concierge: ['コウモリ 駆除', 'コウモリ 糞', 'ハチの巣 駆除 料金', 'ネズミ 駆除 業者', 'ゴキブリ 駆除 業者'],
+  mizu: ['トイレ つまり', '水漏れ 修理', 'キッチン 排水 つまり', '蛇口 交換 費用', '給湯器 交換'],
+  kagi: ['鍵 開錠', '鍵 紛失 車', '鍵 交換 費用', '玄関 鍵 開かない', '金庫 開錠'],
+};
+function viewKw() {
+  const mm = LAST_MONTH, months13 = MONTHS.slice(-13);
+  const note = `<p class="note">仮の画面です。「KW追従」の中身を共有してもらってから確定します。ここではUbersuggestのランク追跡を想定しています。</p>`;
+  if (state.mode === 'compare') {
+    const rows = compareTargets().map(id => ({ id, u: ubersuggest(id, mm), p: ubersuggest(id, shiftMonth(mm, -1)) }));
+    return { html: note + `<section class="panel"><h2>メディア別 順位分布 <small>${mLabel(mm)}</small></h2><div class="table-wrap"><table><thead><tr><th>メディア</th><th class="num">追跡KW</th><th class="num">TOP3</th><th class="num">TOP10</th><th class="num">TOP100</th><th class="num">ランク外</th><th class="num">TOP10以内の割合</th><th class="num">前月差</th></tr></thead><tbody>
+      ${rows.map(r => { const share = (r.u.top3 + r.u.top10) / r.u.total, ps = (r.p.top3 + r.p.top10) / r.p.total; return `<tr><td>${mediaName(r.id)}</td><td class="num">${r.u.total}</td><td class="num">${r.u.top3}</td><td class="num">${r.u.top10}</td><td class="num">${r.u.top100}</td><td class="num">${r.u.out}</td><td class="num"><span class="bar" style="width:${Math.round(share * 120)}px"></span>${(share * 100).toFixed(1)}%</td><td class="num">${((share - ps) * 100 >= 0 ? '+' : '') + ((share - ps) * 100).toFixed(1)}pt</td></tr>`; }).join('')}</tbody></table></div></section>`, after: () => {} };
+  }
+  const words = KW_WORDS[state.media] || KW_WORDS[(DIRS.find(d => d.id === state.media) || {}).parent] || ['（KW例）サービス名 料金', '（KW例）地域名 業者', '（KW例）症状 対処', '（KW例）比較 おすすめ', '（KW例）自分で 方法'];
+  const r = rng(77 + state.media.length);
+  const kwRows = words.map(w => { const now = 1 + Math.floor(r() * 40), prev = Math.max(1, now + Math.round((r() - 0.55) * 12)); return { w, now, prev, vol: 100 * (1 + Math.floor(r() * 40)) }; });
+  const ubRows = months13.map(x => ubersuggest(state.media, x));
+  return { html: note + `<section class="grid2"><div class="panel"><h2>順位分布の推移 <small>${mediaName(state.media)}</small></h2><div class="chart-box"><canvas id="c-kw"></canvas></div></div>
+    <div class="panel"><h2>CSV取り込み状況</h2><dl class="card-kv"><dt>最終取り込み</dt><dd>2026/10/02（直近30日）</dd><dt>取り込み方法</dt><dd>管理者がCSVをアップロード</dd><dt>追跡KW</dt><dd>${ubRows[ubRows.length - 1].total}件</dd></dl></div></section>
+    <section class="panel"><h2>キーワード別の順位 <small>例</small></h2><div class="table-wrap"><table><thead><tr><th>キーワード</th><th class="num">検索ボリューム</th><th class="num">今月順位</th><th class="num">前月順位</th><th class="num">変動</th></tr></thead><tbody>
+    ${kwRows.map(x => { const dv = x.prev - x.now; return `<tr><td>${x.w}</td><td class="num">${nf.format(x.vol)}</td><td class="num">${x.now}位</td><td class="num">${x.prev}位</td><td class="num"><span class="chip ${dv > 0 ? 'up' : dv < 0 ? 'down' : 'flat'}">${dv > 0 ? '▲' + dv : dv < 0 ? '▼' + (-dv) : '±0'}</span></td></tr>`; }).join('')}</tbody></table></div></section>`,
+    after: () => chart('c-kw', { type: 'bar', data: { labels: months13.map(mShort), datasets: [
+      { label: 'TOP3', data: ubRows.map(x => x.top3), backgroundColor: seriesColor(0) }, { label: 'TOP10', data: ubRows.map(x => x.top10), backgroundColor: seriesColor(6) },
+      { label: 'TOP100', data: ubRows.map(x => x.top100), backgroundColor: seriesColor(5) }, { label: 'ランク外', data: ubRows.map(x => x.out), backgroundColor: css('--line') },
+    ] }, options: baseOpts({ scales: { x: { stacked: true, ticks: { color: css('--muted') }, grid: { display: false } }, y: { stacked: true, ticks: { color: css('--muted') }, grid: { color: css('--grid') } } } }) }) };
+}
+
+// ---------- プランニング比（仮） ----------
+function planOf(id, mm, k) { const r = rng([...id].reduce((a, c) => a + c.charCodeAt(0), 0) + MONTHS.indexOf(mm) * 13 + k.length); return aggMonth(id, mm)[k] * (0.92 + r() * 0.22); }
+function viewPlan() {
+  return { html: `<section class="panel placeholder"><h2 style="justify-content:center">プランニング比（次の開発で追加）</h2>
+    <p class="note">要素が多いため、メディア数値ダッシュボードの次の開発で追加します。タブと画面の場所だけ確保しています。</p>
+    <p class="note">「選択メディア／各メディア比較」の切り替えとメディア累計は、他のタブと同じように使える形にする予定です。</p></section>`, after: () => {} };
+}
+// 旧・仮画面（目標と実績の比較）。次の開発で仕様が決まったら作り直す
+function viewPlanDraft() {
+  const mm = LAST_MONTH, keys = ['pv', 'cv', 'contracts', 'revenue'];
+  const note = `<p class="note">仮の画面です。「プランニング」の中身を共有してもらってから確定します。ここでは、月ごとの目標値を登録して実績と比べる形を想定しています。</p>`;
+  if (state.mode === 'compare') {
+    return { html: note + `<section class="panel"><h2>メディア別 目標達成率 <small>${mLabel(mm)}</small></h2><div class="table-wrap"><table><thead><tr><th>メディア</th>${keys.map(k => `<th class="num">${M[k].l}</th>`).join('')}</tr></thead><tbody>
+      ${compareTargets().map(id => `<tr><td>${mediaName(id)}</td>${keys.map(k => { const a = aggMonth(id, mm)[k], p = planOf(id, mm, k), r = p ? a / p : 0; return `<td class="num"><div class="row" style="justify-content:flex-end; gap:6px; flex-wrap:nowrap"><div class="progress" style="width:70px"><span class="${r >= 1 ? 'over' : r < 0.9 ? 'under' : ''}" style="width:${Math.min(r, 1) * 100}%"></span></div>${(r * 100).toFixed(0)}%</div></td>`; }).join('')}</tr>`).join('')}</tbody></table></div></section>`, after: () => {} };
+  }
+  const months13 = MONTHS.slice(-13);
+  return { html: note + `<section class="kpis">${keys.map(k => { const a = aggMonth(state.media, mm)[k], p = planOf(state.media, mm, k), r = a / p; return `<div class="kpi"><div class="lbl"><span>${M[k].l}</span><span class="src">${mLabel(mm)}</span></div><div class="val">${(r * 100).toFixed(0)}<small>%</small></div><div class="progress"><span class="${r >= 1 ? 'over' : r < 0.9 ? 'under' : ''}" style="width:${Math.min(r, 1) * 100}%"></span></div><div class="note">実績 ${fmt(k, a)}／目標 ${fmt(k, p)}</div></div>`; }).join('')}</section>
+    <section class="panel"><div class="panel-head"><h2>${M[state.metric].l}：目標と実績 <small>${mediaName(state.media)}</small></h2>${metricSelect()}</div><div class="chart-box"><canvas id="c-plan"></canvas></div></section>`,
+    after: () => { bindMetric(); const k = state.metric; chart('c-plan', { type: 'bar', data: { labels: months13.map(mShort), datasets: [
+      { label: '実績', data: months13.map(x => aggMonth(state.media, x)[k]), backgroundColor: seriesColor(0), borderRadius: 3 },
+      { label: '目標', data: months13.map(x => planOf(state.media, x, k)), type: 'line', borderColor: seriesColor(1), backgroundColor: seriesColor(1), borderDash: [5, 4], pointRadius: 2 },
+    ] }, options: baseOpts({ scales: { x: { ticks: { color: css('--muted') }, grid: { display: false } }, y: { ticks: Object.assign({ color: css('--muted') }, yFmt(k)), grid: { color: css('--grid') } } } }) }); } };
+}
+
+// ---------- 記事進捗（WordPress・ダミー） ----------
+const CUR_MONTH = '2026-10', CUR_DAY = 7;
+function articleTarget(id) {
+  if (id === ALL) return MEDIA.reduce((a, m) => { const t = articleTarget(m.id); return { posts: a.posts + t.posts, rewrites: a.rewrites + t.rewrites }; }, { posts: 0, rewrites: 0 });
+  const g = DIRS.find(x => x.id === id && x.group);
+  if (g) return g.kids.reduce((a, c) => { const t = articleTarget(c); return { posts: a.posts + t.posts, rewrites: a.rewrites + t.rewrites }; }, { posts: 0, rewrites: 0 });
+  if (id.startsWith('c-')) return { posts: 2, rewrites: 1 };
+  const m = MEDIA.find(x => x.id === id);
+  return { posts: m.base > 20000 ? 8 : m.base > 5000 ? 6 : 3, rewrites: 2 };
+}
+function pipelineOf(id) {
+  const ids = leafIds(id); let p = { sched: 0, review: 0, draft: 0 };
+  ids.forEach(x => { const r = rng([...x].reduce((a, c) => a + c.charCodeAt(0), 0) + 3); p.sched += Math.floor(r() * 3); p.review += Math.floor(r() * 3); p.draft += 1 + Math.floor(r() * 4); });
+  return p;
+}
+function progressRow(label, done, target) {
+  const r = target ? done / target : 0, expected = CUR_DAY / 31;
+  return `<div style="display:flex; flex-direction:column; gap:4px; margin-top:8px"><div class="row" style="justify-content:space-between"><span>${label}</span><span class="num">${done} / ${target}本（${(r * 100).toFixed(0)}%）</span></div>
+    <div class="progress"><span class="${r >= expected ? 'over' : 'under'}" style="width:${Math.min(r, 1) * 100}%"></span></div></div>`;
+}
+function articleProgressBlock(id) {
+  const t = aggMonth(id, CUR_MONTH), tg = articleTarget(id), p = pipelineOf(id);
+  return `${progressRow('新規公開', t.posts, tg.posts)}${progressRow('リライト', t.rewrites, tg.rewrites)}
+    <div class="pipeline"><div><span>今月公開済み</span><b>${t.posts + t.rewrites}</b></div><div><span>予約投稿</span><b>${p.sched}</b></div><div><span>レビュー待ち</span><b>${p.review}</b></div><div><span>下書き</span><b>${p.draft}</b></div></div>
+    <p class="note" style="margin:8px 0 0">緑：今日までの目安（${Math.round(CUR_DAY / 31 * 100)}%）以上／黄：目安より遅れ</p>`;
+}
+const TITLES = ['の正しい駆除方法と費用相場', 'を自分で対策する5つの方法', 'が出る原因と再発防止策', '業者の選び方と注意点', 'の料金を地域別に比較', 'に関するよくある質問', 'を放置するリスクとは', 'の季節ごとの対策'];
+const TOPIC = { seikatsu: '不用品回収', gaiju: 'ハクビシン', hachi: 'スズメバチ', mizu: 'トイレつまり', kagi: '鍵の紛失', glass: '窓ガラス割れ', roof: '雨漏り', shiroari: 'シロアリ', best365: '暮らしの困りごと', concierge: 'コウモリ',
+  'c-cockroach': 'ゴキブリ', 'c-termite': 'シロアリ', 'c-wasp': 'ハチの巣', 'c-other-i': 'ムカデ', 'c-bat': 'コウモリ', 'c-rat': 'ネズミ', 'c-other-a': 'アライグマ' };
+function viewArticles() {
+  if (state.mode === 'compare') {
+    const rows = compareTargets().map(id => ({ id, t: aggMonth(id, CUR_MONTH), tg: articleTarget(id), p: pipelineOf(id), total: 40 + Math.round(MEDIA.find(m => m.id === id).base / 300) }));
+    return { html: `<p class="note">${mLabel(CUR_MONTH)}・${CUR_DAY}日時点。公開数はWordPressから毎日取得します。</p>
+      <section class="panel"><h2>メディア別 記事進捗</h2><div class="table-wrap"><table><thead><tr><th>メディア</th><th class="num">新規公開</th><th>達成率</th><th class="num">リライト</th><th class="num">予約投稿</th><th class="num">レビュー待ち</th><th class="num">下書き</th><th class="num">累計公開記事</th></tr></thead><tbody>
+      ${rows.map(r => { const rr = r.tg.posts ? r.t.posts / r.tg.posts : 0; return `<tr><td>${mediaName(r.id)}</td><td class="num">${r.t.posts} / ${r.tg.posts}</td><td><div class="progress" style="width:120px"><span class="${rr >= CUR_DAY / 31 ? 'over' : 'under'}" style="width:${Math.min(rr, 1) * 100}%"></span></div></td><td class="num">${r.t.rewrites} / ${r.tg.rewrites}</td><td class="num">${r.p.sched}</td><td class="num">${r.p.review}</td><td class="num">${r.p.draft}</td><td class="num">${nf.format(r.total)}</td></tr>`; }).join('')}
+      </tbody></table></div></section>`, after: () => {} };
+  }
+  const months13 = MONTHS.slice(-12).concat([CUR_MONTH]), tg = articleTarget(state.media);
+  const r = rng(state.media.length * 17), topic = TOPIC[state.media] || '害虫・害獣';
+  const statuses = [['公開済み', 'ok'], ['公開済み', 'ok'], ['予約投稿', 'wait'], ['レビュー待ち', 'wait'], ['下書き', 'off'], ['公開済み', 'ok'], ['下書き', 'off'], ['公開済み', 'ok']];
+  const list = statuses.map((s, i) => ({ title: topic + TITLES[i], kind: r() < 0.25 ? 'リライト' : '新規', st: s, date: s[0] === '予約投稿' ? '10/' + (CUR_DAY + 2 + i) : s[1] === 'off' || s[0] === 'レビュー待ち' ? '—' : '10/' + Math.max(1, CUR_DAY - i) }));
+  return { html: `<p class="note">${mediaName(state.media)}／${mLabel(CUR_MONTH)}・${CUR_DAY}日時点。月の目標本数は管理画面で設定します。</p>
+    <section class="grid2"><div class="panel"><h2>今月の進捗</h2>${articleProgressBlock(state.media)}</div>
+      <div class="panel"><h2>公開本数と目標 <small>直近13か月</small></h2><div class="chart-box sm"><canvas id="c-art"></canvas></div></div></section>
+    <section class="panel"><h2>最近の記事 <small>WordPressの状態</small></h2><div class="table-wrap"><table><thead><tr><th>タイトル</th><th>種別</th><th>状態</th><th>公開日／予定日</th></tr></thead><tbody>
+      ${list.map(a => `<tr><td>${a.title}</td><td style="text-align:left">${a.kind}</td><td style="text-align:left"><span class="pill ${a.st[1]}">${a.st[0]}</span></td><td class="num">${a.date}</td></tr>`).join('')}</tbody></table></div></section>`,
+    after: () => chart('c-art', { type: 'bar', data: { labels: months13.map(mShort), datasets: [
+      { label: '新規公開', data: months13.map(x => aggMonth(state.media, x).posts), backgroundColor: seriesColor(0), stack: 'a', borderRadius: 2 },
+      { label: 'リライト', data: months13.map(x => aggMonth(state.media, x).rewrites), backgroundColor: seriesColor(6), stack: 'a', borderRadius: 2 },
+      { label: '新規の目標', data: months13.map(() => tg.posts), type: 'line', borderColor: seriesColor(1), borderDash: [5, 4], pointRadius: 0 },
+    ] }, options: baseOpts({ scales: { x: { stacked: true, ticks: { color: css('--muted') }, grid: { display: false } }, y: { stacked: true, ticks: { color: css('--muted') }, grid: { color: css('--grid') } } } }) }) };
+}
+
+// ---------- エリア（GA4の地域＋kintoneの案件住所・ダミー） ----------
+const PREFS = [
+  ['北海道', 5.1, 12, 0], ['青森', 1.2, 11, 2], ['秋田', .9, 10, 3], ['岩手', 1.2, 11, 3], ['石川', 1.1, 7, 4], ['富山', 1, 8, 4], ['新潟', 2.1, 9, 4], ['山形', 1, 10, 4], ['宮城', 2.3, 11, 4],
+  ['島根', .65, 3, 5], ['鳥取', .55, 4, 5], ['兵庫', 5.4, 5, 5], ['京都', 2.5, 6, 5], ['福井', .75, 7, 5], ['長野', 2, 8, 5], ['群馬', 1.9, 9, 5], ['栃木', 1.9, 10, 5], ['福島', 1.8, 11, 5],
+  ['山口', 1.3, 2, 6], ['広島', 2.7, 3, 6], ['岡山', 1.9, 4, 6], ['大阪', 8.8, 5, 6], ['滋賀', 1.4, 6, 6], ['岐阜', 1.9, 7, 6], ['山梨', .8, 8, 6], ['埼玉', 7.3, 9, 6], ['茨城', 2.8, 10, 6],
+  ['福岡', 5.1, 1, 7], ['愛媛', 1.3, 3, 7], ['香川', .9, 4, 7], ['和歌山', .9, 5, 7], ['奈良', 1.3, 6, 7], ['愛知', 7.5, 7, 7], ['静岡', 3.6, 8, 7], ['東京', 14, 9, 7], ['千葉', 6.3, 10, 7],
+  ['長崎', 1.3, 0, 8], ['佐賀', .8, 1, 8], ['大分', 1.1, 2, 8], ['高知', .7, 3, 8], ['徳島', .7, 4, 8], ['三重', 1.7, 6, 8], ['神奈川', 9.2, 9, 8],
+  ['熊本', 1.7, 1, 9], ['宮崎', 1, 2, 9], ['鹿児島', 1.6, 1, 10], ['沖縄', 1.5, 0, 11],
+];
+const AREA_METRICS = [['sessions', 'セッション'], ['cv', 'CV'], ['cvr', 'CV率'], ['contracts', '成約数（kintone）']];
+function areaRows(id, s, e) {
+  const t = agg(id, s, e), r = rng([...id].reduce((a, c) => a + c.charCodeAt(0), 0) * 7);
+  const w = PREFS.map(p => p[1] * (0.6 + r() * 0.8)), sum = w.reduce((a, b) => a + b, 0);
+  const rows = PREFS.map((p, i) => { const sh = w[i] / sum, ses = Math.round(t.sessions * sh), cv = Math.round(t.cv * sh * (0.7 + r() * 0.6)); return { pref: p[0], col: p[2], row: p[3], sessions: ses, cv, cvr: ses ? cv / ses : 0, contracts: 0, share: sh }; });
+  let left = t.contracts; [...rows].sort((a, b) => b.share - a.share).forEach(x => { if (left > 0 && r() < 0.6) { x.contracts++; left--; } });
+  return rows;
+}
+const areaFmt = (k, v) => k === 'cvr' ? (v * 100).toFixed(2) + '%' : nf.format(v);
+function tileMap(rows, k) {
+  const mx = Math.max(...rows.map(x => x[k])) || 1;
+  return `<div class="tilemap" role="img" aria-label="都道府県別の${(AREA_METRICS.find(a => a[0] === k) || [])[1]}">${rows.map(x => { const p = Math.round(Math.sqrt(x[k] / mx) * 100);
+    return `<div class="tile ${p > 55 ? 'hot' : ''}" style="grid-column:${x.col + 1}; grid-row:${x.row + 1}; background: color-mix(in srgb, var(--accent) ${p}%, var(--surface-2));" title="${x.pref}：${areaFmt(k, x[k])}">${x.pref.slice(0, 2)}</div>`; }).join('')}</div>
+    <div class="scale" style="margin-top:8px">少<i></i>多</div>`;
+}
+function viewArea() {
+  const mm = state.ymMonth, k = state.areaMetric, [s, e] = monthSpan(mm), [ps, pe] = monthSpan(shiftMonth(mm, -1));
+  const seg = `<div class="seg" role="group" aria-label="エリアの指標">${AREA_METRICS.map(a => `<button type="button" data-am="${a[0]}" aria-pressed="${a[0] === k}">${a[1]}</button>`).join('')}</div>`;
+  const controls = `<div class="row">${monthPicker()}${seg}<span class="note">地域はGA4の「地域」、成約はkintoneの案件住所から集計</span></div>`;
+  const bind = () => { bindMonthPicker(); document.querySelectorAll('[data-am]').forEach(b => b.onclick = () => { state.areaMetric = b.dataset.am; render(); }); };
+  if (state.mode === 'compare') {
+    const ids = compareTargets(), totalRows = areaRows(ALL, s, e).sort((a, b) => b[k] - a[k]).slice(0, 10);
+    const cells = ids.map(id => { const rows = areaRows(id, s, e), tot = rows.reduce((a, x) => a + x.sessions, 0); return { id, rows: Object.fromEntries(rows.map(x => [x.pref, x])), tot }; });
+    return { html: controls + `<section class="panel"><h2>メディア別 エリア構成 <small>${mLabel(mm)}・全体の上位10都道府県のセッション構成比</small></h2><div class="table-wrap"><table><thead><tr><th>メディア</th>${totalRows.map(x => `<th class="num">${x.pref}</th>`).join('')}</tr></thead><tbody>
+      ${cells.map(c => `<tr><td>${mediaName(c.id)}</td>${totalRows.map(x => { const v = c.tot ? c.rows[x.pref].sessions / c.tot : 0, p = Math.round(Math.min(v / 0.2, 1) * 70); return `<td class="num" style="background: color-mix(in srgb, var(--accent) ${p}%, transparent)">${(v * 100).toFixed(1)}%</td>`; }).join('')}</tr>`).join('')}</tbody></table></div></section>`, after: bind };
+  }
+  const rows = areaRows(state.media, s, e), prev = Object.fromEntries(areaRows(state.media, ps, pe).map(x => [x.pref, x]));
+  const rank = [...rows].sort((a, b) => b[k] - a[k]).slice(0, 15);
+  return { html: controls + `<section class="grid2 even"><div class="panel"><h2>都道府県マップ <small>${mediaName(state.media)}・${mLabel(mm)}</small></h2>${tileMap(rows, k)}</div>
+    <div class="panel"><h2>上位15都道府県</h2><div class="table-wrap"><table><thead><tr><th>都道府県</th><th class="num">セッション</th><th class="num">構成比</th><th class="num">CV</th><th class="num">CV率</th><th class="num">成約</th><th class="num">セッション前月比</th></tr></thead><tbody>
+    ${rank.map(x => `<tr><td>${x.pref}</td><td class="num">${nf.format(x.sessions)}</td><td class="num">${(x.share * 100).toFixed(1)}%</td><td class="num">${x.cv}</td><td class="num">${(x.cvr * 100).toFixed(2)}%</td><td class="num">${x.contracts}</td>${rateCell('sessions', x.sessions, prev[x.pref].sessions)}</tr>`).join('')}</tbody></table></div></div></section>`, after: bind };
+}
+
+// ---------- 収益管理（開発予定） ----------
+const REVENUE_VIEWS = [
+  { id: 'rv-summary', l: '収益サマリ', ico: VIEWS[0].ico, tag: '予定' },
+  { id: 'rv-partner', l: '加盟店別', ico: 'M4 20V10l8-6 8 6v10zM9 20v-6h6v6', tag: '予定' },
+  { id: 'rv-affiliate', l: 'アフィリエイト', ico: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1', tag: '予定' },
+  { id: 'rv-cost', l: '支出', ico: 'M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6', tag: '予定' },
+  { id: 'rv-pl', l: '収支・ROI', ico: 'M4 20h16M7 16l4-5 3 3 5-7', tag: '予定' },
+];
+function viewRevenue() {
+  return { html: `<section class="panel placeholder"><h2 style="justify-content:center">収益管理ダッシュボード（開発予定）</h2>
+    <p class="note">メディア数値ダッシュボードの完成後に開発します。ログインと権限は共通で、ユーザー管理の画面から両方まとめて設定します。</p>
+    <ul><li>収益サマリ：加盟店・アフィリエイトの収益合計と前月比・前年比</li><li>加盟店別：kintoneの案件から加盟店ごとの成約と収益</li><li>アフィリエイト：ASPごとの成果</li><li>支出：サイト制作・ディレクション・記事制作・プレスリリースなど</li><li>収支・ROI：メディア別の収益 − 支出、投資回収の推移</li></ul></section>`, after: () => {} };
+}
+
+// ---------- 管理：ユーザー ----------
+const USERS = [
+  { n: '管理者ユーザー（あなた）', e: 'admin@best-24.jp', media: '管理者', rev: '管理者', scope: 'すべて', st: 'ok', last: '10/08 09:12' },
+  { n: 'ディレクター A', e: 'director-a@best-24.jp', media: '閲覧', rev: '閲覧', scope: 'すべて', st: 'ok', last: '10/07 18:40' },
+  { n: 'ライター管理 B', e: 'writer-b@best-24.jp', media: '閲覧', rev: 'なし', scope: 'すべて', st: 'ok', last: '10/06 11:05' },
+  { n: '経理 E', e: 'account-e@best-24.jp', media: 'なし', rev: '閲覧', scope: 'すべて', st: 'ok', last: '10/03 10:20' },
+  { n: '営業 C', e: 'sales-c@best-24.jp', media: '閲覧', rev: 'なし', scope: 'すべて', st: 'wait', last: '—' },
+  { n: '外部パートナー D', e: 'partner-d@example.com', media: '閲覧', rev: 'なし', scope: '害獣お助け本舗のみ', st: 'off', last: '08/30 15:22' },
+];
+const permPill = v => `<span class="pill ${v === '管理者' ? 'ok' : v === '閲覧' ? 'wait' : 'off'}">${v}</span>`;
+function viewUsers() {
+  const sel = (id, v) => `<select id="${id}"><option ${v === '管理者' ? 'selected' : ''}>管理者</option><option ${v === '閲覧' ? 'selected' : ''}>閲覧</option><option ${v === 'なし' ? 'selected' : ''}>なし</option></select>`;
+  return { html: `<div class="row"><p class="note" style="margin:0; margin-right:auto">権限はこの画面1か所で管理します。1つのアカウントに、ダッシュボードごとの権限（管理者／閲覧／なし）と見られるメディアを設定します。新規登録したユーザーは承認待ちになります。</p><button class="btn primary" type="button" id="invite">ユーザーを招待</button></div>
+    <section class="panel"><div class="table-wrap"><table><thead><tr><th>名前</th><th>メールアドレス</th><th>メディア数値</th><th>収益管理</th><th>見られるメディア</th><th>状態</th><th>最終ログイン</th><th>操作</th></tr></thead><tbody>
+    ${USERS.map((u, i) => `<tr><td>${u.n}</td><td style="text-align:left">${u.e}</td><td style="text-align:left">${permPill(u.media)}</td><td style="text-align:left">${permPill(u.rev)}</td><td style="text-align:left">${u.scope}</td><td style="text-align:left"><span class="pill ${u.st}">${{ ok: '利用中', wait: '承認待ち', off: '停止中' }[u.st]}</span></td><td class="num">${u.last}</td>
+      <td style="text-align:left">${u.st === 'wait' ? `<button class="btn sm primary" type="button" data-edit="${i}">承認して権限を設定</button>` : `<button class="btn sm" type="button" data-edit="${i}">権限を編集</button>`}</td></tr>`).join('')}</tbody></table></div></section>`,
+    after: () => {
+      const form = u => `<h2>${u ? u.n + ' の権限' : 'ユーザーを招待'}</h2><div class="form-grid">
+        ${u ? '' : '<label class="full">メールアドレス<input id="inv-mail" placeholder="name@best-24.jp"></label>'}
+        <label>メディア数値ダッシュボード${sel('pm-media', u ? u.media : '閲覧')}</label><label>収益管理ダッシュボード${sel('pm-rev', u ? u.rev : 'なし')}</label>
+        <label class="full">見られるメディア<select id="pm-scope"><option>すべて</option><option ${u && u.scope !== 'すべて' ? 'selected' : ''}>選択したメディアのみ</option></select></label></div>
+        <p class="note">「管理者」はユーザー管理・メディア管理・API設定も操作できます。収益管理の権限は、収益管理ダッシュボードの公開後に有効になります。</p>
+        <div class="row" style="justify-content:flex-end"><button class="btn" type="button" data-close>キャンセル</button><button class="btn primary" type="button" data-close>${u ? (u.st === 'wait' ? '承認して保存（試作）' : '保存（試作）') : '招待メールを送る（試作）'}</button></div>`;
+      document.getElementById('invite').onclick = () => openModal(form(null));
+      document.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openModal(form(USERS[Number(b.dataset.edit)])));
+    } };
+}
+function viewLogs() {
+  const acts = ['ログイン', 'サマリを表示（メディア累計）', '月次を表示（ハチお助け本舗）', '日次を表示（害獣お助け本舗）', '前年比を表示（各メディア比較）', 'CSVをダウンロード（月次一覧）', '期間比較を表示（カギお助け本舗）'];
+  const r = rng(9); const rows = [];
+  for (let i = 0; i < 18; i++) { const u = USERS[Math.floor(r() * 3)]; const d = new Date(Date.UTC(2026, 9, 8, 9, 30) - i * (r() * 5 + 1) * 3600000); rows.push({ t: d.toISOString().slice(5, 16).replace('T', ' ').replace('-', '/'), u: u.n, a: acts[Math.floor(r() * acts.length)], ip: '社内ネットワーク' }); }
+  return { html: `<div class="row"><label class="field">ユーザー<select id="log-user"><option>すべて</option>${USERS.map(u => `<option>${u.n}</option>`).join('')}</select></label><label class="field">期間<input type="date" id="log-from" value="2026-10-01"></label><span class="note">ログは1年間保存します</span></div>
+    <section class="panel"><h2>アクセスログ</h2><div class="table-wrap"><table><thead><tr><th>日時</th><th>ユーザー</th><th>操作</th><th>接続元</th></tr></thead><tbody>
+    ${rows.map(x => `<tr><td class="num">${x.t}</td><td style="text-align:left">${x.u}</td><td style="text-align:left">${x.a}</td><td style="text-align:left">${x.ip}</td></tr>`).join('')}</tbody></table></div></section>`, after: () => {} };
+}
+
+// ---------- 管理：メディア ----------
+const MEDIA_CFG = MEDIA.map((m, i) => ({ name: m.name, url: ['https://otasuke-honpo.com/', 'https://gaijyu.otasuke-honpo.com/', 'https://hachi.otasuke-honpo.com/', 'https://mizu.otasuke-honpo.com/', 'https://kagi.otasuke-honpo.com/', 'https://glass.otasuke-honpo.com/', 'https://roof.otasuke-honpo.com/', 'https://shiroari.otasuke-honpo.com/', 'https://best365.best24.co.jp/', 'https://gaichugaiju.best24.co.jp/'][i], kintone: i < 8 ? '登録済み' : i === 9 ? '登録済み' : '未登録', wp: '接続OK', uber: '登録済み', dirs: m.id === 'concierge' ? 9 : 0, on: true }));
+function viewMedia() {
+  return { html: `<div class="row"><p class="note" style="margin:0; margin-right:auto">追加したメディアは、翌日3時の収集から自動で集計されます。過去分は追加時にさかのぼって取得します（GA4は取得できる範囲、Search Consoleは16か月）。</p><button class="btn primary" type="button" id="add-media">＋ メディア追加</button></div>
+    <section class="panel"><div class="table-wrap"><table><thead><tr><th>メディア</th><th>URL</th><th>GA4</th><th>Search Console</th><th>kintone</th><th>WordPress</th><th>Ubersuggest</th><th class="num">ディレクトリ</th><th>集計</th><th>操作</th></tr></thead><tbody id="media-rows">${mediaRows()}</tbody></table></div></section>`,
+    after: () => { document.getElementById('add-media').onclick = openMediaModal; } };
+}
+function mediaRows() {
+  return MEDIA_CFG.map(c => `<tr><td>${c.name}</td><td style="text-align:left">${c.url}</td><td style="text-align:left"><span class="pill ok">接続OK</span></td><td style="text-align:left"><span class="pill ok">接続OK</span></td><td style="text-align:left"><span class="pill ${c.kintone === '登録済み' ? 'ok' : 'off'}">${c.kintone}</span></td><td style="text-align:left"><span class="pill ${c.wp === '接続OK' ? 'ok' : 'off'}">${c.wp || '未登録'}</span></td><td style="text-align:left"><span class="pill ${c.uber === '登録済み' ? 'ok' : 'off'}">${c.uber}</span></td><td class="num">${c.dirs || '—'}</td><td style="text-align:left"><span class="pill ${c.on ? 'ok' : 'off'}">${c.on ? '有効' : '停止'}</span></td><td style="text-align:left"><button class="btn sm" type="button">編集</button></td></tr>`).join('');
+}
+function openMediaModal() {
+  openModal(`<h2>メディア追加</h2>
+    <div class="form-grid">
+      <label>メディア名<input id="nm-name" placeholder="例：エアコンお助け本舗"></label>
+      <label>サイトURL<input id="nm-url" placeholder="https://aircon.otasuke-honpo.com/"></label>
+      <label>GA4プロパティID<input id="nm-ga4" placeholder="数字9桁（例：469786980）" inputmode="numeric"></label>
+      <label>Search Consoleプロパティ<input id="nm-sc" placeholder="URL、または sc-domain:ドメイン"></label>
+      <label>kintoneアプリ<select id="nm-kin"><option>案件管理（アプリID 123）</option><option>登録しない</option></select></label>
+      <label>kintoneの絞り込み<input id="nm-kin-f" placeholder="例：流入元 = エアコンお助け本舗"></label>
+      <label>WordPressのユーザー名<input id="nm-wp-user" placeholder="記事数の取得に使うユーザー"></label>
+      <label>WordPressのアプリケーションパスワード<input id="nm-wp-pass" type="password" placeholder="WordPressの「ユーザー」画面で発行"></label>
+      <label>月の目標本数（新規／リライト）<input id="nm-target" placeholder="例：6 / 2"></label>
+      <label>Ubersuggestプロジェクト<input id="nm-ub" placeholder="プロジェクト名（CSVの照合に使用）"></label>
+      <label>CV（CALL）の数え方<select id="nm-cv"><option>キーイベント合計 − フォーム回答数</option><option>イベント名を指定</option></select></label>
+      <label class="full">ディレクトリ別集計（任意・1行に「見出し名, パス」）<textarea id="nm-dirs" rows="3" placeholder="ゴキブリ, /cockroach/&#10;シロアリ, /termite/"></textarea></label>
+    </div>
+    <div class="test-result" id="nm-test"></div>
+    <div class="row" style="justify-content:flex-end"><button class="btn" type="button" id="nm-check">接続テスト</button><button class="btn" type="button" data-close>キャンセル</button><button class="btn primary" type="button" id="nm-save">追加する</button></div>`);
+  document.getElementById('nm-check').onclick = () => {
+    const ok = document.getElementById('nm-ga4').value.trim().length >= 6;
+    document.getElementById('nm-test').innerHTML = `<span><span class="pill ${ok ? 'ok' : 'ng'}">GA4</span> ${ok ? '読み取りできました（昨日のPV 1,284）' : 'プロパティIDを入力してください。サービスアカウントに閲覧権限があるかも確認してください'}</span>
+      <span><span class="pill ok">Search Console</span> 読み取りできました（昨日の表示回数 32,180）</span><span><span class="pill wait">kintone</span> 絞り込み条件に一致するレコードが0件です。条件を確認してください</span>`;
+  };
+  document.getElementById('nm-save').onclick = () => {
+    const name = document.getElementById('nm-name').value.trim() || '新しいメディア';
+    MEDIA_CFG.push({ name, url: document.getElementById('nm-url').value.trim() || '—', kintone: '未登録', uber: '未登録', dirs: document.getElementById('nm-dirs').value.trim().split('\n').filter(Boolean).length, on: true });
+    closeModal(); const tb = document.getElementById('media-rows'); if (tb) tb.innerHTML = mediaRows();
+  };
+}
+
+// ---------- 管理：API・連携 ----------
+function viewApi() {
+  return { html: `<p class="note">キーやトークンは暗号化して保管し、画面には末尾だけ表示します。各接続は「接続テスト」で確認できます。</p>
+    <section class="cards">
+      <div class="panel"><div class="panel-head"><h2>Google（GA4・Search Console）</h2><span class="pill ok">接続OK</span></div>
+        <dl class="card-kv"><dt>接続方式</dt><dd>サービスアカウント</dd><dt>アカウント</dt><dd class="num">collector@bestmedia.iam.gserviceaccount.com</dd><dt>権限の付け方</dt><dd>各GA4プロパティとSearch Consoleに、このアカウントを「閲覧者」で追加</dd><dt>最終確認</dt><dd>10/08 03:00</dd></dl>
+        <div class="row" style="margin-top:10px"><button class="btn sm" type="button">接続テスト</button><button class="btn sm" type="button">鍵を更新</button></div></div>
+      <div class="panel"><div class="panel-head"><h2>kintone</h2><span class="pill ok">接続OK</span></div>
+        <dl class="card-kv"><dt>サブドメイン</dt><dd>best24.cybozu.com</dd><dt>アプリ</dt><dd>案件管理（ID 123）</dd><dt>APIトークン</dt><dd class="num">●●●●●●●●a3f9</dd><dt>取得する項目</dt><dd>コール数・訪問確定数・成約数・収益（加盟店／アフィリエイト）</dd></dl>
+        <div class="row" style="margin-top:10px"><button class="btn sm" type="button">接続テスト</button><button class="btn sm" type="button">項目の対応を編集</button></div></div>
+      <div class="panel"><div class="panel-head"><h2>WordPress</h2><span class="pill ok">10サイト接続OK</span></div>
+        <dl class="card-kv"><dt>接続方式</dt><dd>各サイトのREST API（WordPressのアプリケーションパスワード）</dd><dt>取得する内容</dt><dd>公開・予約投稿・レビュー待ち・下書きの記事と、公開日・更新日（新規／リライトの判定）</dd><dt>取得タイミング</dt><dd>毎日3時</dd><dt>REST APIが使えない場合</dt><dd>管理画面にブラウザでログインして取得する方式に切り替え</dd></dl>
+        <div class="row" style="margin-top:10px"><button class="btn sm" type="button">接続テスト</button><button class="btn sm" type="button">サイトごとの設定</button></div></div>
+      <div class="panel"><div class="panel-head"><h2>Ubersuggest</h2><span class="pill wait">CSV取り込み</span></div>
+        <p class="note">UbersuggestにはAPIがないため、ランク追跡のCSV（直近30日）をここにアップロードします。TOP3／TOP10／TOP100／ランク外の集計と、ディレクトリへの振り分けは自動で行います。</p>
+        <div class="drop">CSVファイルをここにドラッグ、またはクリックして選択<br><span class="note">最終取り込み：2026/10/02（10メディア）</span></div></div>
+      <div class="panel"><div class="panel-head"><h2>通知とエラー対応</h2><span class="pill ok">有効</span></div>
+        <dl class="card-kv"><dt>エラー通知</dt><dd>管理者にメール</dd><dt>AIによる対処</dt><dd>収集でエラーが出た日だけ起動（正常な日は起動しない）</dd><dt>今月のAI起動</dt><dd>1回</dd></dl></div>
+    </section>`, after: () => {} };
+}
+function viewJobs() {
+  const jobs = [
+    ['10/08 03:00', '日次収集', '全19件', 'ok', '正常', '—'],
+    ['10/07 03:00', '日次収集', '全19件', 'ok', '正常', '—'],
+    ['10/06 03:00', '日次収集', '全19件', 'ng', 'kintone：APIトークンの期限切れ（1件）', 'AIが原因を特定 → 管理者にトークン更新を依頼（10/06 09:10 解消）'],
+    ['10/05 03:00', '日次収集', '全19件', 'ok', '正常', '—'],
+    ['10/04 13:00', '月次確定（Search Console）', '10件', 'ok', '正常', '—'],
+    ['10/02 13:00', '月次確定', '全19件', 'ok', '正常', '—'],
+    ['10/02 10:15', 'Ubersuggest CSV取り込み', '10ファイル', 'ok', '正常', '—'],
+    ['10/01 03:00', '日次収集', '全19件', 'ng', 'Search Console：一時的なエラー（503）', '自動で再試行して成功（AIは起動せず）'],
+  ];
+  return { html: `<p class="note">毎日3時に前日分を収集します。月次の数値は2日13時に確定し、Search Consoleは4日に確定値で上書きします。</p>
+    <section class="panel"><h2>実行履歴</h2><div class="table-wrap"><table><thead><tr><th>開始</th><th>処理</th><th>対象</th><th>結果</th><th>内容</th><th>エラー対応</th></tr></thead><tbody>
+    ${jobs.map(j => `<tr><td class="num">${j[0]}</td><td style="text-align:left">${j[1]}</td><td style="text-align:left">${j[2]}</td><td style="text-align:left"><span class="pill ${j[3]}">${j[3] === 'ok' ? '成功' : 'エラー'}</span></td><td style="text-align:left">${j[4]}</td><td style="text-align:left">${j[5]}</td></tr>`).join('')}</tbody></table></div></section>`, after: () => {} };
+}
+
+// ---------- モーダル ----------
+function openModal(inner) { const m = document.getElementById('modal'); m.innerHTML = `<div class="modal" role="dialog" aria-modal="true">${inner}</div>`; m.hidden = false; m.querySelectorAll('[data-close]').forEach(b => b.onclick = closeModal); m.onclick = ev => { if (ev.target === m) closeModal(); }; }
+function closeModal() { const m = document.getElementById('modal'); m.hidden = true; m.innerHTML = ''; }
+
+// ---------- 描画 ----------
+const RENDER = { summary: viewSummary, monthly: viewMonthly, daily: viewDaily, yoy: () => viewPeriodCompare('yoy'), mom: () => viewPeriodCompare('mom'), range: viewRange,
+  area: viewArea, articles: viewArticles, kw: viewKw, plan: viewPlan,
+  users: viewUsers, logs: viewLogs, media: viewMedia, api: viewApi, jobs: viewJobs };
+REVENUE_VIEWS.forEach(v => { RENDER[v.id] = viewRevenue; });
+function render() {
+  const adminIds = ADMIN_VIEWS.map(v => v.id), dashIds = (state.dash === 'revenue' ? REVENUE_VIEWS : VIEWS).map(v => v.id);
+  if (!dashIds.includes(state.view) && !(state.role === 'admin' && adminIds.includes(state.view))) state.view = dashIds[0];
+  if (state.role !== 'admin' && adminIds.includes(state.view)) state.view = dashIds[0];
+  const isAnalysis = ANALYSIS_IDS.includes(state.view);
+  const all = VIEWS.concat(ADMIN_VIEWS, REVENUE_VIEWS);
+  document.getElementById('page-title').textContent = all.find(v => v.id === state.view).l;
+  document.getElementById('media-field').hidden = !isAnalysis || state.mode === 'compare';
+  document.getElementById('mode-seg').hidden = !isAnalysis;
+  document.querySelectorAll('#mode-seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === state.mode)));
+  document.querySelectorAll('#role-seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.role === state.role)));
+  document.getElementById('user-name').textContent = state.role === 'admin' ? '管理者ユーザー' : '一般ユーザー';
+  document.querySelector('.avatar').textContent = state.role === 'admin' ? '管' : '一';
+  document.getElementById('media-select').value = state.media;
+  renderNav();
+  clearCharts();
+  const v = RENDER[state.view]();
+  document.getElementById('content').innerHTML = v.html;
+  v.after();
+  save();
+}
+
+document.getElementById('nav-analysis').addEventListener('click', ev => { const b = ev.target.closest('button[data-view]'); if (b) { state.view = b.dataset.view; render(); } });
+document.getElementById('nav-admin').addEventListener('click', ev => { const b = ev.target.closest('button[data-view]'); if (b) { state.view = b.dataset.view; render(); } });
+document.getElementById('media-select').onchange = ev => { state.media = ev.target.value; render(); };
+document.getElementById('dash-select').onchange = ev => { state.dash = ev.target.value; state.view = (state.dash === 'revenue' ? REVENUE_VIEWS : VIEWS)[0].id; render(); };
+document.querySelectorAll('#mode-seg button').forEach(b => b.onclick = () => { state.mode = b.dataset.mode; render(); });
+document.querySelectorAll('#role-seg button').forEach(b => b.onclick = () => { state.role = b.dataset.role; render(); });
+document.getElementById('logout').onclick = () => { document.getElementById('login').hidden = false; };
+document.getElementById('login-form').onsubmit = ev => { ev.preventDefault(); document.getElementById('login').hidden = true; };
+document.getElementById('login-google').onclick = () => { document.getElementById('login').hidden = true; };
+document.getElementById('login-register').onclick = () => {
+  document.getElementById('login').hidden = true;
+  openModal(`<h2>新規登録</h2><div class="form-grid"><label>名前<input id="rg-name"></label><label>メールアドレス<input id="rg-mail" type="email"></label><label class="full">パスワード<input id="rg-pass" type="password"></label></div><p class="note">登録後、管理者が承認するとログインできるようになります。</p><div class="row" style="justify-content:flex-end"><button class="btn" type="button" data-close>閉じる</button><button class="btn primary" type="button" data-close>登録を申請する（試作）</button></div>`);
+};
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => render());
+new MutationObserver(() => render()).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+renderMediaSelect();
+render();
+})();
+</script>

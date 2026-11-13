@@ -1,0 +1,139 @@
+{
+  "_note": "AI MEDIAシミュレーションのAIチーム（2026-11-06 ユーザー指定：指揮官が、それぞれのポジションに必要な部分だけを渡す）。ceiling＝そのポジションが読める・書ける上限（指揮官もこれより広げられない）。scope の初期値＝ceiling。画面（app.js）・サーバー（sim.js）・答え合わせのタスク（scripts/sim_check_fs.js）で共通。キャラ（2026-11-06 ユーザー指定：覚えやすく、Claude＝オレンジ・Gemini＝青・OpenAI＝緑）はオリジナルの、頭がまっすぐとがった丸いゼリーのキャラ（先は曲げない・口は小さく・名前に「キング」「スライム」を使わない）（既存のゲームのキャラは使わない）。名前は char、色は color、飾りは deco（crown・lens・antenna・bubble）",
+  "agents": [
+    {
+      "id": "commander",
+      "char": "シュミレ・クロード指揮官",
+      "icon": "🧭",
+      "color": "#e2621b",
+      "position": "指揮官。全体を見て、だれに・どのデータを渡すかを決め、最後に調整案をまとめる",
+      "provider": "claude",
+      "kind": "agent",
+      "parent": "",
+      "model": "opus",
+      "ceiling": {
+        "read": [
+          "sim_checks",
+          "sim_decisions",
+          "sim_ai_reviews",
+          "sim_copy_actuals",
+          "sim_copy_predictions",
+          "ai_agents"
+        ],
+        "write": [
+          "sim_ai_reviews",
+          "ai_agents"
+        ]
+      },
+      "deco": "crown",
+      "role": "指揮官"
+    },
+    {
+      "id": "checker",
+      "char": "シュミレ・クロード検証",
+      "icon": "🔍",
+      "color": "#f59a3c",
+      "position": "ずれの起点を確かめ、原因と計算ルールの調整案を出す（これまでの指摘を読んでから）",
+      "provider": "claude",
+      "kind": "subagent",
+      "parent": "commander",
+      "model": "sonnet",
+      "ceiling": {
+        "read": [
+          "sim_checks",
+          "sim_decisions"
+        ],
+        "write": []
+      },
+      "deco": "lens",
+      "role": "検証"
+    },
+    {
+      "id": "researcher",
+      "char": "シュミレ・ジェミニ探索",
+      "icon": "📈",
+      "color": "#2f7de1",
+      "position": "検索の動き・季節性（PV・表示回数・クリック）から、ずれが外の要因かを見る",
+      "provider": "gemini",
+      "kind": "subagent",
+      "parent": "commander",
+      "model": "gemini-3.8-flash",
+      "ceiling": {
+        "read": [
+          "sim_copy_actuals",
+          "sim_copy_predictions"
+        ],
+        "write": []
+      },
+      "fallback": "gemini-3.5-flash",
+      "deco": "antenna",
+      "role": "探索"
+    },
+    {
+      "id": "reviewer",
+      "char": "シュミレ・オープン検閲",
+      "icon": "✍️",
+      "color": "#1fa463",
+      "position": "編集長の調整案を別の見方で検算する（2つ目の意見）",
+      "provider": "openai",
+      "kind": "subagent",
+      "parent": "commander",
+      "model": "gpt-5-mini",
+      "ceiling": {
+        "read": [
+          "sim_checks",
+          "sim_ai_reviews"
+        ],
+        "write": []
+      },
+      "deco": "bubble",
+      "role": "検閲"
+    }
+  ],
+  "_prices_note": "Gemini・OpenAI の費用の目安（ドル／100万トークン。2026-11 時点の公開価格。gemini-3.8-flash は 2026-12-31 までの価格で、2027-01 から $1.50／$7.50 の予定。変わったらここを直す）。Claude は実行記録の金額（API換算）を使う。モデル名の頭が合うものを上から使う",
+  "prices": {
+    "gemini-3.8-flash": {
+      "in": 0.75,
+      "out": 3.75,
+      "cached": 0.075
+    },
+    "gemini-2.5-flash-lite": {
+      "in": 0.1,
+      "out": 0.4,
+      "cached": 0.025
+    },
+    "gemini-2.5-flash": {
+      "in": 0.3,
+      "out": 2.5,
+      "cached": 0.075
+    },
+    "gemini-2.5-pro": {
+      "in": 1.25,
+      "out": 10.0,
+      "cached": 0.31
+    },
+    "gpt-5.4-mini": {
+      "in": 0.75,
+      "out": 4.5,
+      "cached": 0.075
+    },
+    "gpt-5-nano": {
+      "in": 0.05,
+      "out": 0.4,
+      "cached": 0.005
+    },
+    "gpt-5-mini": {
+      "in": 0.25,
+      "out": 2.0,
+      "cached": 0.025
+    },
+    "gpt-5": {
+      "in": 1.25,
+      "out": 10.0,
+      "cached": 0.125
+    }
+  },
+  "iconBase": "https://best-media-dashboard-812117426134.asia-northeast1.run.app/ai-icons/",
+  "dashboardUrl": "https://best-media-dashboard-812117426134.asia-northeast1.run.app/",
+  "_icon_note": "Google Chat の通知のアイコン（PNG・ログインなしで見られる public/ai-icons/<id>.png）。キャラの見た目を変えたら作り直す（app.js の aiCreature を Chrome の headless で 256px に）"
+}

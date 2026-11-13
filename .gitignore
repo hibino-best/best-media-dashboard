@@ -1,0 +1,17 @@
+# GitHub に上げないもの（2026-11-13 クラウド化の準備）
+node_modules/
+# 過去の会話の記録（大きい・秘密情報らしき文字列を含む）
+引き継ぎ/会話の記録/
+# ログ・点検の作業コピー
+scripts/logs/
+scripts/err_check/base/
+scripts/err_check/deployed/
+scripts/err_check/runs/
+# 鍵・環境変数のファイル（念のため）
+.env
+.env.*
+*.pem
+*.key
+.clasprc.json
+# 大きい資料
+GoogleAds_API_Design_Document.rtf

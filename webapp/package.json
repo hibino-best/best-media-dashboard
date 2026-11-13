@@ -1,0 +1,22 @@
+{
+  "name": "best-media-dashboard",
+  "private": true,
+  "version": "0.1.0",
+  "description": "BESTメディア 数値ダッシュボード（Cloud Run）",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@google-cloud/bigquery": "^7.9.1",
+    "@google-cloud/secret-manager": "^5.6.0",
+    "express": "^4.21.2",
+    "firebase-admin": "^12.7.0",
+    "google-auth-library": "^9.15.0",
+    "pdf-parse": "^1.1.1",
+    "pdfkit": "^0.15.0"
+  }
+}

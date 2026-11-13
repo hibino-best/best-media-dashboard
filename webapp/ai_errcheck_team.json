@@ -1,0 +1,33 @@
+{
+  "_note": "AIエラーチェッカーのAIチーム（2026-11-13 ユーザー指定：AI MEDIAシミュレーションと同じ作り。Supabase＝AIの作業机、受付係 scripts/err_check_fs.js だけが読み書き）。キャラは ai_team.json と同じオリジナルの丸いゼリー（Claude＝オレンジ・OpenAI/CODEX＝緑）。ceiling＝読める・書ける上限。画面（app.js）・サーバー（errcheck.js）・週次のタスク（scripts/err_check_fs.js）で共通",
+  "agents": [
+    {
+      "id": "err_claude",
+      "char": "エラチェ・クロード指揮官",
+      "icon": "🛠️",
+      "color": "#e2621b",
+      "position": "点検の指揮官。コードの変更・ログ・データの食い違いを読み、不具合と直し方の案を出す",
+      "provider": "claude",
+      "kind": "agent",
+      "parent": "",
+      "model": "claude-code",
+      "ceiling": { "read": ["err_checks", "err_decisions"], "write": ["err_findings"] },
+      "deco": "crown",
+      "role": "指揮官"
+    },
+    {
+      "id": "err_codex",
+      "char": "エラチェ・コーデックス検証",
+      "icon": "🔎",
+      "color": "#1fa463",
+      "position": "Claude とは別に同じ材料を点検し、見落としを拾う（二重チェック）",
+      "provider": "openai",
+      "kind": "subagent",
+      "parent": "err_claude",
+      "model": "codex",
+      "ceiling": { "read": ["err_checks", "err_decisions"], "write": ["err_findings"] },
+      "deco": "lens",
+      "role": "二重チェック"
+    }
+  ]
+}

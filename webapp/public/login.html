@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, noai, noimageai">
+<title>BEST MEDIA ダッシュボード</title>
+<!-- ログインしていない人に配るのはこの画面だけ。ダッシュボードの本体（app.js など）はログイン後に配る（2026-10-28 ユーザー指定） -->
+<style>
+  :root { --bg: #f3f5f4; --surface: #fff; --surface-2: #eef2f0; --fg: #17211d; --muted: #5d6b65; --line: #d9e0dc; --accent: #1f6f5c; --bad: #b23a3a; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #0f1513; --surface: #161e1b; --surface-2: #1c2622; --fg: #e3ebe7; --muted: #95a59e; --line: #2a3632; --accent: #5cc3a3; --bad: #f08a83; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: "Noto Sans JP", system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .login { min-height: 100vh; display: grid; place-items: center; padding: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 28px; width: min(400px, 100%); display: flex; flex-direction: column; gap: 14px; }
+  h1 { font-size: 22px; margin: 0; }
+  label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+  input { background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; font-size: 14px; color: var(--fg); }
+  .btn { border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 8px; padding: 9px 12px; font-size: 14px; cursor: pointer; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .link { background: none; border: 0; color: var(--accent); cursor: pointer; font-size: 13px; padding: 0; }
+  .note { font-size: 13px; color: var(--muted); margin: 0; }
+  .err { color: var(--bad); font-size: 13px; margin: 0; }
+  .row { display: flex; justify-content: space-between; gap: 8px; }
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+</head>
+<body>
+<div class="login">
+  <form class="card" id="form" novalidate>
+    <h1>BEST MEDIA ダッシュボード</h1>
+    <p class="note" id="lead">管理者が追加した Googleアカウントでログインしてください。</p>
+    <button class="btn primary" type="button" id="google">Googleアカウントでログイン</button>
+    <p class="err" id="err" hidden></p>
+    <button class="link" type="button" id="logout" hidden>別のアカウントでログインする</button>
+  </form>
+</div>
+<script src="/gate.js?v=2"></script>
+</body>
+</html>

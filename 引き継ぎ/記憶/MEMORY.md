@@ -1,0 +1,2 @@
+- [Deploy checks](deploy-checks.md) — node --check app.js AND server.js separately, bump ?v=, verify live page after deploy
+- [System map updates](system-map-updates.md) — update webapp/system-map.json (version 1.<v>, changelog, jobs) on every web-app update
