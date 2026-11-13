@@ -345,7 +345,7 @@ const ICO = {
   sim: 'M3 20h18M5 16l4-5 4 3 6-8M17 6h2v2', 'ai-sim': 'M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8zM19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z', simcmp: 'M4 20V10M10 20V4M16 20v-8M22 20H2M3 6l4-2',
   yoy: 'M4 12h16M4 6h10M4 18h7M18 4l3 3-3 3', mom: 'M5 12h14M12 5l7 7-7 7', range: 'M3 5h8v14H3zM13 5h8v14h-8z',
   area: 'M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
-  articles: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h5', artlist: 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01', 'am-list': 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01', 'am-monthly': 'M4 5h16v15H4zM4 9h16M8 3v4M16 3v4M8 13h3M8 16h6', 'am-press': 'M4 5h16v14H4zM8 9h8M8 13h5', 'am-progress': 'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z', 'am-settings': 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z', 'am-status': 'M4 20V10M10 20V4M16 20v-8M22 20H2', contracts: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h4M15 16l1.5 1.5L19 15', 'rw-active': 'M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', 'rv-monthly': 'M4 20V10M10 20V4M16 20v-8M22 20H2', 'rv-daily': 'M3 17l5-6 4 3 5-7 4 4M3 21h18', 'rv-yoy': 'M4 12h16M4 6h10M4 18h7M18 4l3 3-3 3', 'rv-range': 'M3 5h8v14H3zM13 5h8v14h-8z', 'rv-kintone': 'M4 4h16v16H4zM4 10h16M10 10v10', 'rv-area': 'M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z', 'rv-moshimo': 'M4 17l5-5 4 4 7-8M15 8h5v5', kw: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5', plan: 'M4 4h16v16H4zM8 15l3-3 2 2 4-5',
+  articles: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h5', artlist: 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01', 'am-list': 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01', 'am-monthly': 'M4 5h16v15H4zM4 9h16M8 3v4M16 3v4M8 13h3M8 16h6', 'am-press': 'M4 5h16v14H4zM8 9h8M8 13h5', 'am-concept': 'M12 3a6 6 0 0 0-3.5 10.9V17h7v-3.1A6 6 0 0 0 12 3zM9.5 20h5', 'am-progress': 'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z', 'am-settings': 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z', 'am-status': 'M4 20V10M10 20V4M16 20v-8M22 20H2', contracts: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h4M15 16l1.5 1.5L19 15', 'rw-active': 'M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', 'rv-monthly': 'M4 20V10M10 20V4M16 20v-8M22 20H2', 'rv-daily': 'M3 17l5-6 4 3 5-7 4 4M3 21h18', 'rv-yoy': 'M4 12h16M4 6h10M4 18h7M18 4l3 3-3 3', 'rv-range': 'M3 5h8v14H3zM13 5h8v14h-8z', 'rv-kintone': 'M4 4h16v16H4zM4 10h16M10 10v10', 'rv-area': 'M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z', 'rv-moshimo': 'M4 17l5-5 4 4 7-8M15 8h5v5', kw: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5', plan: 'M4 4h16v16H4zM8 15l3-3 2 2 4-5',
   users: 'M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0zM4 21c1-4 4-6 8-6s7 2 8 6', subs: 'M4 7h16v12H4zM8 3v4M16 3v4M4 11h16', logs: 'M5 4h14v16H5zM8 8h8M8 12h8M8 16h5',
   media: 'M4 6h16M4 12h16M4 18h10M18 16v6M15 19h6', targets: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM12 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2z', api: 'M9 7L4 12l5 5M15 7l5 5-5 5', jobs: 'M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z',
 };
@@ -362,7 +362,7 @@ ICO.system = 'M4 4h6v6H4zM14 4h6v6h-6zM9 14h6v6H9zM7 10v2h10v-2M12 12v2';
 ICO.expenses = 'M3 6h18v12H3zM3 10h18M7 15h3';
 ICO.staff = 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20c.7-3 3-5 6-5s5.3 2 6 5M17 11a2.5 2.5 0 1 0 0-5M21 19c-.4-2-1.7-3.4-3.5-4';
 ICO.roles = 'M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6zM9 12l2 2 4-4';
-const ARTICLE_VIEWS = [{ id: 'am-status', l: '制作状況' }, { id: 'am-progress', l: 'コンテンツ進行管理' }, { id: 'am-press', l: 'プレスリリース進行管理' }, { id: 'am-monthly', l: '月次進行管理' }, { id: 'kw', l: 'KW追従' }, { id: 'am-settings', l: 'カテゴリ・タグ・ブロック' }];   // 制作状況＝記事進捗＋制作状況＋記事一覧（2026-10-27 ユーザー指定）
+const ARTICLE_VIEWS = [{ id: 'am-status', l: '制作状況' }, { id: 'am-progress', l: 'コンテンツ進行管理' }, { id: 'am-press', l: 'プレスリリース進行管理' }, { id: 'am-monthly', l: '月次進行管理' }, { id: 'am-concept', l: 'コンセプト' }, { id: 'kw', l: 'KW追従' }, { id: 'am-settings', l: 'カテゴリ・タグ・ブロック' }];   // 制作状況＝記事進捗＋制作状況＋記事一覧（2026-10-27 ユーザー指定）
 const CONTENT_NUM_VIEWS = ['articles', 'artlist', 'kw', 'am-status'];   // メディア数値から移した画面（右上のメディアは state.media を使う）
 /** 支出管理（ダッシュボード）：支出一覧は管理者・BEST役員・BEST社員、ほかは管理者だけ（2026-11-02 ユーザー指定） */
 const EXPENSE_VIEWS = [{ id: 'ex-list', l: '支出一覧' }, { id: 'ex-staff', l: 'BEST人件費' }, { id: 'ex-site', l: 'サイト制作・修正費' }, { id: 'ex-outsource', l: '業務委託費' }, { id: 'ex-press', l: 'プレスリリース費' }, { id: 'ex-tool', l: 'ツール利用費' }];   /* AI利用費はツール利用費にまとめた（2026-11-02 ユーザー指定） */
@@ -385,7 +385,7 @@ const canEditArticles = () => !!me && me.status === 'active' && (me.perms.media 
 const MEDIA_DASHES = ['articles', 'rewards', 'revenue'];   // 右上でメディアを選ぶダッシュボード
 const ADMIN_MEDIA_VIEWS = ['contracts', 'expenses', 'staff'];   // 管理メニューで右上のメディア（メディア累計あり）を使う画面（2026-10-14 ユーザー指定）
 const adminMedia = () => state.adminMedia || ALL;
-const dashViews = () => state.dash === 'ai' ? AI_VIEWS.filter(v => v.id !== 'ai-errcheck' || hasCap('ai_errcheck', () => false)) : state.dash === 'expenses' ? expenseViews() : state.dash === 'goals' ? WORK_VIEWS : state.dash === 'rewards' ? rewardViews() : state.dash === 'revenue' ? REVENUE_VIEWS : state.dash === 'articles' ? ARTICLE_VIEWS.filter(v => isWriterOnly() ? v.id === 'am-monthly' : (v.id !== 'am-progress' || canEditArticles()) && (v.id !== 'am-press' || canSeePress()) && (v.id !== 'am-monthly' || canEditArticles()) && (v.id !== 'am-settings' || isAdminArticles())) : VIEWS.filter(v => !['sim', 'simcmp'].includes(v.id) || hasCap('sim_view', () => !noMoney()));   /* REsta社員はシミュレーションの予測を見る権限がないので、タブを出さない（2026-11-06 ユーザー指定：見る権限がないタブは非表示） */
+const dashViews = () => state.dash === 'ai' ? AI_VIEWS.filter(v => v.id !== 'ai-errcheck' || hasCap('ai_errcheck', () => false)) : state.dash === 'expenses' ? expenseViews() : state.dash === 'goals' ? WORK_VIEWS : state.dash === 'rewards' ? rewardViews() : state.dash === 'revenue' ? REVENUE_VIEWS : state.dash === 'articles' ? ARTICLE_VIEWS.filter(v => isWriterOnly() ? v.id === 'am-monthly' : (v.id !== 'am-progress' || canEditArticles()) && (v.id !== 'am-press' || canSeePress()) && (v.id !== 'am-monthly' || canEditArticles()) && (v.id !== 'am-settings' || isAdminArticles()) && (v.id !== 'am-concept' || canConcept())) : VIEWS.filter(v => !['sim', 'simcmp'].includes(v.id) || hasCap('sim_view', () => !noMoney()));   /* REsta社員はシミュレーションの予測を見る権限がないので、タブを出さない（2026-11-06 ユーザー指定：見る権限がないタブは非表示） */
 const ADMIN_GROUPS = { users: ['users', 'roles'], media: ['media', 'targets', 'people'] };
 const groupOf = id => Object.keys(ADMIN_GROUPS).find(g => ADMIN_GROUPS[g].includes(id));
 /** まとめた管理メニューの中のタブ（見られるものだけ） */
@@ -2277,6 +2277,8 @@ function missingFor(r, status) {
   if (i >= STATUS_ORDER.indexOf('記事執筆完了') && !has('writing_url')) need.push('ライティングURL');
   /* コピペ率（CCD）は「完了」にするときに必須（2026-11-13 ユーザー指定で記事執筆完了から → 完了に戻す。文字数の自動入力〈記事執筆完了〉とそろえる） */
   if (status === '完了' && !has('copy_rate')) need.push('コピペ率（CCD）');
+  /* ガイドライン確認（全項目チェック、または未対応の理由）がそろわないと「完了」にできない（2026-11-13 ユーザー指定。サーバーでも止める） */
+  if (status === '完了') { const gm = guideMissingFor(r); if (gm && gm.length) need.push('ガイドライン確認（残り' + gm.length + '項目）'); }
   if (status === '完了') PG_COLS.filter(c => !['ro', 'vol', 'status', 'person', 'opt', 'tags', 'sel', 'copy', 'ccd', 'lines'].includes(c.kind) && c.k !== 'memo' && c.k !== 'outline_url' && c.k !== 'writing_url' && (!c.sup || isSupMedia(r.media))).forEach(c => { if (c.kind === 'sup' ? !supOf(r) : !has(c.k)) need.push(c.h); });
   return need;
 }
@@ -2358,7 +2360,7 @@ function pgCell(r, c, i) {
   if (c.kind === 'copy') return '<td class="' + c.w + ' c-ctr" data-copycell="' + c.src + '">' + copyCell(r[c.src]) + '</td>';
   if (c.kind === 'ccd') return '<td class="' + c.w + ' c-ctr"><input type="hidden" ' + id + ' value="' + esc(v) + '">' + ccdBtn(v, i) + '</td>';
   if (c.kind === 'vol') return '<td class="c-num">' + cellOf(r, 'vol_avg') + '</td>';
-  if (c.kind === 'status') return '<td class="' + c.w + ' ' + pgAl(c) + '"><select class="ph-' + phaseCls(v) + '" ' + id + '>' + blank(v) + STATUS_ORDER.filter(x => statusesFor(r).includes(x) || x === v).map(o => '<option value="' + esc(o) + '"' + (o === v ? ' selected' : '') + '>' + esc(o) + '</option>').join('') + '</select></td>';
+  if (c.kind === 'status') return '<td class="' + c.w + ' ' + pgAl(c) + '"><select class="ph-' + phaseCls(v) + '" ' + id + '>' + blank(v) + STATUS_ORDER.filter(x => statusesFor(r).includes(x) || x === v).map(o => '<option value="' + esc(o) + '"' + (o === v ? ' selected' : '') + '>' + esc(o) + '</option>').join('') + '</select>' + guideSlot(r) + '</td>';
   if (c.kind === 'sup') { const cur = supOf(r); return '<td class="' + c.w + ' ' + pgAl(c) + '"><select class="' + (cur === 'あり' ? 'sup-yes' : '') + '" ' + id + ' title="' + (r.supervision ? '' : '専門レベルから判断しています') + '">' + blank(cur) + ['あり', 'なし'].map(o => '<option value="' + o + '"' + (o === cur ? ' selected' : '') + '>' + o + '</option>').join('') + '</select></td>'; }
   if (c.kind === 'type') return '<td class="' + c.w + ' ' + pgAl(c) + '"><select ' + id + '>' + opts(TYPE_OPTIONS) + '</select></td>';
   if (c.kind === 'sel') return '<td class="' + c.w + ' ' + pgAl(c) + '"><select ' + id + (v ? '' : ' class="unsel"') + '>' + opts(c.opts) + '</select></td>';
@@ -2538,7 +2540,7 @@ function viewAmMonthly() {
   const ym = state.amMonth || CUR_MONTH, writerOnly = isWriterOnly();
   return { html: '<section class="panel" id="amm-body"><p class="loading">読み込み中…</p></section>', view: '月次進行管理', after: async () => {
     const mySeq = renderSeq;
-    await loadItems(); await loadPersonNames();
+    await loadItems(); await loadPersonNames(); await loadGuide();   /* ガイドライン確認（2026-11-13） */
     if (mySeq !== renderSeq) return;
     const media = artMedia(), box = $('amm-body');
     const inMonth = r => (r.target_ym ? r.target_ym === ym : String(r.upload_date || '').slice(0, 7) === ym) && !r.deleted && (writerOnly || inArt(r, media));
@@ -2547,7 +2549,7 @@ function viewAmMonthly() {
     const groups = {}; list.forEach(r => { (groups[nm(r)] = groups[nm(r)] || []).push(r); });
     const names = Object.keys(groups).sort((a, b) => (a === '（執筆担当なし）') - (b === '（執筆担当なし）') || a.localeCompare(b, 'ja'));
     const inp = (r, k, type, ph) => '<input class="amm-in" data-key="' + esc(r.key) + '" data-k="' + k + '" type="' + type + '"' + (type === 'number' ? ' inputmode="numeric"' : '') + ' placeholder="' + (ph || '') + '" value="' + esc(r[k] == null ? '' : String(r[k])) + '">';
-    const stSel = r => '<select class="amm-in ph-' + phaseCls(r.status || '') + '" data-key="' + esc(r.key) + '" data-k="status">' + (r.status ? '' : '<option value="" selected disabled hidden>選択</option>') + STATUS_ORDER.filter(x => statusesFor(r).includes(x) || x === r.status).map(o => '<option' + (o === r.status ? ' selected' : '') + '>' + esc(o) + '</option>').join('') + '</select>';
+    const stSel = r => '<select class="amm-in ph-' + phaseCls(r.status || '') + '" data-key="' + esc(r.key) + '" data-k="status">' + (r.status ? '' : '<option value="" selected disabled hidden>選択</option>') + STATUS_ORDER.filter(x => statusesFor(r).includes(x) || x === r.status).map(o => '<option' + (o === r.status ? ' selected' : '') + '>' + esc(o) + '</option>').join('') + '</select>' + guideSlot(r);
     /* 列の定義（幅を決めて、担当者ごとの表で左右の位置をそろえる。入力欄はコンテンツ進行管理と同じ見た目）（2026-11-05 ユーザー指定）
        a：そろえ方（txt＝左、ctr＝中央）。見出しも中身も同じそろえ方 */
     const docIn = (r, k, ph) => '<div class="doc-cell">' + inp(r, k, 'url', ph) + (r[k] ? '<a href="' + escUrl(r[k]) + '" target="_blank" rel="noopener">開く</a>' : '') + '</div>';
@@ -2589,7 +2591,7 @@ function viewAmMonthly() {
       const r = ITEMS.find(x => x.key === el.dataset.key), k = el.dataset.k, v = el.value.trim(); if (!r) return;
       if (k === 'writing_url' && v && !DOC_URL.test(v)) { el.value = r[k] || ''; return showInputError('URLを保存できません', ['ライティングURLは Google ドキュメントの URL（https://docs.google.com/…）を入れてください。']); }
       if (k === 'url' && v && !/^https?:\/\//i.test(v)) { el.value = r[k] || ''; return showInputError('URLを保存できません', ['アップロードURLは http:// か https:// で始まるURLを入れてください。']); }
-      if (k === 'status') { const miss = missingFor(r, v); if (miss.length) { el.value = r.status || ''; return showInputError('「' + v + '」にできません', miss.map(x => x + 'が入力されていません')); } }
+      if (k === 'status') { const miss = missingFor(r, v); if (miss.length) { el.value = r.status || ''; return showInputError('「' + v + '」にできません', miss.map(x => x + (/^ガイドライン確認/.test(x) ? 'が終わっていません（「ガイドライン確認」ボタンから）' : 'が入力されていません'))); } }
       const td = el.closest('td'); td.classList.remove('saved', 'failed'); td.classList.add('saving');
       try {
         const sres = await apiSend('PATCH', '/article-items', { key: r.key, fields: { [k]: v } });
@@ -2605,7 +2607,7 @@ function viewAmMonthly() {
 function viewAmProgress() {
   const f = state.pgFilter = state.pgFilter || {};   // 進行状況の絞り込みは「すべて」から
   return { html: '<section class="panel" id="pg-body"><p class="loading">読み込み中…</p></section>', view: '記事管理：コンテンツ進行管理', after: async () => {
-    await Promise.all([loadItems(), loadCopy()]);
+    await Promise.all([loadItems(), loadCopy(), loadGuide()]);   /* ガイドライン確認（2026-11-13） */
     if (artMedia() === ALL) await Promise.all(topMedia().map(m => loadArtOptions(m.media).catch(() => {})));   // メディア累計：各行のメディアの選択肢
     else await loadArtOptions(artMedia()).catch(() => {});
     const media = artMedia(); renderArtMediaSelect();
@@ -2730,7 +2732,7 @@ function viewAmProgress() {
       if (k === 'target_ym' && v && tmEl) tmEl.classList.remove('need-no');
       if (k === 'related_kw') { v = relKwList(v).join('\n'); el.value = v; }   // 関連KWは1行に1つ
       if (!r.key && r._rewrite && k !== 'kw' && !r.kw) { el.value = r[k] || ''; return msg('先に検索KWを入れてください（過去の記事と同じKW）', true); }
-      if (k === 'status') { const miss = missingFor(r, v); if (miss.length) { el.value = r.status || ''; return showInputError('「' + v + '」にできません', miss.map(x => x + 'が入力されていません')); } }
+      if (k === 'status') { const miss = missingFor(r, v); if (miss.length) { el.value = r.status || ''; return showInputError('「' + v + '」にできません', miss.map(x => x + (/^ガイドライン確認/.test(x) ? 'が終わっていません（「ガイドライン確認」ボタンから）' : 'が入力されていません'))); } }
       if (k === 'supervision') { r.supervision = v || null; el.className = supOf(r) === 'あり' ? 'sup-yes' : ''; const kwEl = el.closest('tr').querySelector('[data-k="kw"]'); if (kwEl) kwEl.classList.toggle('kw-sup', supOf(r) === 'あり'); const s2 = el.closest('tr').querySelector('[data-k="status"]'); if (s2) { const cur = s2.value; s2.innerHTML = (cur ? '' : '<option value="" selected disabled hidden>選択</option>') + statusesFor(r).map(o => '<option value="' + esc(o) + '"' + (o === cur ? ' selected' : '') + '>' + esc(o) + '</option>').join(''); } }
       if (el.dataset.k && PG_COLS.find(c => c.k === el.dataset.k && (c.kind === 'opt' || c.kind === 'sel'))) el.classList.toggle('unsel', !v);
       if (k === 'status') { el.className = 'ph-' + phaseCls(v); const tr = el.closest('tr'); tr.className = tr.className.replace(/ph-row-\w+/, 'ph-row-' + phaseCls(v)); }
@@ -3926,6 +3928,213 @@ function optNames(src, media) {
   if (!names.length) return sheetValues(media, src === 'cta' ? 'cta' : 'appeal_block').sort((a, b) => a.localeCompare(b, 'ja'));   // マイブロックがないメディア（害虫害獣コンシェルジュなど）は、今までどおりシートにある値から選ぶ
   return [...new Set(names)].sort((a, b) => a.localeCompare(b, 'ja'));
 }
+// ---------- ガイドライン確認（記事ごと。2026-11-13 ユーザー指定） ----------
+/* 進行状況が「記事執筆完了」以降の記事に「ガイドライン確認」を出す。全項目チェック、または未対応の理由を入れないと「完了」にできない（サーバーの PATCH /article-items でも止める）。
+   判定はいつも今のガイドラインの項目で行う（ガイドラインを変えたら随時反映）。将来 AI でもチェックするので、チェックは項目IDごとに保存 */
+let GUIDE = null;
+const GUIDE_FROM = ['記事執筆完了', '記事チェック中', '記事監修者確認', 'アップロードチェック中', '完了'];
+async function loadGuide(force) {
+  if (GUIDE && !force) return GUIDE;
+  try { GUIDE = await api('/guide-checks'); } catch (e) { GUIDE = { guides: {}, checks: {}, err: e.message }; }
+  return GUIDE;
+}
+const guideItemDone = c => !!c && (c.ok === true || String(c.reason || '').trim() !== '');
+/** 終わっていない項目（ガイドラインを読み込めていなければ null＝画面では止めない。サーバーで止める） */
+function guideMissingFor(r) {
+  const g = GUIDE && GUIDE.guides && GUIDE.guides[r.media]; if (!g) return null;
+  const it = ((GUIDE.checks || {})[r.key] || {}).items || {};
+  return g.sections.flatMap(s => s.items.filter(x => !guideItemDone(it[x.id])).map(x => s.title + '：' + x.title));
+}
+const guideTotal = r => { const g = GUIDE && GUIDE.guides && GUIDE.guides[r.media]; return g ? g.sections.reduce((a, s) => a + s.items.length, 0) : 0; };
+function guideBtnHtml(r, status) {
+  if (!r.key || !GUIDE_FROM.includes(status) || !GUIDE || !GUIDE.guides || !GUIDE.guides[r.media]) return '';
+  const miss = guideMissingFor(r) || [], tot = guideTotal(r), ok = !miss.length;
+  return '<button class="guide-btn' + (ok ? ' ok' : '') + '" type="button" data-guide="' + esc(r.key) + '" title="サイトのガイドラインに沿っているかの確認（全項目そろわないと「完了」にできません）">' + (ok ? '✓ ' : '') + 'ガイドライン確認 ' + (tot - miss.length) + '/' + tot + '</button>';
+}
+const guideSlot = r => '<span class="guide-slot" data-gslot="' + esc(r.key || '') + '">' + guideBtnHtml(r, r.status || '') + '</span>';
+function refreshGuideSlots(key, status) {
+  const r = (ITEMS || []).find(x => x.key === key); if (!r) return;
+  document.querySelectorAll('[data-gslot]').forEach(s => { if (s.dataset.gslot !== key) return; const sel = s.closest('td') && s.closest('td').querySelector('select[data-k="status"]'); s.innerHTML = guideBtnHtml(r, status || (sel ? sel.value : r.status) || ''); });
+}
+/* 進行状況を変えたら、ボタンを出す・消す（保存の処理はそれぞれの画面のまま） */
+document.addEventListener('change', ev => { const el = ev.target; if (!el || !el.matches || !el.matches('select[data-k="status"]')) return; const s = el.closest('td') && el.closest('td').querySelector('[data-gslot]'); if (s && s.dataset.gslot) setTimeout(() => refreshGuideSlots(s.dataset.gslot, el.value), 0); });
+document.addEventListener('click', ev => { const b = ev.target && ev.target.closest && ev.target.closest('[data-guide]'); if (!b) return; const r = (ITEMS || []).find(x => x.key === b.dataset.guide); if (r) openGuideCheck(r); });
+function openGuideCheck(r) {
+  const g = GUIDE && GUIDE.guides && GUIDE.guides[r.media]; if (!g) return;
+  const cur = Object.assign({}, ((GUIDE.checks || {})[r.key] || {}).items || {}), can = canEditArticles(), dis = can ? '' : ' disabled';
+  const ck = GUIDE.checks[r.key];
+  openModal('<h2>ガイドライン確認 <small class="note">' + esc(mediaLabel(r.media)) + (r.no ? '　No.' + esc(r.no) : '') + '　' + esc(r.kw || '') + '</small></h2>'
+    + '<p class="note">項目ごとに「確認した」にチェックするか、対応しない場合はその理由を入れてください。全部そろうと「完了」にできます。項目はコンテンツ作成 →「コンセプト」の「ガイドライン」で直せます（直すと、ここにもすぐ反映されます）。' + (ck && ck.by ? '<br>最終更新：' + esc(ck.by) + (ck.at ? '（' + esc(String(ck.at).slice(0, 16).replace('T', ' ')) + '）' : '') : '') + '</p>'
+    + '<div class="row" style="gap:8px;margin-bottom:6px">' + (can ? '<button class="btn sm" type="button" id="gc-all">すべて「確認した」にする</button>' : '') + '<button class="btn sm" type="button" disabled title="これから作ります">AIでチェック（準備中）</button><span class="note" id="gc-count"></span></div>'
+    + '<div class="gc-list">' + g.sections.map(s => '<h3 class="gc-h">' + esc(s.title) + '</h3>' + s.items.map(x => { const c = cur[x.id] || {};
+      return '<div class="gc-item" data-gcid="' + esc(x.id) + '"><label class="gc-ok"><input type="checkbox" data-gcok' + (c.ok === true ? ' checked' : '') + dis + '><b>' + esc(x.title) + '</b></label>' + (x.desc ? '<div class="note">' + esc(x.desc) + '</div>' : '')
+        + '<input class="gc-reason" data-gcreason placeholder="対応しない場合は理由を入力" value="' + esc(c.ok === true ? '' : c.reason || '') + '"' + (c.ok === true ? ' hidden' : '') + dis + '></div>'; }).join('')).join('') + '</div>'
+    + (g.refs && g.refs.length ? '<p class="note">参考：' + g.refs.map(x => '<a href="' + escUrl(x.url) + '" target="_blank" rel="noopener">' + esc(x.title) + '</a>').join('　') + '</p>' : '')
+    + '<p class="err" id="gc-err" hidden></p><div class="row" style="justify-content:flex-end;gap:8px;margin-top:10px"><button class="btn" type="button" data-close>' + (can ? 'キャンセル' : '閉じる') + '</button>' + (can ? '<button class="btn primary" type="button" id="gc-save">保存</button>' : '') + '</div>');
+  const read = () => { const o = {}; document.querySelectorAll('[data-gcid]').forEach(d => { const ok = d.querySelector('[data-gcok]').checked, rs = d.querySelector('[data-gcreason]').value.trim(); if (ok) o[d.dataset.gcid] = { ok: true }; else if (rs) o[d.dataset.gcid] = { ok: false, reason: rs }; }); return o; };
+  const count = () => { const o = read(), tot = g.sections.reduce((a, s) => a + s.items.length, 0), n = Object.keys(o).length; $('gc-count').textContent = n + ' / ' + tot + ' 項目' + (n === tot ? '（そろいました）' : ''); };
+  document.querySelectorAll('[data-gcid]').forEach(d => { const cb = d.querySelector('[data-gcok]'), rs = d.querySelector('[data-gcreason]'); cb.onchange = () => { rs.hidden = cb.checked; count(); }; rs.oninput = count; });
+  if ($('gc-all')) $('gc-all').onclick = () => { document.querySelectorAll('[data-gcok]').forEach(cb => { cb.checked = true; cb.onchange(); }); };
+  count();
+  if ($('gc-save')) $('gc-save').onclick = async () => {
+    const btn = $('gc-save'); btn.disabled = true;
+    try { const res = await apiSend('PUT', '/guide-checks', { key: r.key, media: r.media, items: read() }); GUIDE.checks[r.key] = { items: res.items, by: me.name || me.email, at: new Date().toISOString() }; closeModal(); refreshGuideSlots(r.key); toast(res.missing && res.missing.length ? 'ガイドライン確認を保存しました（残り' + res.missing.length + '項目）' : 'ガイドライン確認がそろいました'); }
+    catch (e) { btn.disabled = false; $('gc-err').textContent = e.message; $('gc-err').hidden = false; }
+  };
+}
+
+// ---------- コンセプト（メディアごと。2026-11-13 ユーザー指定） ----------
+/* コンセプト・ペルソナ（メディア1つ＋ディレクトリごと）・サイトのガイドライン・競合サイト（Ahrefs。ボタンを押したときだけ）。
+   ペルソナは構成シートの「ペルソナをコピー」（メディアから／ディレクトリから）で使う。ガイドラインは記事のガイドライン確認の項目になる */
+let CP = null;
+const CP_TABS = [['concept', 'コンセプト'], ['persona', 'ペルソナ'], ['guide', 'ガイドライン'], ['compete', '競合サイト']];
+const CP_LONG = ['purpose', 'article_purpose', 'wants', 'concept', 'goal', 'quality'];
+const CP_PH = { purpose: 'このメディアは何のためにあるか', url: 'https://…', article_purpose: '記事を作る目的（集客・問い合わせ・ブランディングなど）', wants: '読者・会社がこのメディアに求めるもの', concept: 'メディアのコンセプト（一言で）', cv_tel: '0120-…', cv_form: 'https://…（問い合わせフォームのURL）', goal: '数値目標など（月間PV・問い合わせ件数など）', quality: '記事に求める品質（専門性・文字数・画像・監修など）' };
+const canConcept = () => hasCap('concept_view', () => !!me && !!me.perms && me.perms.articles !== 'none');
+function viewAmConcept() {
+  return { html: '<section class="panel" id="cp-body"><p class="loading">読み込み中…</p></section>', view: 'コンテンツ作成：コンセプト', after: async () => {
+    const mySeq = renderSeq;
+    await loadItems(); if (mySeq !== renderSeq) return;
+    const media = artMedia(); renderArtMediaSelect();
+    const box = $('cp-body');
+    if (media === ALL) { box.innerHTML = H('コンセプト <small>メディア累計</small>', []) + '<p class="empty">コンセプトはメディアごとです。右上でメディアを選んでください。</p>'; return; }
+    let d; try { d = await api('/concept?media=' + encodeURIComponent(media)); } catch (e) { if (mySeq === renderSeq) box.innerHTML = H('コンセプト', []) + '<p class="err">' + esc(e.message) + '</p>'; return; }
+    if (mySeq !== renderSeq) return;
+    CP = { media, d, tab: state.cpTab || 'concept', showEx: false };
+    cpInitSubs(); paintConcept();
+  } };
+}
+/** ディレクトリ（記事管理のディレクトリ＋保存済み）。URLの推定＝そのディレクトリの記事URLで多い「ドメイン/最初のフォルダ/」 */
+function cpInitSubs() {
+  const saved = CP.d.subs || [], names = [...new Set((artSubs(CP.media) || []).concat(saved.map(s => s.sub)))];
+  CP.subs = names.map(n => { const s = saved.find(x => x.sub === n) || {}; return { sub: n, url: s.url || '', persona: Object.assign({}, s.persona || {}) }; });
+  CP.persona = Object.assign({}, CP.d.persona || {});
+}
+/** 右上でディレクトリを選んでいたら、そのディレクトリだけ出す（全てなら全部） */
+const cpSubShown = sub => !state.artSub || state.artSub === sub;
+function cpGuessUrl(sub) {
+  const cnt = {}; (ITEMS || []).filter(r => r.media === CP.media && r.sub === sub && /^https?:\/\//.test(r.url || '')).forEach(r => { try { const u = new URL(r.url), seg = u.pathname.split('/').filter(Boolean)[0]; if (seg) { const k = u.origin + '/' + seg + '/'; cnt[k] = (cnt[k] || 0) + 1; } } catch (e) { /* URLでない */ } });
+  return Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0] || '';
+}
+/** 代表KW＝進行管理の検索KWで、検索Volが多い順に10個 */
+function cpRepKws(sub) {
+  const seen = new Set();
+  return (ITEMS || []).filter(r => r.media === CP.media && !r.deleted && (!sub || r.sub === sub) && normKwStr(r.kw)).sort((a, b) => (Number(b.vol_avg) || 0) - (Number(a.vol_avg) || 0))
+    .filter(r => { const k = normKwStr(r.kw).toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 10).map(r => normKwStr(r.kw));
+}
+async function cpSave(part, val) {
+  const res = await apiSend('PUT', '/concept', Object.assign({ media: CP.media, version: CP.d.version }, typeof part === 'object' ? part : { [part]: val }));
+  CP.d = Object.assign(CP.d, res); GUIDE = null;   /* ガイドラインを変えたら記事の判定も読み直す */
+  return res;
+}
+function paintConcept() {
+  const d = CP.d, ed = d.canEdit, dis = ed ? '' : ' disabled', box = $('cp-body'); if (!box) return;
+  if (!CP_TABS.some(t => t[0] === CP.tab)) CP.tab = 'concept';
+  const tabs = '<div class="seg cp-tabs">' + CP_TABS.map(([k, l]) => '<button type="button" data-cptab="' + k + '" aria-pressed="' + (CP.tab === k) + '">' + l + '</button>').join('') + '</div>';
+  const upd = d.updatedAt ? '<span class="note">最終更新：' + esc(d.updatedBy) + '（' + esc(String(d.updatedAt).slice(0, 16).replace('T', ' ')) + '）</span>' : '';
+  let body = '';
+  if (CP.tab === 'concept') {
+    const c = d.concept || {};
+    body = '<div class="cp-form">' + (d.keys || []).map(([k, l]) => '<label class="cp-f"><span class="cp-l">' + esc(l) + '</span>' + (CP_LONG.includes(k) ? '<textarea rows="3" data-cpc="' + k + '" placeholder="' + esc(CP_PH[k] || '') + '"' + dis + '>' + esc(c[k] || '') + '</textarea>'
+      : '<input data-cpc="' + k + '" value="' + esc(c[k] || (k === 'url' ? '' : '')) + '" placeholder="' + esc(k === 'url' && d.siteUrl ? d.siteUrl : CP_PH[k] || '') + '"' + dis + '>') + '</label>').join('') + '</div>'
+      + (ed ? '<div class="row" style="justify-content:flex-end"><button class="btn primary" type="button" id="cp-save-c">コンセプトを保存</button></div>' : '');
+  } else if (CP.tab === 'persona') {
+    const ta = (A, m, i) => '<div class="cp-pta"><label><span class="ol-pl">考え</span><textarea rows="2" data-' + A + '="persona_thought" data-cpi="' + i + '"' + dis + '>' + esc(m.persona_thought || '') + '</textarea></label><label><span class="ol-pl">悩み</span><textarea rows="2" data-' + A + '="persona_worry" data-cpi="' + i + '"' + dis + '>' + esc(m.persona_worry || '') + '</textarea></label></div>';
+    const block = (i, m) => '<div class="cp-pbox" data-cpbox="' + i + '">' + olPersonaHtml(dis, m, 'cpp') + ta('cpp', m, i) + '</div>';
+    body = '<p class="note">メディアのペルソナ1つと、ディレクトリごとのペルソナです。構成シートの「ペルソナをコピー」→「メディアから」「ディレクトリから」で記事にコピーできます。</p>'
+      + '<h3 class="am-h">メディア：' + esc(mediaLabel(CP.media)) + '</h3>' + block(-1, CP.persona)
+      + CP.subs.map((s, i) => cpSubShown(s.sub) ? '<h3 class="am-h">ディレクトリ：' + esc(s.sub) + '</h3>' + block(i, s.persona) : '').join('')
+      + (ed ? '<div class="row" style="justify-content:flex-end"><button class="btn primary" type="button" id="cp-save-p">ペルソナを保存</button></div>' : '');
+  } else if (CP.tab === 'guide') {
+    const g = CP.g = CP.g || JSON.parse(JSON.stringify(d.guideline));
+    body = '<p class="note">記事の「ガイドライン確認」の項目です（進行状況が「記事執筆完了」以降の記事に出ます）。項目を直すと、各記事の判定は今の項目で行います。' + (d.guidelineDefault ? '<b>今は初期値です。</b>' : '') + '</p>'
+      + g.sections.map((s, si) => '<div class="cp-gsec"><div class="row cp-gsec-h">' + (ed ? '<input class="cp-gst" data-gs="' + si + '" value="' + esc(s.title) + '"><button class="linkbtn" type="button" data-gsup="' + si + '">↑</button><button class="linkbtn" type="button" data-gsdel="' + si + '">見出しごと削除</button>' : '<b>' + esc(s.title) + '</b>') + '<span class="note">' + s.items.length + '項目</span></div>'
+        + '<table class="am-table cp-gtbl"><thead><tr><th class="c-ctr" style="width:40px">#</th><th class="c-txt" style="width:200px">項目</th><th class="c-txt">説明</th>' + (ed ? '<th style="width:110px"></th>' : '') + '</tr></thead><tbody>'
+        + s.items.map((x, ii) => '<tr><td class="c-ctr">' + (ii + 1) + '</td>' + (ed ? '<td class="c-txt"><input data-gi="' + si + ':' + ii + '" data-gf="title" value="' + esc(x.title) + '"></td><td class="c-txt"><input data-gi="' + si + ':' + ii + '" data-gf="desc" value="' + esc(x.desc) + '"></td><td class="c-ctr"><button class="linkbtn" type="button" data-giup="' + si + ':' + ii + '">↑</button><button class="linkbtn" type="button" data-gidel="' + si + ':' + ii + '">削除</button></td>'
+          : '<td class="c-txt"><b>' + esc(x.title) + '</b></td><td class="c-txt" style="white-space:normal">' + esc(x.desc) + '</td>') + '</tr>').join('') + '</tbody></table>'
+        + (ed ? '<button class="btn sm" type="button" data-giadd="' + si + '">＋ 項目を追加</button>' : '') + '</div>').join('')
+      + (ed ? '<div class="row"><button class="btn sm" type="button" id="cp-gsadd">＋ 見出しを追加</button></div>' : '')
+      + '<h3 class="am-h">参考リンク</h3>' + (ed ? (g.refs || []).map((x, i) => '<div class="row cp-gref"><input data-gr="' + i + '" data-gf="title" value="' + esc(x.title) + '" placeholder="名前"><input data-gr="' + i + '" data-gf="url" value="' + esc(x.url) + '" placeholder="https://…" style="flex:1"><button class="linkbtn" type="button" data-grdel="' + i + '">削除</button></div>').join('') + '<button class="btn sm" type="button" id="cp-gradd">＋ リンクを追加</button>'
+        : '<ul>' + (g.refs || []).map(x => '<li><a href="' + escUrl(x.url) + '" target="_blank" rel="noopener">' + esc(x.title) + '</a></li>').join('') + '</ul>')
+      + (ed ? '<div class="row" style="justify-content:flex-end;gap:8px;margin-top:10px">' + (d.guidelineDefault ? '' : '<button class="btn" type="button" id="cp-greset">初期値に戻す</button>') + '<button class="btn" type="button" id="cp-gcancel">変更を取り消す</button><button class="btn primary" type="button" id="cp-save-g">ガイドラインを保存</button></div>' : '');
+  } else {
+    const marks = Object.fromEntries((d.marks || []).map(m => [m.domain, m.mark]));
+    const latest = (sub, method) => (d.competitors || []).find(x => (x.sub || '') === sub && x.method === method);
+    const nfmt = v => v == null ? '<span class="note">—</span>' : nf.format(v);
+    const tbl = (res, method) => {
+      if (!res) return '<p class="empty">まだ取得していません</p>';
+      let list = res.list.slice().sort((a, b) => (marks[b.domain] === 'star') - (marks[a.domain] === 'star'));
+      const nEx = list.filter(x => marks[x.domain] === 'exclude').length;
+      if (!CP.showEx) list = list.filter(x => marks[x.domain] !== 'exclude');
+      return '<p class="note">' + esc(String(res.at || '').slice(0, 16).replace('T', ' ')) + ' ' + esc(res.name || res.by || '') + 'が取得' + (res.kws && res.kws.length ? '／代表KW：' + esc(res.kws.join('、')) : '') + (res.target ? '／対象：' + esc(res.target) : '') + (nEx ? '／除外 ' + nEx + '件' : '') + '</p>'
+        + '<div class="table-wrap"><table class="am-table cp-ctbl"><thead><tr><th class="c-txt">サイト名</th><th class="c-txt">ドメイン</th><th class="c-num">DR</th><th class="c-num">オーガニックトラフィック</th><th class="c-num">' + (method === 'overlap' ? '共通KW数' : '上位に出たKW数') + '</th><th></th></tr></thead><tbody>'
+        + list.map(x => { const mk = marks[x.domain] || ''; return '<tr class="' + (mk === 'star' ? 'cp-star' : mk === 'exclude' ? 'cp-ex' : '') + '"><td class="c-txt">' + (mk === 'star' ? '★ ' : '') + esc(x.name || x.domain) + '</td><td class="c-txt"><a href="https://' + esc(x.domain) + '/" target="_blank" rel="noopener">' + esc(x.domain) + '</a></td><td class="c-num">' + nfmt(x.dr) + '</td><td class="c-num">' + nfmt(x.traffic) + '</td><td class="c-num">' + (method === 'overlap' ? nfmt(x.common) : nfmt(x.hits) + (x.best ? '<span class="note">（最高' + x.best + '位）</span>' : '')) + '</td>'
+          + '<td class="c-ctr" style="white-space:nowrap">' + (ed ? '<button class="linkbtn" type="button" data-cpmark="' + esc(x.domain) + '" data-mk="star">' + (mk === 'star' ? '★解除' : '★重要') + '</button> <button class="linkbtn" type="button" data-cpmark="' + esc(x.domain) + '" data-mk="exclude">' + (mk === 'exclude' ? '除外を戻す' : '除外') + '</button>' : '') + '</td></tr>'; }).join('')
+        + '</tbody></table></div>';
+    };
+    const targets = [{ sub: '', label: 'メディア全体：' + mediaLabel(CP.media) }].concat(CP.subs.map(s => ({ sub: s.sub, label: 'ディレクトリ：' + s.sub })));
+    body = '<p class="note">Ahrefs から取るのは「取得」を押したときだけです（Ahrefs のユニットを使います）。上位10件・大手サイトも含みます（自社メディアは除く）。「★重要」「除外」はメディアごとに残ります。</p>'
+      + '<label class="note"><input type="checkbox" id="cp-showex"' + (CP.showEx ? ' checked' : '') + '> 除外したサイトも表示</label>'
+      + targets.map((t, ti) => { if (t.sub && !cpSubShown(t.sub)) return ''; const s = CP.subs.find(x => x.sub === t.sub), guess = t.sub ? cpGuessUrl(t.sub) : '';
+        return '<div class="cp-ctarget"><h3 class="am-h">' + esc(t.label) + '</h3>'
+          + (t.sub ? '<div class="row" style="gap:6px;align-items:center"><span class="note">ディレクトリのURL</span><input class="cp-durl" data-cpdurl="' + ti + '" value="' + esc(s.url || '') + '" placeholder="' + esc(guess || 'https://…/ディレクトリ/') + '"' + dis + ' style="flex:1;max-width:460px">' + (guess && !s.url ? '<span class="note">（空欄なら記事URLから推定：' + esc(guess) + '）</span>' : '') + '</div>' : '')
+          + '<div class="cp-cgrid">' + [['overlap', 'KWがかぶるサイト'], ['serp', '代表KWの検索上位']].map(([m, l]) => '<div class="cp-cbox"><div class="row" style="justify-content:space-between"><b>' + l + '</b>' + (ed ? '<button class="btn sm primary" type="button" data-cpfetch="' + ti + '" data-method="' + m + '">取得（Ahrefs）</button>' : '') + '</div>' + tbl(latest(t.sub, m), m) + '</div>').join('') + '</div></div>'; }).join('');
+  }
+  box.innerHTML = H('コンセプト <small>' + esc(mediaLabel(CP.media)) + '</small>', CP.tab === 'compete' ? ['Ahrefs'] : [], upd) + tabs + (ed ? '' : '<p class="note">見るだけです（編集は権限管理の「コンセプトの編集」がある人）。</p>') + '<div class="cp-body">' + body + '</div>';
+  bindConcept();
+}
+function bindConcept() {
+  const box = $('cp-body'), d = CP.d, err = e => alert('保存できませんでした：' + e.message);
+  box.querySelectorAll('[data-cptab]').forEach(b => b.onclick = () => { if (CP.tab === 'guide' && CP.gDirty && !confirm('ガイドラインの変更を保存していません。移動すると消えます。よろしいですか？')) return; if (CP.tab === 'guide') { CP.g = null; CP.gDirty = false; } CP.tab = state.cpTab = b.dataset.cptab; paintConcept(); });
+  if ($('cp-save-c')) $('cp-save-c').onclick = async () => { const c = {}; box.querySelectorAll('[data-cpc]').forEach(el => { if (el.value.trim()) c[el.dataset.cpc] = el.value.trim(); }); if (c.url && !/^https?:\/\//.test(c.url)) return alert('URLは http:// か https:// で始めてください'); if (c.cv_form && !/^https?:\/\//.test(c.cv_form)) return alert('CV（フォーム）は http:// か https:// で始まるURLを入れてください');
+    try { await cpSave('concept', c); paintConcept(); toast('コンセプトを保存しました'); } catch (e) { err(e); } };
+  // ペルソナ：入力をそのまま CP に入れる。家族構成を変えたら人数の欄を出し直す
+  const target = i => Number(i) < 0 ? CP.persona : CP.subs[Number(i)].persona;
+  box.querySelectorAll('[data-cpbox]').forEach(bx => { const i = bx.dataset.cpbox; bx.querySelectorAll('[data-cpp]').forEach(el => { el.oninput = el.onchange = ev => { const m = target(i), k = el.dataset.cpp, v = el.value; if (el.tagName === 'SELECT') el.classList.toggle('ol-ph', !v); if (String(v).trim()) m[k] = v; else delete m[k];
+    if (/^persona_family/.test(k)) { const t = olFamilyTotal(m); if (t != null) m.persona_family_total = String(t); else delete m.persona_family_total; if (ev.type === 'change') { const y = window.scrollY; paintConcept(); window.scrollTo(0, y); } } }; }); });
+  if ($('cp-save-p')) $('cp-save-p').onclick = async () => { try { await cpSave({ persona: CP.persona, subs: CP.subs.map(s => ({ sub: s.sub, url: s.url, persona: s.persona })) }); cpInitSubs(); paintConcept(); toast('ペルソナを保存しました'); } catch (e) { err(e); } };
+  // ガイドライン（保存を押すまで画面の中だけ）
+  if (CP.tab === 'guide' && d.canEdit) {
+    const g = CP.g, dirty = () => { CP.gDirty = true; }, re = () => { const y = window.scrollY; paintConcept(); window.scrollTo(0, y); };
+    const ix = v => v.split(':').map(Number);
+    box.querySelectorAll('[data-gs]').forEach(el => el.oninput = () => { g.sections[Number(el.dataset.gs)].title = el.value; dirty(); });
+    box.querySelectorAll('[data-gi]').forEach(el => el.oninput = () => { const [a, b] = ix(el.dataset.gi); g.sections[a].items[b][el.dataset.gf] = el.value; dirty(); });
+    box.querySelectorAll('[data-gr]').forEach(el => el.oninput = () => { g.refs[Number(el.dataset.gr)][el.dataset.gf] = el.value; dirty(); });
+    box.querySelectorAll('[data-giadd]').forEach(b => b.onclick = () => { g.sections[Number(b.dataset.giadd)].items.push({ title: '', desc: '' }); dirty(); re(); });
+    box.querySelectorAll('[data-gidel]').forEach(b => b.onclick = () => { const [a, c] = ix(b.dataset.gidel); const it = g.sections[a].items[c]; if (it.title && !confirm('「' + it.title + '」を削除します。よろしいですか？（記事のチェックは、項目を戻したときのために残します）')) return; g.sections[a].items.splice(c, 1); dirty(); re(); });
+    box.querySelectorAll('[data-giup]').forEach(b => b.onclick = () => { const [a, c] = ix(b.dataset.giup); if (!c) return; const L = g.sections[a].items; [L[c - 1], L[c]] = [L[c], L[c - 1]]; dirty(); re(); });
+    box.querySelectorAll('[data-gsup]').forEach(b => b.onclick = () => { const a = Number(b.dataset.gsup); if (!a) return; [g.sections[a - 1], g.sections[a]] = [g.sections[a], g.sections[a - 1]]; dirty(); re(); });
+    box.querySelectorAll('[data-gsdel]').forEach(b => b.onclick = () => { const a = Number(b.dataset.gsdel); if (!confirm('見出し「' + g.sections[a].title + '」と、その中の項目' + g.sections[a].items.length + '個を削除します。よろしいですか？')) return; g.sections.splice(a, 1); dirty(); re(); });
+    box.querySelectorAll('[data-grdel]').forEach(b => b.onclick = () => { g.refs.splice(Number(b.dataset.grdel), 1); dirty(); re(); });
+    if ($('cp-gsadd')) $('cp-gsadd').onclick = () => { g.sections.push({ title: '新しい見出し', items: [] }); dirty(); re(); };
+    if ($('cp-gradd')) $('cp-gradd').onclick = () => { g.refs = g.refs || []; g.refs.push({ title: '', url: '' }); dirty(); re(); };
+    if ($('cp-gcancel')) $('cp-gcancel').onclick = () => { CP.g = null; CP.gDirty = false; re(); };
+    if ($('cp-greset')) $('cp-greset').onclick = async () => { if (!confirm('ガイドラインを初期値に戻します。よろしいですか？（今の内容は履歴に残ります）')) return; try { await cpSave('guideline', null); CP.g = null; CP.gDirty = false; re(); toast('初期値に戻しました'); } catch (e) { err(e); } };
+    if ($('cp-save-g')) $('cp-save-g').onclick = async () => {
+      const empty = g.sections.flatMap(s => s.items).filter(x => !String(x.title || '').trim()).length; if (empty && !confirm('項目名が空の行が' + empty + '個あります。空の行は保存しません。よろしいですか？')) return;
+      const badRef = (g.refs || []).find(x => x.title && x.url && !/^https?:\/\//.test(x.url)); if (badRef) return alert('参考リンクのURLは http:// か https:// で始めてください：' + badRef.title);
+      try { await cpSave('guideline', g); CP.g = null; CP.gDirty = false; re(); toast('ガイドラインを保存しました（記事のガイドライン確認にも反映）'); } catch (e) { err(e); } };
+  }
+  // 競合サイト
+  if ($('cp-showex')) $('cp-showex').onchange = ev => { CP.showEx = ev.target.checked; paintConcept(); };
+  box.querySelectorAll('[data-cpdurl]').forEach(el => el.onchange = async () => { const t = CP.subs[Number(el.dataset.cpdurl) - 1], v = el.value.trim(); if (v && !/^https?:\/\//.test(v)) { el.value = t.url || ''; return alert('URLは https:// から入れてください'); } t.url = v;
+    try { await cpSave('subs', CP.subs.map(s => ({ sub: s.sub, url: s.url, persona: s.persona }))); toast('ディレクトリのURLを保存しました'); } catch (e) { err(e); } });
+  box.querySelectorAll('[data-cpmark]').forEach(b => b.onclick = async () => {
+    const dm = b.dataset.cpmark, mk = b.dataset.mk, list = (d.marks || []).filter(m => m.domain !== dm), cur = (d.marks || []).find(m => m.domain === dm);
+    if (!(cur && cur.mark === mk)) list.push({ domain: dm, mark: mk });
+    try { await cpSave('marks', list); paintConcept(); } catch (e) { err(e); } });
+  box.querySelectorAll('[data-cpfetch]').forEach(b => b.onclick = async () => {
+    const ti = Number(b.dataset.cpfetch), sub = ti ? CP.subs[ti - 1].sub : '', method = b.dataset.method;
+    const dirUrl = ti ? (CP.subs[ti - 1].url || cpGuessUrl(sub)) : '', kws = method === 'serp' ? cpRepKws(sub) : [];
+    if (method === 'overlap' && ti && !dirUrl) return alert('ディレクトリのURLを入れてください（記事URLから推定できませんでした）');
+    if (method === 'serp' && !kws.length) return alert('代表KWがありません（進行管理に検索KWがある記事がありません）');
+    if (!confirm((method === 'overlap' ? 'KWがかぶるサイトを Ahrefs から取得します。\n対象：' + (ti ? dirUrl : d.siteUrl) : '代表KW（' + kws.length + '個）の検索上位を Ahrefs から取得します。\n' + kws.join('、')) + '\n\nAhrefs のユニットを使います。よろしいですか？')) return;
+    b.disabled = true; b.textContent = '取得中…';
+    try { const res = await apiSend('POST', '/concept/competitors', { media: CP.media, sub, method, kws, dirUrl }); d.competitors = [res.result].concat((d.competitors || []).filter(x => !((x.sub || '') === sub && x.method === method))); paintConcept(); toast('競合サイトを取得しました（' + res.result.list.length + '件）'); }
+    catch (e) { b.disabled = false; b.textContent = '取得（Ahrefs）'; alert('取得できませんでした：' + e.message); }
+  });
+}
+
 function viewAmSettings() {
   return { html: '<section class="grid2 even"><div class="panel" id="st-cat"><p class="loading">読み込み中…</p></div><div class="panel" id="st-tag"></div></section><section class="panel" id="st-cta"></section><section class="panel" id="st-appeal"></section><section class="panel" id="st-content"></section>', view: '記事管理：各種設定', after: async () => {
     await loadItems();
@@ -6039,7 +6248,7 @@ function viewAiSim() {
 }
 const RENDER = { 'ai-errcheck': viewErrCheck, 'ai-sim': viewAiSim, simcmp: viewSimCompare, sim: viewSim, summary: viewSummary, monthly: viewMonthly, daily: viewDaily, yoy: () => viewPeriodCompare('yoy'), mom: () => viewPeriodCompare('mom'), range: viewRange,
   'ex-list': () => viewExpenses('list'), 'ex-staff': () => viewExpenses('staff'), 'ex-site': () => viewExpenses('site'), 'ex-outsource': () => viewExpenses('outsource'), 'ex-press': () => viewExpenses('press'), 'ex-tool': () => viewExpenses('tool'), 'ex-ai': () => viewExpenses('ai'),
-  area: viewArea, articles: viewArticles, artlist: viewArtList, 'am-list': viewAmList, 'am-status': viewProduction, 'am-progress': () => { const v = viewAmProgress(); return Object.assign({}, v, { html: v.html + '<section class="panel" id="press-body"><p class="loading">プレスリリースを読み込み中…</p></section>', after: async () => { await v.after(); await drawPressPanel(true); } }); }, 'am-press': () => ({ html: '<section class="panel" id="press-body"><p class="loading">読み込み中…</p></section>', view: 'プレスリリース進行管理', after: drawPressPanel }), 'am-monthly': viewAmMonthly,   /* コンテンツ進行管理の下の別の画面（2026-10-31 ユーザー指定） */ 'am-settings': viewAmSettings, outline: viewOutline, 'rw-active': viewRewardsAll, 'rw-mine': viewRewards, 'rw-me': viewRewardMe, 'rw-preview': viewRewardPreview, 'rw-batch': viewInvBatch, 'rw-finance': viewInvFinance, 'rw-check': viewRwCheck, 'rv-monthly': () => viewRevTotal('monthly'), 'rv-range': () => viewRevTotal('range'), 'rv-kintone': () => viewRev(state.rvKMode || 'monthly'), 'rv-moshimo': viewMoshimo, kw: viewKw, plan: viewPlan,
+  area: viewArea, articles: viewArticles, artlist: viewArtList, 'am-list': viewAmList, 'am-status': viewProduction, 'am-progress': () => { const v = viewAmProgress(); return Object.assign({}, v, { html: v.html + '<section class="panel" id="press-body"><p class="loading">プレスリリースを読み込み中…</p></section>', after: async () => { await v.after(); await drawPressPanel(true); } }); }, 'am-press': () => ({ html: '<section class="panel" id="press-body"><p class="loading">読み込み中…</p></section>', view: 'プレスリリース進行管理', after: drawPressPanel }), 'am-monthly': viewAmMonthly, 'am-concept': viewAmConcept,   /* コンセプト（2026-11-13 ユーザー指定） */   /* コンテンツ進行管理の下の別の画面（2026-10-31 ユーザー指定） */ 'am-settings': viewAmSettings, outline: viewOutline, 'rw-active': viewRewardsAll, 'rw-mine': viewRewards, 'rw-me': viewRewardMe, 'rw-preview': viewRewardPreview, 'rw-batch': viewInvBatch, 'rw-finance': viewInvFinance, 'rw-check': viewRwCheck, 'rv-monthly': () => viewRevTotal('monthly'), 'rv-range': () => viewRevTotal('range'), 'rv-kintone': () => viewRev(state.rvKMode || 'monthly'), 'rv-moshimo': viewMoshimo, kw: viewKw, plan: viewPlan,
   users: viewUsers, roles: viewRoles, system: viewSystem,
   subs: () => ({ html: '<section class="panel" id="ex-subs"><p class="loading">読み込み中…</p></section><section class="panel" id="adm-imp-site"></section><section class="panel" id="adm-imp-free"></section><section class="panel" id="adm-imp-prt"></section><section class="panel" id="adm-imp-press"></section><section class="panel" id="adm-imp-tool"></section>', view: '支出管理', after: async () => {
     /* 支出管理（旧：定額のサービス。2026-11-05 ユーザー指定）：定額のサービスと、支出情報の各タブと同じ請求の入力。どちらで入れても同じ支出（expense_invoices）になる */
@@ -6238,21 +6447,23 @@ function olFamilyTotal(m) {
   if (f === '3世代') return n('persona_family_adult') + n('persona_family_child') + n('persona_family_elder');
   return null;
 }
-function olPersonaHtml(dis) {
+/** m・attr を渡すと、コンセプト（メディア・ディレクトリのペルソナ）でも使う（2026-11-13） */
+function olPersonaHtml(dis, m0, attr) {
+  const A = attr || 'olm', M = m0 || OL.meta;
   /* 見出し（持ち家/賃貸・建物・間取り・駅徒歩など）は選べない見本として出す（2026-11-13 ユーザー指摘：選択肢に入っていてわかりにくい） */
-  if (OL.meta.persona_income && !P_INCOME.includes(OL.meta.persona_income)) delete OL.meta.persona_income;   /* 世帯年収は100万円ごとの選択肢だけ（「31～40％」などは消す。2026-11-13 ユーザー指定） */
-  const m = OL.meta, sel = (k, list, ph) => { const v = m[k] || ''; return '<select data-olm="' + k + '"' + dis + (v ? '' : ' class="ol-ph"') + '><option value="" disabled hidden' + (v ? '' : ' selected') + '>' + (ph || '未選択') + '</option>' + (v && !list.includes(v) ? '<option selected>' + esc(v) + '</option>' : '') + list.map(o => '<option' + (o === v ? ' selected' : '') + '>' + esc(o) + '</option>').join('') + '</select>'; };
-  const num = (k, l) => '<label class="ol-pnum">' + l + '<input type="number" min="0" max="20" data-olm="' + k + '" value="' + esc(m[k] || '') + '"' + dis + '>人</label>';
+  if (M.persona_income && !P_INCOME.includes(M.persona_income)) delete M.persona_income;   /* 世帯年収は100万円ごとの選択肢だけ（「31～40％」などは消す。2026-11-13 ユーザー指定） */
+  const m = M, sel = (k, list, ph) => { const v = m[k] || ''; return '<select data-' + A + '="' + k + '"' + dis + (v ? '' : ' class="ol-ph"') + '><option value="" disabled hidden' + (v ? '' : ' selected') + '>' + (ph || '未選択') + '</option>' + (v && !list.includes(v) ? '<option selected>' + esc(v) + '</option>' : '') + list.map(o => '<option' + (o === v ? ' selected' : '') + '>' + esc(o) + '</option>').join('') + '</select>'; };
+  const num = (k, l) => '<label class="ol-pnum">' + l + '<input type="number" min="0" max="20" data-' + A + '="' + k + '" value="' + esc(m[k] || '') + '"' + dis + '>人</label>';
   const f = m.persona_family, tot = olFamilyTotal(m);
   const cell = (l, h, cls) => '<div class="ol-pc ' + (cls || '') + '"><span class="ol-pl">' + l + '</span>' + h + '</div>';
   /* 1行目：性別・年齢・世帯年収（小さく）／2行目：家族構成・居住地・居住環境／3行目：移動手段・趣味（2026-11-13 ユーザー指定） */
-  return '<div class="ol-persona" id="ol-persona">'
+  return '<div class="ol-persona" id="' + (A === 'olm' ? 'ol-persona' : A + '-persona') + '">'
     + '<div class="ol-prow1">' + cell('性別', sel('persona_gender', P_GENDER), 'sm') + cell('年齢', sel('persona_age', P_AGE), 'sm') + cell('世帯年収', sel('persona_income', P_INCOME), 'sm') + '</div>'
     + '<div class="ol-prow2">'
     + cell('家族構成', '<div class="ol-pline">' + sel('persona_family', P_FAMILY) + (f === '2世代' || f === '3世代' ? num('persona_family_adult', '大人') + num('persona_family_child', '子供') + (f === '3世代' ? num('persona_family_elder', '祖父母') : '') : '') + (tot != null ? '<span class="ol-ptot">合計 <b>' + tot + '</b>人</span>' : '') + '</div>', 'fam')
     + cell('居住地', '<div class="ol-pline">' + sel('persona_area', P_AREA) + sel('persona_station', P_STATION, '駅徒歩') + '</div>', 'area')
-    + cell('居住環境', '<div class="ol-pline">' + sel('persona_home_own', P_OWN, '持ち家/賃貸') + sel('persona_home_type', P_TYPE, '建物') + sel('persona_home_room', P_ROOM, '間取り') + '<input data-olm="persona_home_note" value="' + esc(m.persona_home_note || m.persona_home || '') + '" placeholder="補足（庭付き・駐車場付きなど）"' + dis + '></div>', 'home')
-    + '</div><div class="ol-prow3">' + cell('移動手段', sel('persona_move', P_MOVE), 'move') + cell('趣味', '<input data-olm="persona_hobby" value="' + esc(m.persona_hobby || '') + '" placeholder="旅行・キャンプなど"' + dis + '>', 'hobby') + '</div>'
+    + cell('居住環境', '<div class="ol-pline">' + sel('persona_home_own', P_OWN, '持ち家/賃貸') + sel('persona_home_type', P_TYPE, '建物') + sel('persona_home_room', P_ROOM, '間取り') + '<input data-' + A + '="persona_home_note" value="' + esc(m.persona_home_note || m.persona_home || '') + '" placeholder="補足（庭付き・駐車場付きなど）"' + dis + '></div>', 'home')
+    + '</div><div class="ol-prow3">' + cell('移動手段', sel('persona_move', P_MOVE), 'move') + cell('趣味', '<input data-' + A + '="persona_hobby" value="' + esc(m.persona_hobby || '') + '" placeholder="旅行・キャンプなど"' + dis + '>', 'hobby') + '</div>'
     + '</div>';
 }
 /** Googleドキュメントなどに出す1行のまとめ */
@@ -6263,22 +6474,36 @@ function olPersonaText() {
   return [['性別', m.persona_gender], ['年齢', m.persona_age], ['世帯年収', m.persona_income], ['家族構成', fam], ['居住環境', home], ['居住地', [m.persona_area, m.persona_station].filter(Boolean).join('・')], ['移動手段', m.persona_move], ['趣味', m.persona_hobby]].filter(x => x[1]).map(x => x[0] + '：' + x[1]).join('\n');
 }
 /** ペルソナをコピーする（2026-11-13 ユーザー指定）：記事から＝同じメディアで、進行状況が「構成作成完了」〜「完了」の記事の構成シートのペルソナ。
- *  メディアから・ディレクトリから は、メディア・ディレクトリのペルソナを作ったら使えるようにする（今は準備中） */
-async function olPersonaCopy() {
+ *  メディアから・ディレクトリから＝コンテンツ作成 →「コンセプト」で作ったメディア・ディレクトリのペルソナ（2026-11-13 ユーザー指定で使えるように） */
+async function olPersonaCopy(tab) {
   const r = OL.r, from = STATUS_ORDER.indexOf('構成作成完了'), to = STATUS_ORDER.indexOf('完了');
-  openModal('<h2>ペルソナをコピー <small class="note">' + esc(mediaLabel(r.media)) + '</small></h2>'
-    + '<div class="seg ol-pc-tabs"><button type="button" aria-pressed="false" disabled title="これから作ります">メディアから（準備中）</button><button type="button" aria-pressed="false" disabled title="これから作ります">ディレクトリから（準備中）</button><button type="button" aria-pressed="true">記事から</button></div>'
-    + '<p class="note">同じメディアで、進行状況が「構成作成完了」〜「完了」の記事のうち、構成シートにペルソナが入っているものです。選ぶと、この記事のペルソナ（性別〜悩み）を置き換えます。</p>'
+  tab = typeof tab === 'string' ? tab : (OL.pcTab || 'media'); OL.pcTab = tab;
+  const tb = (k, l) => '<button type="button" data-pctab="' + k + '" aria-pressed="' + (tab === k) + '">' + l + '</button>';
+  openModal('<h2>ペルソナをコピー <small class="note">' + esc(mediaLabel(r.media)) + (r.sub ? '／' + esc(r.sub) : '') + '</small></h2>'
+    + '<div class="seg ol-pc-tabs">' + tb('media', 'メディアから') + (artSubs(r.media) ? tb('sub', 'ディレクトリから') : '') + tb('article', '記事から') + '</div>'
+    + '<p class="note">' + (tab === 'article' ? '同じメディアで、進行状況が「構成作成完了」〜「完了」の記事のうち、構成シートにペルソナが入っているものです。' : 'コンテンツ作成 →「コンセプト」で設定したペルソナです。') + '選ぶと、この記事のペルソナ（性別〜悩み）を置き換えます。</p>'
     + '<div id="ol-pc-list"><p class="loading">読み込み中…</p></div><div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn" type="button" data-close>閉じる</button></div>');
-  let list = [];
-  try { list = (await api('/outline/personas?media=' + encodeURIComponent(r.media))).list || []; } catch (e) { $('ol-pc-list').innerHTML = '<p class="err">' + esc(e.message) + '</p>'; return; }
-  const byKey = Object.fromEntries((ITEMS || []).map(x => [x.key, x]));
-  const rows = list.map(x => Object.assign({}, x, { item: byKey[x.key] })).filter(x => x.key !== OL.key && x.item && (i => i >= from && i <= to)(STATUS_ORDER.indexOf(x.item.status)))
-    .sort((a, b) => String(b.item.no || '').localeCompare(String(a.item.no || ''), 'ja', { numeric: true }));
+  document.querySelectorAll('[data-pctab]').forEach(b => b.onclick = () => olPersonaCopy(b.dataset.pctab));
   const sum = pp => [pp.persona_gender, pp.persona_age, pp.persona_income, pp.persona_family ? pp.persona_family + (pp.persona_family_total ? '（' + pp.persona_family_total + '人）' : '') : '', [pp.persona_home_own, pp.persona_home_type, pp.persona_home_room].filter(Boolean).join('・')].filter(Boolean).join(' / ');
-  $('ol-pc-list').innerHTML = rows.length ? '<div class="table-wrap"><table class="am-table"><thead><tr><th class="c-txt">No.</th><th class="c-txt">検索KW</th><th class="c-txt">進行状況</th><th class="c-txt">ペルソナ</th><th></th></tr></thead><tbody>'
-    + rows.map((x, i) => '<tr><td class="c-txt">' + esc(x.item.no || '') + '</td><td class="c-txt">' + esc(x.item.kw || '') + '</td><td class="c-txt">' + esc(x.item.status || '') + '</td><td class="c-txt" style="white-space:normal;font-size:12px">' + esc(sum(x.persona)) + (x.persona.persona_worry ? '<div class="note">悩み：' + esc(String(x.persona.persona_worry).slice(0, 50)) + '</div>' : '') + '</td><td><button class="btn sm primary" type="button" data-pcpick="' + i + '">コピー</button></td></tr>').join('') + '</tbody></table></div>'
-    : '<p class="empty">コピーできる記事がありません（構成作成完了〜完了の記事で、ペルソナが入っている構成シートがありません）</p>';
+  let rows = [];
+  try {
+    if (tab === 'article') {
+      const list = (await api('/outline/personas?media=' + encodeURIComponent(r.media))).list || [];
+      const byKey = Object.fromEntries((ITEMS || []).map(x => [x.key, x]));
+      rows = list.map(x => Object.assign({}, x, { item: byKey[x.key] })).filter(x => x.key !== OL.key && x.item && (i => i >= from && i <= to)(STATUS_ORDER.indexOf(x.item.status)))
+        .sort((a, b) => String(b.item.no || '').localeCompare(String(a.item.no || ''), 'ja', { numeric: true }))
+        .map(x => ({ cells: [x.item.no || '', x.item.kw || '', x.item.status || ''], persona: x.persona }));
+    } else {
+      const d = await api('/concept/personas?media=' + encodeURIComponent(r.media));
+      rows = tab === 'media' ? (Object.keys(d.media || {}).length ? [{ cells: [mediaLabel(r.media)], persona: d.media }] : [])
+        : (d.subs || []).slice().sort((a, b) => (b.sub === r.sub) - (a.sub === r.sub)).map(x => ({ cells: [x.sub + (x.sub === r.sub ? '（この記事）' : '')], persona: x.persona }));
+    }
+  } catch (e) { $('ol-pc-list').innerHTML = '<p class="err">' + esc(e.message) + '</p>'; return; }
+  if (!$('ol-pc-list') || OL.pcTab !== tab) return;
+  const heads = tab === 'article' ? ['No.', '検索KW', '進行状況'] : [tab === 'media' ? 'メディア' : 'ディレクトリ'];
+  $('ol-pc-list').innerHTML = rows.length ? '<div class="table-wrap"><table class="am-table"><thead><tr>' + heads.map(h => '<th class="c-txt">' + h + '</th>').join('') + '<th class="c-txt">ペルソナ</th><th></th></tr></thead><tbody>'
+    + rows.map((x, i) => '<tr>' + x.cells.map(c => '<td class="c-txt">' + esc(c) + '</td>').join('') + '<td class="c-txt" style="white-space:normal;font-size:12px">' + esc(sum(x.persona)) + (x.persona.persona_worry ? '<div class="note">悩み：' + esc(String(x.persona.persona_worry).slice(0, 50)) + '</div>' : '') + '</td><td><button class="btn sm primary" type="button" data-pcpick="' + i + '">コピー</button></td></tr>').join('') + '</tbody></table></div>'
+    : '<p class="empty">' + (tab === 'article' ? 'コピーできる記事がありません（構成作成完了〜完了の記事で、ペルソナが入っている構成シートがありません）' : 'まだペルソナがありません。コンテンツ作成 →「コンセプト」の「ペルソナ」で作れます。') + '</p>';
   document.querySelectorAll('[data-pcpick]').forEach(b => b.onclick = () => {
     const src = rows[Number(b.dataset.pcpick)].persona, has = Object.keys(OL.meta).some(k => /^persona/.test(k) && OL.meta[k]);
     if (has && !confirm('この記事のペルソナを置き換えます。よろしいですか？')) return;
@@ -6572,7 +6797,7 @@ function paintOutline() {
   if ($('ol-urgency')) $('ol-urgency').onchange = ev => prog('urgency', ev.target, ev.target.value);
   if (!ed) return;
   olBindTld();
-  if ($('ol-pcopy')) $('ol-pcopy').onclick = olPersonaCopy;
+  if ($('ol-pcopy')) $('ol-pcopy').onclick = () => olPersonaCopy();
   const bindMeta = () => document.querySelectorAll('[data-olm]').forEach(el => { el.oninput = el.onchange = ev => { const k = el.dataset.olm, v = el.value; if (el.tagName === 'SELECT') el.classList.toggle('ol-ph', !v); if (v.trim()) OL.meta[k] = v; else delete OL.meta[k];
     /* 家族構成：人数の欄の出し入れと合計 */
     if (/^persona_family/.test(k)) { const t = olFamilyTotal(OL.meta); if (t != null) OL.meta.persona_family_total = String(t); else delete OL.meta.persona_family_total; if (ev.type === 'change' || k !== 'persona_family') { const box = $('ol-persona'); if (box) { const f = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.olm : ''; box.outerHTML = olPersonaHtml(disA); bindMeta(); const back = f && document.querySelector('[data-olm="' + f + '"]'); if (back && ev.type === 'input') { back.focus(); try { back.setSelectionRange(back.value.length, back.value.length); } catch (e) { /* 数字の欄 */ } } } } }
@@ -6637,7 +6862,7 @@ function olBindHead() {
   $('ol-copyurl').onclick = () => olCopyText(outlineUrl(r), 'URLをコピーしました');
   const st = $('ol-status'); if (st) st.onchange = async () => {
     const v = st.value, miss = missingFor(r, v);
-    if (miss.length) { st.value = r.status || ''; return showInputError('「' + v + '」にできません', miss.map(x => x + 'が入力されていません')); }
+    if (miss.length) { st.value = r.status || ''; return showInputError('「' + v + '」にできません', miss.map(x => x + (/^ガイドライン確認/.test(x) ? 'が終わっていません（「ガイドライン確認」ボタンから）' : 'が入力されていません'))); }
     try { await apiSend('PATCH', '/article-items', { key: r.key, fields: { status: v } }); r.status = v; if (r.source !== 'dashboard') { r.edited = true; r.editedBy = me.email; r.editedAt = new Date().toISOString(); } toast('進行状況を「' + v + '」にしました（進行管理にも反映）'); }
     catch (e) { st.value = r.status || ''; alert('保存できませんでした：' + e.message); }
   };

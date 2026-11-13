@@ -119,7 +119,8 @@ const CAPS = [['media_view', 'メディア数値', '閲覧'], ['articles_view', 
   ['revenue_view', '収益情報', '閲覧'], ['rewards_view', '報酬管理', '閲覧'],
   /* 2026-10 以降に足した機能（2026-11-06 ユーザー指定：権限管理で切り替えられるように） */
   ['sim_view', 'メディア数値', 'シミュレーション・シミュレーション比較'], ['expenses_view', '支出情報', '閲覧・入力（サイト制作・プレスリリース・ツール・業務委託など）'], ['goals_view', '目標・工数', '目標・稼働工数の入力と進捗（BEST社員管理に登録がある人）'],
-  ['press_view', 'コンテンツ作成', 'プレスリリース進行管理の閲覧'], ['outline_edit', 'コンテンツ作成', '構成シートの作成・編集（ライターへの編集の受け渡しも）'], ['outline_compete', 'コンテンツ作成', '構成シートの競合調査（閲覧・取得）'],['feedback_send', '機能改善依頼', '各画面からの依頼の送信'], ['ai_tools', 'AIツール', 'AI MEDIAシミュレーションの閲覧'], ['ai_errcheck', 'AIツール', 'AIエラーチェッカー（週次の点検の報告を見る）'],
+  ['press_view', 'コンテンツ作成', 'プレスリリース進行管理の閲覧'], ['outline_edit', 'コンテンツ作成', '構成シートの作成・編集（ライターへの編集の受け渡しも）'], ['outline_compete', 'コンテンツ作成', '構成シートの競合調査（閲覧・取得）'], ['concept_view', 'コンテンツ作成', 'コンセプト（メディアの方針・ペルソナ・ガイドライン・競合サイト）の閲覧'], ['concept_edit', 'コンテンツ作成', 'コンセプトの編集・競合サイトの取得（Ahrefs）'],   /* コンセプト（2026-11-13 ユーザー指定） */
+ ['feedback_send', '機能改善依頼', '各画面からの依頼の送信'], ['ai_tools', 'AIツール', 'AI MEDIAシミュレーションの閲覧'], ['ai_errcheck', 'AIツール', 'AIエラーチェッカー（週次の点検の報告を見る）'],
   ['admin_users', '管理メニュー', 'ユーザー管理（役割の設定。管理者の役割は付けられない）'], ['admin_roles', '管理メニュー', '権限管理'], ['admin_logs', '管理メニュー', 'アクセスログ'], ['admin_media', '管理メニュー', 'メディア管理（WordPressの接続）'],
   ['admin_contracts', '管理メニュー', '契約管理'], ['admin_expenses', '管理メニュー', '支出管理'], ['admin_staff', '管理メニュー', 'BEST社員管理'], ['admin_targets', '管理メニュー', '記事目標設定'], ['admin_api', '管理メニュー', 'API・連携設定（Google広告・kintone）'], ['admin_jobs', '管理メニュー', '収集ジョブ'], ['admin_system', '管理メニュー', 'システム構造']];
 /** 新しく足した権限の初期値＝足す前の見せ方と同じ（保存済みの役割にも、その権限をまだ保存したことがなければこれを入れる）（2026-11-06） */
@@ -134,6 +135,8 @@ const NEW_CAP_DEFAULT = {
   outline_edit: role => ['exec', 'employee', 'contract', 'parttime', 'out_director', 'out_ad'].includes(role),   /* 構成シートは基本ディレクターだけ（2026-11-12 ユーザー指定） */
   outline_compete: role => ['exec', 'employee', 'out_director', 'out_ad', 'out_aw'].includes(role),   /* 競合調査は業務委託のディレクション担当（アシスタント以上）とBEST役員・正社員だけ（2026-11-13 ユーザー指定） */
   admin_system: role => role !== 'finance',
+  concept_view: role => ['exec', 'employee', 'contract', 'parttime', 'out_director', 'out_ad', 'out_aw'].includes(role),   /* コンセプトの閲覧：BEST社員と業務委託のディレクション担当（2026-11-13） */
+  concept_edit: role => ['exec', 'employee', 'out_director'].includes(role),   /* コンセプトの編集・競合サイトの取得（Ahrefs のユニットを使う）（2026-11-13） */
 };
 /** その人がその権限を持つか。役割がない人（これまでの個別の権限）は fallback（足す前の判定） */
 const capOk = (u, cap, fallback) => isFullAdmin(u) || (!!u && Array.isArray(u.caps) ? u.caps.includes(cap) : !!(fallback && fallback(u)));
@@ -1104,6 +1107,11 @@ api.patch('/article-items', async (req, res, next) => {
       const w = 'writer' in fields ? fields.writer : cur.writer, t = 'target_ym' in fields ? fields.target_ym : cur.target_ym;
       if (w && !t) return res.status(400).json({ error: '執筆担当を入れたら、アップロード目標月も入れてください' });
     }
+    /* 「完了」にするのは、ガイドライン確認（今のガイドラインの全項目がチェック済みか理由あり）がそろってから（2026-11-13 ユーザー指定） */
+    if (fields.status === '完了') {
+      const gm = key.startsWith('entry:') ? ((await db.collection('article_entries').doc(key.slice(6)).get()).data() || {}).media : key.split('|')[0];
+      if (gm) { const miss = await conceptMod.missingFor(key, gm); if (miss.length) return res.status(400).json({ error: 'ガイドライン確認が終わっていないため「完了」にできません（残り' + miss.length + '項目：' + miss.slice(0, 3).join('、') + (miss.length > 3 ? ' ほか' : '') + '）', guideMissing: miss }); }
+    }
     /* 文字数は原稿のドキュメントの文字数を超えたら保存しない（2026-11-12 ユーザー指定） */
     if ('chars' in fields && fields.chars != null) {
       try { await checkCharsLimit(fields.chars, 'writing_url' in fields ? fields.writing_url : await currentWritingUrl(key)); } catch (e) { return res.status(400).json({ error: e.message, docChars: e.docChars }); }
@@ -1787,6 +1795,9 @@ ccheck.routes(api, adminApi);
 // 構成シート（2026-11-12 ユーザー指定）
 const comp = require('./competitor')({ db, admin, braveWeb: (q, n) => ccheck.braveWeb(q, n), ownHosts: () => ccheck.ownHosts(), ahrefsKey: () => ahr.loadKey(), onChanged: () => cache.clear() });   /* 競合調査（2026-11-13 ユーザー指定） */
 comp.adminRoutes(adminApi, () => MEDIA_ORDER.map(([k]) => k));
+// コンセプト（メディアの方針・ペルソナ・ガイドライン・競合サイト）（2026-11-13 ユーザー指定）
+const conceptMod = require('./concept')({ db, admin, allowedMedia, capOk, canEditArticles, ownsItem, ahrefsKey: () => ahr.loadKey(), siteUrls: require('./ahrefs').SITE_URLS || {}, medias: () => MEDIA_ORDER.map(([k]) => k) });
+conceptMod.routes(api);
 require('./outline')({ db, admin, query, T, allowedMedia, capOk, docIdOf, keyOfItem, WRITER_ROLES, comp }).routes(api);
 // Gmail からのメール送信（marketing@ だけ。連携はフル管理者だけ。2026-10-28 ユーザー指定）
 const gmail = require('./gmail')({ PROJECT, db, admin, isFullAdmin });

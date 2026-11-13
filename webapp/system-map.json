@@ -1,8 +1,16 @@
 {
-  "version": "1.573",
+  "version": "1.574",
   "updated": "2026-11-13",
   "note": "WEBアプリを更新するたびに、このファイル（version・updated・changelog と、変わった仕組み）も更新する",
   "changelog": [
+    {
+      "ver": "1.574",
+      "date": "2026-11-13",
+      "items": [
+        "コンセプト（方針・ペルソナ・ガイドライン・競合）を追加",
+        "完了前のガイドライン確認を追加"
+      ]
+    },
     {
       "ver": "1.573",
       "date": "2026-11-13",
@@ -4047,6 +4055,12 @@
       "name": "settings/competitor・competitor_runs",
       "what": "競合調査（Brave）のメディアごとの今月の回数・費用・上限と、取得の記録（結果は article_outlines/{id}/competitors）",
       "by": "構成シート・API・連携設定"
+    },
+    {
+      "kind": "Firestore",
+      "name": "media_concepts・article_guidechecks",
+      "what": "メディアごとのコンセプト・ペルソナ（メディア＋ディレクトリ）・サイトのガイドライン・競合サイトの印（直す前は media_concepts/{id}/history、Ahrefsの取得結果は media_concepts/{id}/competitors）。記事ごとのガイドライン確認（項目IDごとのチェック・未対応の理由。直す前は history）",
+      "by": "コンセプト・進行管理"
     },
     {
       "kind": "Firestore",
