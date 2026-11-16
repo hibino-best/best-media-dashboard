@@ -1451,3 +1451,4 @@ option.ol-lk-pillar { background: #dce8fb; color: #1a4fa8; } option.ol-lk-long {
 .cp-last { margin: 4px 0 6px; font-size: 12px; }
 .cp-last.locked { color: var(--muted); }
 .cp-body .btn:disabled { opacity: .45; cursor: not-allowed; }   /* 3か月たつまで押せない取得ボタン（2026-11-16） */
+.cp-body .btn[data-early] { background: #8a6d1f; border-color: #8a6d1f; }   /* 3か月たつ前（フル管理者だけ押せる） */

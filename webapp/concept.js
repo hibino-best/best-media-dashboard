@@ -203,16 +203,19 @@ module.exports = function concept({ db, admin, allowedMedia, capOk, canEditArtic
   }
   /** 同じメディア（ディレクトリ）・同じ取り方は、前回の取得から3か月たつまで取れない（2026-11-16 ユーザー指定：ユニットの使いすぎ防止） */
   const nextAllowed = at => { const d = new Date(at); if (isNaN(d)) return null; d.setMonth(d.getMonth() + 3); return d; };
-  async function checkInterval(media, sub, method) {
+  /* フル管理者だけは、画面で確認したうえで3か月たつ前でも取れる（force。2026-11-16 ユーザー指定） */
+  const isFull = u => !!u && u.status === 'active' && !!u.perms && u.perms.media === 'admin';
+  async function checkInterval(media, sub, method, force, user) {
     const c = col.doc(idOf(media)).collection(method === 'kwgap' ? 'kwgaps' : 'competitors');
     const s = await c.orderBy('at', 'desc').limit(60).get();
     const last = s.docs.map(d => d.data()).find(x => (x.sub || '') === (sub || '') && x.method === method);
     if (!last) return;
     const at = iso(last.at), next = nextAllowed(at);
+    if (next && Date.now() < next.getTime() && force && isFull(user)) return true;
     if (next && Date.now() < next.getTime()) throw Object.assign(new Error('前回の取得（' + String(at).slice(0, 10) + ' ' + (last.name || last.by || '') + '）から3か月たっていないため、まだ取得できません（' + next.toISOString().slice(0, 10) + ' から取得できます）'), { status: 400 });
   }
-  async function fetchCompetitors({ media, sub, method, kws, dirUrl, user, domains, limit, names: names0 }) {
-    await checkInterval(media, sub, method);
+  async function fetchCompetitors({ media, sub, method, kws, dirUrl, user, domains, limit, names: names0, force }) {
+    const early = !!(await checkInterval(media, sub, method, force, user));
     let key = ''; try { key = await ahrefsKey(); } catch (e) { key = ''; }
     if (!key) throw Object.assign(new Error('Ahrefs のAPIキーが登録されていません（管理 → API・連携設定）'), { status: 400 });
     const own = new Set(Object.values(siteUrls).map(hostOf));
@@ -227,12 +230,12 @@ module.exports = function concept({ db, admin, allowedMedia, capOk, canEditArtic
       const u0 = await units(key);
       const g = await byKwGap(key, target.replace(/^https?:\/\//, ''), !!sub, ds, lim);
       const names = {}; (names0 || []).forEach(x => { if (x && x.domain) names[hostOf(x.domain)] = txt(x.name, 80); });
-      const doc = { sub: sub || '', method, at: now(), by: user.email, name: user.name || user.email, domains: ds.map(d => ({ domain: d, name: names[d] || d })), list: g.list, limit: lim, target, kws: [], calls: g.units, rows: g.units };
+      const doc = { sub: sub || '', method, at: now(), by: user.email, name: user.name || user.email, domains: ds.map(d => ({ domain: d, name: names[d] || d })), list: g.list, limit: lim, target, kws: [], calls: g.units, rows: g.units, early };
       const u1 = await units(key); if (u0 && u1 && u0.used != null && u1.used != null) { doc.usedUnits = Math.max(0, u1.used - u0.used); doc.unitsAfter = u1; }
       const ref = col.doc(idOf(media));
       if (!(await ref.get()).exists) await ref.set({ media, version: 0 }, { merge: true });
       const add = await ref.collection('kwgaps').add(doc);   /* 行が多いので competitors とは別に置き、タブを開いたときだけ読む */
-      await db.collection('access_logs').add({ uid: user.uid, email: user.email, name: user.name, view: '競合サイトKW比較を取得：' + media + (sub ? '／' + sub : '') + '（' + ds.join('、') + '）', at: now() });
+      await db.collection('access_logs').add({ uid: user.uid, email: user.email, name: user.name, view: '競合サイトKW比較を取得：' + media + (sub ? '／' + sub : '') + '（' + ds.join('、') + '）' + (early ? '［3か月たつ前・フル管理者］' : ''), at: now() });
       return Object.assign({ id: add.id }, doc, { at: new Date().toISOString() });
     }
     const u0 = await units(key);
@@ -253,12 +256,12 @@ module.exports = function concept({ db, admin, allowedMedia, capOk, canEditArtic
       if (x.traffic == null) { x.traffic = await orgTraffic(key, x.domain); units += 1; }
       x.name = await siteName(x.domain) || x.domain;
     }));
-    const doc = { sub: sub || '', method, at: now(), by: user.email, name: user.name || user.email, list, kws: method === 'serp' ? kws : [], target: method === 'overlap' ? (sub ? dirUrl : siteUrls[media]) : '', calls: units + (method === 'serp' ? kws.length : 1) };
+    const doc = { sub: sub || '', method, at: now(), by: user.email, name: user.name || user.email, list, kws: method === 'serp' ? kws : [], target: method === 'overlap' ? (sub ? dirUrl : siteUrls[media]) : '', calls: units + (method === 'serp' ? kws.length : 1) , early };
     { const u1 = await units(key); if (u0 && u1 && u0.used != null && u1.used != null) { doc.usedUnits = Math.max(0, u1.used - u0.used); doc.unitsAfter = u1; } }
     const ref = col.doc(idOf(media));
     if (!(await ref.get()).exists) await ref.set({ media, version: 0 }, { merge: true });
     const add = await ref.collection('competitors').add(doc);
-    await db.collection('access_logs').add({ uid: user.uid, email: user.email, name: user.name, view: '競合サイトを取得：' + media + (sub ? '／' + sub : '') + '（' + (method === 'overlap' ? '競合サイト' : '代表KWの検索上位') + '）', at: now() });
+    await db.collection('access_logs').add({ uid: user.uid, email: user.email, name: user.name, view: '競合サイトを取得：' + media + (sub ? '／' + sub : '') + '（' + (method === 'overlap' ? '競合サイト' : '代表KWの検索上位') + '）' + (early ? '［3か月たつ前・フル管理者］' : ''), at: now() });
     return Object.assign({ id: add.id }, doc, { at: new Date().toISOString() });
   }
   async function latestCompetitors(media) {
@@ -306,7 +309,7 @@ module.exports = function concept({ db, admin, allowedMedia, capOk, canEditArtic
         const b = req.body || {}, media = String(b.media || '');
         if (!okMedia(req.user, media) || !canEdit(req.user)) return res.status(403).json({ error: '競合サイトを取得する権限がありません' });
         if (!['overlap', 'serp', 'kwgap'].includes(b.method)) return res.status(400).json({ error: '取得のしかたが正しくありません' });
-        res.json({ result: await fetchCompetitors({ media, sub: txt(b.sub, 60).trim(), method: b.method, kws: b.kws, dirUrl: b.dirUrl, user: req.user, domains: b.domains, limit: b.limit, names: b.names }) });
+        res.json({ result: await fetchCompetitors({ media, sub: txt(b.sub, 60).trim(), method: b.method, kws: b.kws, dirUrl: b.dirUrl, user: req.user, domains: b.domains, limit: b.limit, names: b.names, force: b.force === true }) });
       } catch (e) { res.status(e.status && e.status < 500 ? e.status : 400).json({ error: e.message }); }
     });
     // Ahrefs の今月のユニット（使わない呼び出し）。取得の前に画面で見て判断する（2026-11-16 ユーザー指定）

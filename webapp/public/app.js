@@ -4041,9 +4041,16 @@ const ymdLocal = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(
 function cpLastHtml(res) {
   if (!res || !res.at) return '<p class="note cp-last">前回の取得：まだありません（取得は3か月に1回まで）</p>';
   const d = new Date(res.at), n = cpNext(res), when = isNaN(d) ? String(res.at).slice(0, 16) : ymdLocal(d) + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-  return '<p class="note cp-last' + (cpLocked(res) ? ' locked' : '') + '">前回の取得：<b>' + esc(when) + '</b>　<b>' + esc(res.name || res.by || '') + '</b>' + (n ? '　／　' + (cpLocked(res) ? '次に取得できるのは <b>' + ymdLocal(n) + '</b> から（3か月に1回）' : '取得できます（前回から3か月たちました）') : '') + '</p>';
+  return '<p class="note cp-last' + (cpLocked(res) ? ' locked' : '') + '">前回の取得：<b>' + esc(when) + '</b>　<b>' + esc(res.name || res.by || '') + '</b>' + (n ? '　／　' + (cpLocked(res) ? '次に取得できるのは <b>' + ymdLocal(n) + '</b> から（3か月に1回）' + (isAdmin() ? '<span class="cp-early-n">　※フル管理者は確認のうえ今すぐ取得できます</span>' : '') : '取得できます（前回から3か月たちました）') : '') + '</p>';
 }
-const cpLockAttr = res => cpLocked(res) ? ' disabled title="前回の取得から3か月たつまで取得できません"' : '';
+/* フル管理者だけは、確認の画面を出したうえで3か月たつ前でも取れる（2026-11-16 ユーザー指定） */
+const cpLockAttr = res => !cpLocked(res) ? '' : isAdmin() ? ' data-early="1" title="前回の取得から3か月たっていません（フル管理者だけ、確認のうえ取得できます）"' : ' disabled title="前回の取得から3か月たつまで取得できません"';
+function cpEarlyOk(res) {
+  if (!cpLocked(res)) return { ok: true, force: false };
+  if (!isAdmin()) { alert('前回の取得から3か月たっていないため、まだ取得できません'); return { ok: false }; }
+  const ok = confirm('前回の取得（' + String(res.at).slice(0, 10) + ' ' + (res.name || res.by || '') + '）から3か月たっていません。\n次に取得できるのは ' + ymdLocal(cpNext(res)) + ' からです。\n\nフル管理者として、今取得しますか？（Ahrefs のユニットを使います）');
+  return { ok, force: ok };
+}
 async function cpLoadUnits() {
   CP.units = null; const media = CP.media;
   try { const r = await api('/concept/ahrefs-units'); if (!CP || CP.media !== media) return; CP.units = r.units || false; } catch (e) { if (CP) CP.units = false; }
@@ -4157,11 +4164,12 @@ function bindKwcmp() {
     const ti = Number(b.dataset.kgfetch), sub = tg(ti), ui = CP.kgUi[sub], doms = ui.doms || [], lim = ui.lim || 100;
     const dirUrl = ti ? (CP.subs[ti - 1].url || cpGuessUrl(sub)) : '';
     if (!doms.length) return alert('くらべる競合サイトを選んでください（最大5つ）');
+    const ea = cpEarlyOk(CP.kg[sub]); if (!ea.ok) return;
     if (ti && !dirUrl) return alert('ディレクトリのURLを「競合サイト」タブで入れてください（記事URLから推定できませんでした）');
     const ov = (CP.d.competitors || []).find(x => (x.sub || '') === sub && x.method === 'overlap'), names = ov ? ov.list.map(x => ({ domain: x.domain, name: x.name })) : [];
     if (!confirm('競合サイト' + doms.length + 'つ（' + doms.join('、') + '）のKWと、自メディア' + (sub ? '（' + sub + '）' : '') + 'の順位を Ahrefs から取得します。\n1サイトあたり ' + lim + 'KW・自メディアは ' + Math.min(1000, lim * 5) + 'KW まで。\n\n取ったKWの行数ぶん Ahrefs のユニットを使います（最大 約' + nf.format(lim * doms.length + Math.min(1000, lim * 5)) + '行）。' + (CP.units && CP.units.limit != null ? '\n今月の残り：' + nf.format(CP.units.limit - CP.units.used) + 'ユニット' : '') + '\nよろしいですか？')) return;
     b.disabled = true; b.textContent = '取得中…';
-    try { const res = await apiSend('POST', '/concept/competitors', { media: CP.media, sub, method: 'kwgap', domains: doms, limit: lim, dirUrl, names });
+    try { const res = await apiSend('POST', '/concept/competitors', { media: CP.media, sub, method: 'kwgap', domains: doms, limit: lim, dirUrl, names, force: ea.force });
       CP.kg[sub] = res.result; CP.kgSel[sub] = new Set(); if (res.result.unitsAfter) CP.units = res.result.unitsAfter; re(); toast('競合サイトKW比較を取得しました（' + res.result.list.length + 'KW）'); }
     catch (e) { b.disabled = false; b.textContent = '取得（Ahrefs）'; alert('取得できませんでした：' + e.message); }
   });
@@ -4285,12 +4293,13 @@ function bindConcept() {
     try { await cpSave('marks', list); paintConcept(); } catch (e) { err(e); } });
   box.querySelectorAll('[data-cpfetch]').forEach(b => b.onclick = async () => {
     const ti = Number(b.dataset.cpfetch), sub = ti ? CP.subs[ti - 1].sub : '', method = b.dataset.method;
+    const ea = cpEarlyOk((d.competitors || []).find(x => (x.sub || '') === sub && x.method === method)); if (!ea.ok) return;
     const dirUrl = ti ? (CP.subs[ti - 1].url || cpGuessUrl(sub)) : '', kws = method === 'serp' ? cpRepKws(sub) : [];
     if (method === 'overlap' && ti && !dirUrl) return alert('ディレクトリのURLを入れてください（記事URLから推定できませんでした）');
     if (method === 'serp' && !kws.length) return alert('代表KWがありません（進行管理に検索KWがある記事がありません）');
-    if (!confirm((method === 'overlap' ? 'KWがかぶるサイトを Ahrefs から取得します。\n対象：' + (ti ? dirUrl : d.siteUrl) : '代表KW（' + kws.length + '個）の検索上位を Ahrefs から取得します。\n' + kws.join('、')) + '\n\nAhrefs のユニットを使います。よろしいですか？')) return;
+    if (!confirm((method === 'overlap' ? '競合サイトを Ahrefs から取得します。\n対象：' + (ti ? dirUrl : d.siteUrl) : '代表KW（' + kws.length + '個）の検索上位を Ahrefs から取得します。\n' + kws.join('、')) + '\n\nAhrefs のユニットを使います。よろしいですか？')) return;
     b.disabled = true; b.textContent = '取得中…';
-    try { const res = await apiSend('POST', '/concept/competitors', { media: CP.media, sub, method, kws, dirUrl }); d.competitors = [res.result].concat((d.competitors || []).filter(x => !((x.sub || '') === sub && x.method === method))); if (res.result.unitsAfter) CP.units = res.result.unitsAfter; paintConcept(); toast('競合サイトを取得しました（' + res.result.list.length + '件）'); }
+    try { const res = await apiSend('POST', '/concept/competitors', { media: CP.media, sub, method, kws, dirUrl, force: ea.force }); d.competitors = [res.result].concat((d.competitors || []).filter(x => !((x.sub || '') === sub && x.method === method))); if (res.result.unitsAfter) CP.units = res.result.unitsAfter; paintConcept(); toast('競合サイトを取得しました（' + res.result.list.length + '件）'); }
     catch (e) { b.disabled = false; b.textContent = '取得（Ahrefs）'; alert('取得できませんでした：' + e.message); }
   });
 }
