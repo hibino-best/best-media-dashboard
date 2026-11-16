@@ -201,7 +201,18 @@ module.exports = function concept({ db, admin, allowedMedia, capOk, canEditArtic
     }
     return Object.values(agg).sort((a, b) => b.hits - a.hits || a.best - b.best);
   }
+  /** 同じメディア（ディレクトリ）・同じ取り方は、前回の取得から3か月たつまで取れない（2026-11-16 ユーザー指定：ユニットの使いすぎ防止） */
+  const nextAllowed = at => { const d = new Date(at); if (isNaN(d)) return null; d.setMonth(d.getMonth() + 3); return d; };
+  async function checkInterval(media, sub, method) {
+    const c = col.doc(idOf(media)).collection(method === 'kwgap' ? 'kwgaps' : 'competitors');
+    const s = await c.orderBy('at', 'desc').limit(60).get();
+    const last = s.docs.map(d => d.data()).find(x => (x.sub || '') === (sub || '') && x.method === method);
+    if (!last) return;
+    const at = iso(last.at), next = nextAllowed(at);
+    if (next && Date.now() < next.getTime()) throw Object.assign(new Error('前回の取得（' + String(at).slice(0, 10) + ' ' + (last.name || last.by || '') + '）から3か月たっていないため、まだ取得できません（' + next.toISOString().slice(0, 10) + ' から取得できます）'), { status: 400 });
+  }
   async function fetchCompetitors({ media, sub, method, kws, dirUrl, user, domains, limit, names: names0 }) {
+    await checkInterval(media, sub, method);
     let key = ''; try { key = await ahrefsKey(); } catch (e) { key = ''; }
     if (!key) throw Object.assign(new Error('Ahrefs のAPIキーが登録されていません（管理 → API・連携設定）'), { status: 400 });
     const own = new Set(Object.values(siteUrls).map(hostOf));

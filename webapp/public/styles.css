@@ -1448,3 +1448,6 @@ option.ol-lk-pillar { background: #dce8fb; color: #1a4fa8; } option.ol-lk-long {
 .gc-refs { font-size: 13px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; margin: 0 0 8px; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cp-refs { --cpb: #222a33; } }
 :root[data-theme="dark"] .cp-refs { --cpb: #222a33; }
+.cp-last { margin: 4px 0 6px; font-size: 12px; }
+.cp-last.locked { color: var(--muted); }
+.cp-body .btn:disabled { opacity: .45; cursor: not-allowed; }   /* 3か月たつまで押せない取得ボタン（2026-11-16） */

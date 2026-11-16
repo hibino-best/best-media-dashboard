@@ -4034,6 +4034,16 @@ const gcColor = i => GC_COLORS[i % GC_COLORS.length];
 function cpAutosize(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight + 2) + 'px'; }
 /* ---------- 競合サイトのグラフ（Ahrefs の Organic competitors のような散布図。2026-11-16 ユーザー指定） ---------- */
 /* Ahrefs の今月のユニット（取得の前に容量を見て判断する。2026-11-16 ユーザー指定） */
+/* 取得は同じメディア（ディレクトリ）・同じ取り方で3か月に1回まで。前回いつ・誰が取ったかを出す（2026-11-16 ユーザー指定） */
+function cpNext(res) { if (!res || !res.at) return null; const d = new Date(res.at); if (isNaN(d)) return null; d.setMonth(d.getMonth() + 3); return d; }
+const cpLocked = res => { const n = cpNext(res); return !!n && Date.now() < n.getTime(); };
+const ymdLocal = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+function cpLastHtml(res) {
+  if (!res || !res.at) return '<p class="note cp-last">前回の取得：まだありません（取得は3か月に1回まで）</p>';
+  const d = new Date(res.at), n = cpNext(res), when = isNaN(d) ? String(res.at).slice(0, 16) : ymdLocal(d) + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  return '<p class="note cp-last' + (cpLocked(res) ? ' locked' : '') + '">前回の取得：<b>' + esc(when) + '</b>　<b>' + esc(res.name || res.by || '') + '</b>' + (n ? '　／　' + (cpLocked(res) ? '次に取得できるのは <b>' + ymdLocal(n) + '</b> から（3か月に1回）' : '取得できます（前回から3か月たちました）') : '') + '</p>';
+}
+const cpLockAttr = res => cpLocked(res) ? ' disabled title="前回の取得から3か月たつまで取得できません"' : '';
 async function cpLoadUnits() {
   CP.units = null; const media = CP.media;
   try { const r = await api('/concept/ahrefs-units'); if (!CP || CP.media !== media) return; CP.units = r.units || false; } catch (e) { if (CP) CP.units = false; }
@@ -4109,10 +4119,10 @@ function cpKwcmpHtml() {
       let h = '<div class="cp-dir cp-indigo cp-kg"><h3 class="cp-dir-h">' + esc(t.label) + '</h3><div class="cp-kg-in">';
       if (!cands.length) h += '<p class="note">先に「競合サイト」タブで、このメディア（ディレクトリ）の「競合サイト」を取得してください。</p>';
       else if (ed) h += '<div class="cp-kg-pick"><span class="note">くらべる競合サイト：</span>' + cands.map(x => '<label class="cp-kg-dom"><input type="checkbox" data-kgdom="' + ti + '" value="' + esc(x.domain) + '"' + (chosen.includes(x.domain) ? ' checked' : '') + '> ' + (marks[x.domain] === 'star' ? '★' : '') + esc(x.name || x.domain) + '</label>').join('')
-        + '<span class="row" style="gap:6px;align-items:center"><span class="note">1サイトあたり</span><select data-kglim="' + ti + '">' + [100, 300, 500].map(n => '<option value="' + n + '"' + (Number(ui.lim || (r && r.limit) || 100) === n ? ' selected' : '') + '>' + n + 'KW</option>').join('') + '</select><button class="btn sm primary" type="button" data-kgfetch="' + ti + '">取得（Ahrefs）</button></span></div>';
+        + '<span class="row" style="gap:6px;align-items:center"><span class="note">1サイトあたり</span><select data-kglim="' + ti + '">' + [100, 300, 500].map(n => '<option value="' + n + '"' + (Number(ui.lim || (r && r.limit) || 100) === n ? ' selected' : '') + '>' + n + 'KW</option>').join('') + '</select><button class="btn sm primary" type="button" data-kgfetch="' + ti + '"' + cpLockAttr(r) + '>取得（Ahrefs）</button></span></div>' + cpLastHtml(r);
       if (!r) return h + (cands.length ? '<p class="empty">まだ取得していません</p>' : '') + '</div></div>';
       const rows = cpKgRows(t.sub), shown = rows.slice(0, 300), doms = r.domains;
-      h += '<p class="note">' + esc(String(r.at || '').slice(0, 16).replace('T', ' ')) + ' ' + esc(r.name || '') + 'が取得／' + nf.format(r.list.length) + 'KW／対象：' + esc(r.target || '') + (r.usedUnits != null ? '／使ったユニット ' + nf.format(r.usedUnits) : r.rows ? '／取った行数 ' + nf.format(r.rows) : '') + '</p>'
+      h += '<p class="note">' + nf.format(r.list.length) + 'KW／対象：' + esc(r.target || '') + (r.usedUnits != null ? '／使ったユニット ' + nf.format(r.usedUnits) : r.rows ? '／取った行数 ' + nf.format(r.rows) : '') + '</p>'
         + '<div class="row cp-kg-bar"><select data-kgf="' + ti + '">' + [['all', 'すべてのKW'], ['notyet', 'コンテンツ管理表にないKW'], ['lose', mediaLabel(CP.media) + 'が競合より下・圏外のKW'], ['out', mediaLabel(CP.media) + 'が圏外のKW']].map(([k, l]) => '<option value="' + k + '"' + ((ui.f || 'all') === k ? ' selected' : '') + '>' + l + '</option>').join('') + '</select>'
         + '<input type="search" data-kgq="' + ti + '" placeholder="KWで絞り込み" value="' + esc(ui.q || '') + '">'
         + '<span class="note">' + nf.format(rows.length) + 'KW' + (rows.length > shown.length ? '（上位' + shown.length + '件を表示）' : '') + '</span>'
@@ -4211,7 +4221,7 @@ function paintConcept() {
       let list = res.list.slice().sort((a, b) => (marks[b.domain] === 'star') - (marks[a.domain] === 'star'));
       const nEx = list.filter(x => marks[x.domain] === 'exclude').length;
       if (!CP.showEx) list = list.filter(x => marks[x.domain] !== 'exclude');
-      return '<p class="note">' + esc(String(res.at || '').slice(0, 16).replace('T', ' ')) + ' ' + esc(res.name || res.by || '') + 'が取得' + (res.kws && res.kws.length ? '／代表KW：' + esc(res.kws.join('、')) : '') + (res.target ? '／対象：' + esc(res.target) : '') + (nEx ? '／除外 ' + nEx + '件' : '') + '</p>'
+      return '<p class="note">' + (res.usedUnits != null ? '使ったユニット ' + nf.format(res.usedUnits) : '') + (res.kws && res.kws.length ? '／代表KW：' + esc(res.kws.join('、')) : '') + (res.target ? '／対象：' + esc(res.target) : '') + (nEx ? '／除外 ' + nEx + '件' : '') + '</p>'
         + '<div class="table-wrap"><table class="am-table cp-ctbl"><thead><tr><th class="c-txt">サイト名</th><th class="c-txt">ドメイン</th><th class="c-num">DR</th><th class="c-num">オーガニックトラフィック</th><th class="c-num">' + (method === 'overlap' ? '共通KW数' : '上位に出たKW数') + '</th>' + (method === 'overlap' ? '<th class="c-num" title="共通KW数 ÷ 自メディア（ディレクトリ）の順位がついているKW数">KW重複率</th>' : '') + '<th></th></tr></thead><tbody>'
         + list.map(x => { const mk = marks[x.domain] || ''; return '<tr class="' + (mk === 'star' ? 'cp-star' : mk === 'exclude' ? 'cp-ex' : '') + '"><td class="c-txt">' + (mk === 'star' ? '★ ' : '') + esc(x.name || x.domain) + '</td><td class="c-txt"><a href="https://' + esc(x.domain) + '/" target="_blank" rel="noopener">' + esc(x.domain) + '</a></td><td class="c-num">' + nfmt(x.dr) + '</td><td class="c-num">' + nfmt(x.traffic) + '</td><td class="c-num">' + (method === 'overlap' ? nfmt(x.common) : nfmt(x.hits) + (x.best ? '<span class="note">（最高' + x.best + '位）</span>' : '')) + '</td>' + (method === 'overlap' ? '<td class="c-num">' + (x.rate == null ? '<span class="note">—</span>' : x.rate.toFixed(1) + '%') + '</td>' : '')
           + '<td class="c-ctr" style="white-space:nowrap">' + (ed ? '<button class="linkbtn" type="button" data-cpmark="' + esc(x.domain) + '" data-mk="star">' + (mk === 'star' ? '★解除' : '★重要') + '</button> <button class="linkbtn" type="button" data-cpmark="' + esc(x.domain) + '" data-mk="exclude">' + (mk === 'exclude' ? '除外を戻す' : '除外') + '</button>' : '') + '</td></tr>'; }).join('')
@@ -4223,7 +4233,7 @@ function paintConcept() {
       + targets.map((t, ti) => { if (t.sub && !cpSubShown(t.sub)) return ''; const s = CP.subs.find(x => x.sub === t.sub), guess = t.sub ? cpGuessUrl(t.sub) : '';
         return '<div class="cp-ctarget cp-dir cp-orange"><h3 class="cp-dir-h">' + esc(t.label) + '</h3>'
           + (t.sub ? '<div class="row" style="gap:6px;align-items:center"><span class="note">ディレクトリのURL</span><input class="cp-durl" data-cpdurl="' + ti + '" value="' + esc(s.url || '') + '" placeholder="' + esc(guess || 'https://…/ディレクトリ/') + '"' + dis + ' style="flex:1;max-width:460px">' + (guess && !s.url ? '<span class="note">（空欄なら記事URLから推定：' + esc(guess) + '）</span>' : '') + '</div>' : '')
-          + '<div class="cp-cgrid">' + [['overlap', '競合サイト'], ['serp', '代表KWの検索上位']].map(([m, l]) => '<div class="cp-cbox"><div class="row" style="justify-content:space-between"><b>' + l + '</b>' + (ed ? '<button class="btn sm primary" type="button" data-cpfetch="' + ti + '" data-method="' + m + '">取得（Ahrefs）</button>' : '') + '</div>'
+          + '<div class="cp-cgrid">' + [['overlap', '競合サイト'], ['serp', '代表KWの検索上位']].map(([m, l]) => '<div class="cp-cbox"><div class="row" style="justify-content:space-between"><b>' + l + '</b>' + (ed ? '<button class="btn sm primary" type="button" data-cpfetch="' + ti + '" data-method="' + m + '"' + cpLockAttr(latest(t.sub, m)) + '>取得（Ahrefs）</button>' : '') + '</div>' + cpLastHtml(latest(t.sub, m))
             + (m === 'overlap' && latest(t.sub, m) && latest(t.sub, m).list.length ? '<div class="cp-bub"><canvas id="cp-bub-' + ti + '" role="img" aria-label="競合サイトのグラフ（横＝共通KW数、縦＝オーガニックトラフィック、円の大きさ＝KW重複率）"></canvas></div><p class="note cp-bub-n">横＝共通KW数　縦＝オーガニックトラフィック　円の大きさ＝KW重複率（★は濃い色）</p>' : '') + tbl(latest(t.sub, m), m) + '</div>').join('') + '</div></div>'; }).join('');
   }
   box.innerHTML = H('コンセプト <small>' + esc(mediaLabel(CP.media)) + '</small>', CP.tab === 'compete' ? ['Ahrefs'] : [], upd) + tabs + (ed ? '' : '<p class="note">見るだけです（編集は権限管理の「コンセプトの編集」がある人）。</p>') + '<div class="cp-body">' + body + '</div>';
