@@ -3965,7 +3965,7 @@ function openGuideCheck(r) {
   const ck = GUIDE.checks[r.key];
   openModal('<h2>ガイドライン確認 <small class="note">' + esc(mediaLabel(r.media)) + (r.no ? '　No.' + esc(r.no) : '') + '　' + esc(r.kw || '') + '</small></h2>'
     + '<p class="note">項目ごとに「確認した」にチェックするか、対応しない場合はその理由を入れてください。全部そろうと「完了」にできます。項目はコンテンツ作成 →「コンセプト」の「ガイドライン」で直せます（直すと、ここにもすぐ反映されます）。' + (ck && ck.by ? '<br>最終更新：' + esc(ck.by) + (ck.at ? '（' + esc(String(ck.at).slice(0, 16).replace('T', ' ')) + '）' : '') : '') + '</p>'
-    + '<div class="row" style="gap:8px;margin-bottom:6px">' + (can ? '<button class="btn sm" type="button" id="gc-all">すべて「確認した」にする</button>' : '') + '<button class="btn sm" type="button" disabled title="これから作ります">AIでチェック（準備中）</button><span class="note" id="gc-count"></span></div>'
+    + '<div class="row" style="gap:8px;margin-bottom:6px">' + '<button class="btn sm" type="button" disabled title="これから作ります">AIでチェック（準備中）</button><span class="note" id="gc-count"></span></div>'
     + '<div class="gc-list">' + g.sections.map(s => '<h3 class="gc-h">' + esc(s.title) + '</h3>' + s.items.map(x => { const c = cur[x.id] || {};
       return '<div class="gc-item" data-gcid="' + esc(x.id) + '"><label class="gc-ok"><input type="checkbox" data-gcok' + (c.ok === true ? ' checked' : '') + dis + '><b>' + esc(x.title) + '</b></label>' + (x.desc ? '<div class="note">' + esc(x.desc) + '</div>' : '')
         + '<input class="gc-reason" data-gcreason placeholder="対応しない場合は理由を入力" value="' + esc(c.ok === true ? '' : c.reason || '') + '"' + (c.ok === true ? ' hidden' : '') + dis + '></div>'; }).join('')).join('') + '</div>'
@@ -3974,7 +3974,7 @@ function openGuideCheck(r) {
   const read = () => { const o = {}; document.querySelectorAll('[data-gcid]').forEach(d => { const ok = d.querySelector('[data-gcok]').checked, rs = d.querySelector('[data-gcreason]').value.trim(); if (ok) o[d.dataset.gcid] = { ok: true }; else if (rs) o[d.dataset.gcid] = { ok: false, reason: rs }; }); return o; };
   const count = () => { const o = read(), tot = g.sections.reduce((a, s) => a + s.items.length, 0), n = Object.keys(o).length; $('gc-count').textContent = n + ' / ' + tot + ' 項目' + (n === tot ? '（そろいました）' : ''); };
   document.querySelectorAll('[data-gcid]').forEach(d => { const cb = d.querySelector('[data-gcok]'), rs = d.querySelector('[data-gcreason]'); cb.onchange = () => { rs.hidden = cb.checked; count(); }; rs.oninput = count; });
-  if ($('gc-all')) $('gc-all').onclick = () => { document.querySelectorAll('[data-gcok]').forEach(cb => { cb.checked = true; cb.onchange(); }); };
+  /* 「すべて確認した」は置かない。1記事ずつ全項目を必ず確認する（2026-11-16 ユーザー指定） */
   count();
   if ($('gc-save')) $('gc-save').onclick = async () => {
     const btn = $('gc-save'); btn.disabled = true;
@@ -4027,6 +4027,10 @@ async function cpSave(part, val) {
   CP.d = Object.assign(CP.d, res); GUIDE = null;   /* ガイドラインを変えたら記事の判定も読み直す */
   return res;
 }
+/* ディレクトリごとに色（ペルソナ・競合サイトで同じ色。メディアは -1）（2026-11-16 ユーザー指定：色を付けて見やすく） */
+const cpColor = i => i < 0 ? 'cp-cm' : 'cp-c' + (i % 8);
+/* 長い文は途切れさせない：中身に合わせて高さを伸ばす（2026-11-16 ユーザー指定） */
+function cpAutosize(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight + 2) + 'px'; }
 function paintConcept() {
   const d = CP.d, ed = d.canEdit, dis = ed ? '' : ' disabled', box = $('cp-body'); if (!box) return;
   if (!CP_TABS.some(t => t[0] === CP.tab)) CP.tab = 'concept';
@@ -4035,15 +4039,15 @@ function paintConcept() {
   let body = '';
   if (CP.tab === 'concept') {
     const c = d.concept || {};
-    body = '<div class="cp-form">' + (d.keys || []).map(([k, l]) => '<label class="cp-f"><span class="cp-l">' + esc(l) + '</span>' + (CP_LONG.includes(k) ? '<textarea rows="3" data-cpc="' + k + '" placeholder="' + esc(CP_PH[k] || '') + '"' + dis + '>' + esc(c[k] || '') + '</textarea>'
+    body = '<div class="cp-form">' + (d.keys || []).map(([k, l]) => '<label class="cp-f' + (CP_LONG.includes(k) ? ' cp-long' : '') + '"><span class="cp-l">' + esc(l) + '</span>' + (CP_LONG.includes(k) ? '<textarea rows="4" class="cp-auto" data-cpc="' + k + '" placeholder="' + esc(CP_PH[k] || '') + '"' + dis + '>' + esc(c[k] || '') + '</textarea>'
       : '<input data-cpc="' + k + '" value="' + esc(c[k] || (k === 'url' ? '' : '')) + '" placeholder="' + esc(k === 'url' && d.siteUrl ? d.siteUrl : CP_PH[k] || '') + '"' + dis + '>') + '</label>').join('') + '</div>'
       + (ed ? '<div class="row" style="justify-content:flex-end"><button class="btn primary" type="button" id="cp-save-c">コンセプトを保存</button></div>' : '');
   } else if (CP.tab === 'persona') {
-    const ta = (A, m, i) => '<div class="cp-pta"><label><span class="ol-pl">考え</span><textarea rows="2" data-' + A + '="persona_thought" data-cpi="' + i + '"' + dis + '>' + esc(m.persona_thought || '') + '</textarea></label><label><span class="ol-pl">悩み</span><textarea rows="2" data-' + A + '="persona_worry" data-cpi="' + i + '"' + dis + '>' + esc(m.persona_worry || '') + '</textarea></label></div>';
+    const ta = (A, m, i) => '<div class="cp-pta"><label><span class="ol-pl">考え</span><textarea rows="2" class="cp-auto" data-' + A + '="persona_thought" data-cpi="' + i + '"' + dis + '>' + esc(m.persona_thought || '') + '</textarea></label><label><span class="ol-pl">悩み</span><textarea rows="2" class="cp-auto" data-' + A + '="persona_worry" data-cpi="' + i + '"' + dis + '>' + esc(m.persona_worry || '') + '</textarea></label></div>';
     const block = (i, m) => '<div class="cp-pbox" data-cpbox="' + i + '">' + olPersonaHtml(dis, m, 'cpp') + ta('cpp', m, i) + '</div>';
     body = '<p class="note">メディアのペルソナ1つと、ディレクトリごとのペルソナです。構成シートの「ペルソナをコピー」→「メディアから」「ディレクトリから」で記事にコピーできます。</p>'
-      + '<h3 class="am-h">メディア：' + esc(mediaLabel(CP.media)) + '</h3>' + block(-1, CP.persona)
-      + CP.subs.map((s, i) => cpSubShown(s.sub) ? '<h3 class="am-h">ディレクトリ：' + esc(s.sub) + '</h3>' + block(i, s.persona) : '').join('')
+      + '<div class="cp-dir ' + cpColor(-1) + '"><h3 class="cp-dir-h">メディア：' + esc(mediaLabel(CP.media)) + '</h3>' + block(-1, CP.persona) + '</div>'
+      + CP.subs.map((s, i) => cpSubShown(s.sub) ? '<div class="cp-dir ' + cpColor(i) + '"><h3 class="cp-dir-h">ディレクトリ：' + esc(s.sub) + '</h3>' + block(i, s.persona) + '</div>' : '').join('')
       + (ed ? '<div class="row" style="justify-content:flex-end"><button class="btn primary" type="button" id="cp-save-p">ペルソナを保存</button></div>' : '');
   } else if (CP.tab === 'guide') {
     const g = CP.g = CP.g || JSON.parse(JSON.stringify(d.guideline));
@@ -4076,11 +4080,12 @@ function paintConcept() {
     body = '<p class="note">Ahrefs から取るのは「取得」を押したときだけです（Ahrefs のユニットを使います）。上位10件・大手サイトも含みます（自社メディアは除く）。「★重要」「除外」はメディアごとに残ります。</p>'
       + '<label class="note"><input type="checkbox" id="cp-showex"' + (CP.showEx ? ' checked' : '') + '> 除外したサイトも表示</label>'
       + targets.map((t, ti) => { if (t.sub && !cpSubShown(t.sub)) return ''; const s = CP.subs.find(x => x.sub === t.sub), guess = t.sub ? cpGuessUrl(t.sub) : '';
-        return '<div class="cp-ctarget"><h3 class="am-h">' + esc(t.label) + '</h3>'
+        return '<div class="cp-ctarget cp-dir ' + cpColor(ti - 1) + '"><h3 class="cp-dir-h">' + esc(t.label) + '</h3>'
           + (t.sub ? '<div class="row" style="gap:6px;align-items:center"><span class="note">ディレクトリのURL</span><input class="cp-durl" data-cpdurl="' + ti + '" value="' + esc(s.url || '') + '" placeholder="' + esc(guess || 'https://…/ディレクトリ/') + '"' + dis + ' style="flex:1;max-width:460px">' + (guess && !s.url ? '<span class="note">（空欄なら記事URLから推定：' + esc(guess) + '）</span>' : '') + '</div>' : '')
           + '<div class="cp-cgrid">' + [['overlap', 'KWがかぶるサイト'], ['serp', '代表KWの検索上位']].map(([m, l]) => '<div class="cp-cbox"><div class="row" style="justify-content:space-between"><b>' + l + '</b>' + (ed ? '<button class="btn sm primary" type="button" data-cpfetch="' + ti + '" data-method="' + m + '">取得（Ahrefs）</button>' : '') + '</div>' + tbl(latest(t.sub, m), m) + '</div>').join('') + '</div></div>'; }).join('');
   }
   box.innerHTML = H('コンセプト <small>' + esc(mediaLabel(CP.media)) + '</small>', CP.tab === 'compete' ? ['Ahrefs'] : [], upd) + tabs + (ed ? '' : '<p class="note">見るだけです（編集は権限管理の「コンセプトの編集」がある人）。</p>') + '<div class="cp-body">' + body + '</div>';
+  box.querySelectorAll('textarea.cp-auto').forEach(el => { cpAutosize(el); el.addEventListener('input', () => cpAutosize(el)); });
   bindConcept();
 }
 function bindConcept() {

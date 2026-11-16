@@ -1385,3 +1385,24 @@ option.ol-lk-pillar { background: #dce8fb; color: #1a4fa8; } option.ol-lk-long {
 .gc-reason { width: 100%; box-sizing: border-box; margin-top: 4px; font-size: 12px; }
 @media (max-width: 700px) { .cp-pta { grid-template-columns: 1fr; } .cp-cgrid { grid-template-columns: 1fr; } }
 @media (prefers-color-scheme: dark) { .cp-ctbl tr.cp-star td { background: #3a3218; } .guide-btn { background: #3a2a10; color: #f0c070; } .guide-btn.ok { background: #12332a; color: #7fd3b0; } }
+/* コンセプト：長い欄は横幅いっぱい・高さは中身に合わせる／ディレクトリごとの色（2026-11-16 ユーザー指定） */
+.cp-f.cp-long { grid-column: 1 / -1; }
+.cp-f textarea.cp-auto { min-height: 84px; resize: vertical; overflow: hidden; line-height: 1.6; }
+.cp-pta textarea.cp-auto { min-height: 48px; overflow: hidden; }
+.cp-dir { --cpc: #64748b; --cpb: #f1f5f9; border: 1px solid var(--line); border-left: 6px solid var(--cpc); border-radius: 8px; margin-bottom: 14px; overflow: hidden; }
+.cp-dir > .cp-dir-h { margin: 0; padding: 8px 12px; font-size: 14px; background: var(--cpb); color: var(--fg); border-bottom: 1px solid var(--line); }
+.cp-dir > .cp-pbox { border: 0; border-radius: 0; margin: 0; }
+.cp-dir.cp-ctarget > .row, .cp-dir.cp-ctarget > .cp-cgrid { margin: 8px 10px; }
+.cp-dir.cp-ctarget .cp-cbox { background: var(--surface); }
+.cp-dir.cp-ctarget > .cp-cgrid { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
+.cp-cm { --cpc: #1f7a63; --cpb: #e3f3ee; }
+.cp-c0 { --cpc: #2f6fd6; --cpb: #e6effc; }
+.cp-c1 { --cpc: #d9822b; --cpb: #fcf0e2; }
+.cp-c2 { --cpc: #8a4fd0; --cpb: #f1e9fb; }
+.cp-c3 { --cpc: #c2416a; --cpb: #fbe8ee; }
+.cp-c4 { --cpc: #1f9bb0; --cpb: #e2f4f7; }
+.cp-c5 { --cpc: #a3851a; --cpb: #f8f2dc; }
+.cp-c6 { --cpc: #4f8a2b; --cpb: #e9f4e1; }
+.cp-c7 { --cpc: #6b6fd8; --cpb: #ecedfc; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cp-cm { --cpb: #163a31; } :root:not([data-theme="light"]) .cp-c0 { --cpb: #1a2b47; } :root:not([data-theme="light"]) .cp-c1 { --cpb: #3d2c18; } :root:not([data-theme="light"]) .cp-c2 { --cpb: #2e2245; } :root:not([data-theme="light"]) .cp-c3 { --cpb: #3d1e29; } :root:not([data-theme="light"]) .cp-c4 { --cpb: #163840; } :root:not([data-theme="light"]) .cp-c5 { --cpb: #3a3218; } :root:not([data-theme="light"]) .cp-c6 { --cpb: #213518; } :root:not([data-theme="light"]) .cp-c7 { --cpb: #25274a; } }
+:root[data-theme="dark"] .cp-cm { --cpb: #163a31; } :root[data-theme="dark"] .cp-c0 { --cpb: #1a2b47; } :root[data-theme="dark"] .cp-c1 { --cpb: #3d2c18; } :root[data-theme="dark"] .cp-c2 { --cpb: #2e2245; } :root[data-theme="dark"] .cp-c3 { --cpb: #3d1e29; } :root[data-theme="dark"] .cp-c4 { --cpb: #163840; } :root[data-theme="dark"] .cp-c5 { --cpb: #3a3218; } :root[data-theme="dark"] .cp-c6 { --cpb: #213518; } :root[data-theme="dark"] .cp-c7 { --cpb: #25274a; }
