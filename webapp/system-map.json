@@ -1,8 +1,9 @@
 {
-  "version": "1.577",
+  "version": "1.578",
   "updated": "2026-11-16",
   "note": "WEBアプリを更新するたびに、このファイル（version・updated・changelog と、変わった仕組み）も更新する",
   "changelog": [
+    { "ver": "1.578", "date": "2026-11-16", "items": ["競合サイトのKW重複率・グラフ・KW比較タブを追加"] },
     { "ver": "1.577", "date": "2026-11-16", "items": ["コンセプトの入力欄・タブごとの色・ガイドライン確認を調整"] },
     {
       "ver": "1.576",
@@ -4084,7 +4085,7 @@
     {
       "kind": "Firestore",
       "name": "media_concepts・article_guidechecks",
-      "what": "メディアごとのコンセプト・ペルソナ（メディア＋ディレクトリ）・サイトのガイドライン・競合サイトの印（直す前は media_concepts/{id}/history、Ahrefsの取得結果は media_concepts/{id}/competitors）。記事ごとのガイドライン確認（項目IDごとのチェック・未対応の理由。直す前は history）",
+      "what": "メディアごとのコンセプト・ペルソナ（メディア＋ディレクトリ）・サイトのガイドライン・競合サイトの印（直す前は media_concepts/{id}/history、Ahrefsの取得結果は media_concepts/{id}/competitors、競合サイトKW比較は media_concepts/{id}/kwgaps）。記事ごとのガイドライン確認（項目IDごとのチェック・未対応の理由。直す前は history）",
       "by": "コンセプト・進行管理"
     },
     {

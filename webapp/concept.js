@@ -5,6 +5,7 @@
  * 「サイトのガイドライン」「競合サイト（Ahrefs。ボタンを押したときだけ）」を持つ。
  * - 保存先：Firestore media_concepts/{sha1('concept|'+メディア)}。直す前の内容は media_concepts/{id}/history に残す
  * - 競合サイトの取得結果：media_concepts/{id}/competitors（取得日時・取得した人・使ったユニット）
+ * - 競合サイトKW比較の取得結果：media_concepts/{id}/kwgaps（KWごとの自メディア・競合サイトの順位。2026-11-16 ユーザー指定）
  * - 記事ごとのガイドライン確認：article_guidechecks/{sha1(記事のキー)}（項目IDごとに ok か、未対応の理由）。直す前は history に残す
  *   将来 AI でチェックするので、項目は ID を持つ（by: 'ai' などを足せる形）
  * - 「完了」にできるのは、今のガイドラインの全項目が「チェック済み」か「理由あり」のときだけ（画面の missingFor と PATCH /article-items の両方で止める）
@@ -150,12 +151,36 @@ module.exports = function concept({ db, admin, allowedMedia, capOk, canEditArtic
       return t.replace(/&amp;/g, '&').replace(/&#0?39;/g, "'").replace(/&quot;/g, '"').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().split(/\s*[|｜]\s*/)[0].slice(0, 60);
     } catch (e) { return ''; }
   }
-  /** (a) KWがかぶるサイト：site-explorer の organic competitors（ディレクトリはそのURL配下＝prefix） */
+  /** (a) 競合サイト：site-explorer の organic competitors（ディレクトリはそのURL配下＝prefix）
+   *  KW重複率（2026-11-16 ユーザー指定）＝共通KW数 ÷ 自メディアのKW数（keywords_target）。取れないときは Ahrefs の share */
   async function byOverlap(key, target, isDir) {
     const res = await callSel(key, 'site-explorer/organic-competitors', { target, country: 'jp', date: date(), mode: isDir ? 'prefix' : 'subdomains', limit: 15, order_by: 'keywords_common:desc' },
-      ['competitor_domain,keywords_common,share,domain_rating,traffic', 'competitor_domain,keywords_common']);
+      ['competitor_domain,keywords_common,keywords_competitor,keywords_target,share,domain_rating,traffic,value', 'competitor_domain,keywords_common,keywords_competitor,keywords_target,share,domain_rating,traffic', 'competitor_domain,keywords_common,share,domain_rating,traffic', 'competitor_domain,keywords_common']);
     const rows = res.competitors || res.organic_competitors || res.domains || [];
-    return rows.map(x => ({ domain: hostOf(x.competitor_domain || x.domain || x.competitor_url || ''), common: x.keywords_common != null ? x.keywords_common : null, share: x.share != null ? x.share : null, dr: x.domain_rating != null ? x.domain_rating : null, traffic: x.traffic != null ? Math.round(x.traffic) : null })).filter(x => x.domain);
+    const num = v => v != null && isFinite(v) ? Number(v) : null;
+    return rows.map(x => {
+      const common = num(x.keywords_common), tgt = num(x.keywords_target), share = num(x.share);
+      const rate = common != null && tgt ? Math.round(common / tgt * 1000) / 10 : share != null ? Math.round((share <= 1 ? share * 100 : share) * 10) / 10 : null;
+      return { domain: hostOf(x.competitor_domain || x.domain || x.competitor_url || ''), common, kwComp: num(x.keywords_competitor), kwTarget: tgt, rate, share, dr: num(x.domain_rating), traffic: num(x.traffic) != null ? Math.round(x.traffic) : null, value: num(x.value) };
+    }).filter(x => x.domain);
+  }
+  /** (c) 競合サイトKW比較（2026-11-16 ユーザー指定）：競合サイトの順位がついているKWと、自メディア（ディレクトリ）の順位を並べる
+   *  organic-keywords を 自メディア1回＋競合サイトごとに1回。行数ぶんユニットを使う */
+  async function orgKeywords(key, target, mode, limit) {
+    const res = await callSel(key, 'site-explorer/organic-keywords', { target, country: 'jp', date: date(), mode, limit, order_by: 'sum_traffic:desc' },
+      ['keyword,volume,keyword_difficulty,best_position,best_position_url,sum_traffic', 'keyword,volume,best_position,best_position_url', 'keyword,best_position']);
+    return (res.keywords || res.organic_keywords || []).map(x => ({ kw: String(x.keyword || '').trim(), vol: x.volume != null ? Number(x.volume) : null, kd: x.keyword_difficulty != null ? Number(x.keyword_difficulty) : null, pos: x.best_position != null ? Number(x.best_position) : null, url: x.best_position_url || '', traffic: x.sum_traffic != null ? Math.round(x.sum_traffic) : null })).filter(x => x.kw);
+  }
+  async function byKwGap(key, ownTarget, isDir, domains, limit) {
+    const ownLimit = Math.min(1000, limit * 5);
+    const [own, ...comps] = await Promise.all([orgKeywords(key, ownTarget, isDir ? 'prefix' : 'subdomains', ownLimit)].concat(domains.map(d => orgKeywords(key, d, 'subdomains', limit))));
+    const nk = s => s.normalize('NFKC').replace(/\s+/g, ' ').trim().toLowerCase();
+    const map = {};
+    const row = x => (map[nk(x.kw)] = map[nk(x.kw)] || { kw: x.kw, vol: null, kd: null, own: null, ranks: {} });
+    comps.forEach((list, i) => list.forEach(x => { const r = row(x); r.ranks[domains[i]] = x.pos; if (r.vol == null) r.vol = x.vol; if (r.kd == null) r.kd = x.kd; }));
+    own.forEach(x => { const r = map[nk(x.kw)]; if (r) { r.own = { pos: x.pos, url: x.url }; if (r.vol == null) r.vol = x.vol; } });
+    const list = Object.values(map).sort((a, b) => (b.vol || 0) - (a.vol || 0)).slice(0, 1500);
+    return { list, units: own.length + comps.reduce((a, l) => a + l.length, 0), ownRows: own.length };
   }
   /** (b) 代表KWの検索上位：KWごとに検索上位10件を見て、出てきた回数の多いサイト */
   async function bySerp(key, kws) {
@@ -166,12 +191,27 @@ module.exports = function concept({ db, admin, allowedMedia, capOk, canEditArtic
     }
     return Object.values(agg).sort((a, b) => b.hits - a.hits || a.best - b.best);
   }
-  async function fetchCompetitors({ media, sub, method, kws, dirUrl, user }) {
+  async function fetchCompetitors({ media, sub, method, kws, dirUrl, user, domains, limit, names: names0 }) {
     let key = ''; try { key = await ahrefsKey(); } catch (e) { key = ''; }
     if (!key) throw Object.assign(new Error('Ahrefs のAPIキーが登録されていません（管理 → API・連携設定）'), { status: 400 });
     const own = new Set(Object.values(siteUrls).map(hostOf));
     const isOwn = h => own.has(h) || [...own].some(o => h.endsWith('.' + o) || o.endsWith('.' + h));
     let list;
+    if (method === 'kwgap') {
+      const target = sub ? String(dirUrl || '').trim() : siteUrls[media];
+      if (!target || !/^https?:\/\//.test(target)) throw Object.assign(new Error(sub ? 'ディレクトリのURL（https://〜）を入れてから取得してください' : 'メディアのURLがわかりません'), { status: 400 });
+      const ds = [...new Set((Array.isArray(domains) ? domains : []).map(hostOf).filter(Boolean))].filter(h => !isOwn(h)).slice(0, 5);
+      if (!ds.length) throw Object.assign(new Error('くらべる競合サイトを選んでください（最大5つ）'), { status: 400 });
+      const lim = [100, 300, 500].includes(Number(limit)) ? Number(limit) : 100;
+      const g = await byKwGap(key, target.replace(/^https?:\/\//, ''), !!sub, ds, lim);
+      const names = {}; (names0 || []).forEach(x => { if (x && x.domain) names[hostOf(x.domain)] = txt(x.name, 80); });
+      const doc = { sub: sub || '', method, at: now(), by: user.email, name: user.name || user.email, domains: ds.map(d => ({ domain: d, name: names[d] || d })), list: g.list, limit: lim, target, kws: [], calls: g.units };
+      const ref = col.doc(idOf(media));
+      if (!(await ref.get()).exists) await ref.set({ media, version: 0 }, { merge: true });
+      const add = await ref.collection('kwgaps').add(doc);   /* 行が多いので competitors とは別に置き、タブを開いたときだけ読む */
+      await db.collection('access_logs').add({ uid: user.uid, email: user.email, name: user.name, view: '競合サイトKW比較を取得：' + media + (sub ? '／' + sub : '') + '（' + ds.join('、') + '）', at: now() });
+      return Object.assign({ id: add.id }, doc, { at: new Date().toISOString() });
+    }
     if (method === 'overlap') {
       const target = sub ? String(dirUrl || '').trim() : siteUrls[media];
       if (!target || !/^https?:\/\//.test(target)) throw Object.assign(new Error(sub ? 'ディレクトリのURL（https://〜）を入れてから取得してください' : 'メディアのURLがわかりません'), { status: 400 });
@@ -193,7 +233,7 @@ module.exports = function concept({ db, admin, allowedMedia, capOk, canEditArtic
     const ref = col.doc(idOf(media));
     if (!(await ref.get()).exists) await ref.set({ media, version: 0 }, { merge: true });
     const add = await ref.collection('competitors').add(doc);
-    await db.collection('access_logs').add({ uid: user.uid, email: user.email, name: user.name, view: '競合サイトを取得：' + media + (sub ? '／' + sub : '') + '（' + (method === 'overlap' ? 'KWがかぶるサイト' : '代表KWの検索上位') + '）', at: now() });
+    await db.collection('access_logs').add({ uid: user.uid, email: user.email, name: user.name, view: '競合サイトを取得：' + media + (sub ? '／' + sub : '') + '（' + (method === 'overlap' ? '競合サイト' : '代表KWの検索上位') + '）', at: now() });
     return Object.assign({ id: add.id }, doc, { at: new Date().toISOString() });
   }
   async function latestCompetitors(media) {
@@ -240,9 +280,19 @@ module.exports = function concept({ db, admin, allowedMedia, capOk, canEditArtic
       try {
         const b = req.body || {}, media = String(b.media || '');
         if (!okMedia(req.user, media) || !canEdit(req.user)) return res.status(403).json({ error: '競合サイトを取得する権限がありません' });
-        if (!['overlap', 'serp'].includes(b.method)) return res.status(400).json({ error: '取得のしかたが正しくありません' });
-        res.json({ result: await fetchCompetitors({ media, sub: txt(b.sub, 60).trim(), method: b.method, kws: b.kws, dirUrl: b.dirUrl, user: req.user }) });
+        if (!['overlap', 'serp', 'kwgap'].includes(b.method)) return res.status(400).json({ error: '取得のしかたが正しくありません' });
+        res.json({ result: await fetchCompetitors({ media, sub: txt(b.sub, 60).trim(), method: b.method, kws: b.kws, dirUrl: b.dirUrl, user: req.user, domains: b.domains, limit: b.limit, names: b.names }) });
       } catch (e) { res.status(e.status && e.status < 500 ? e.status : 400).json({ error: e.message }); }
+    });
+    // 競合サイトKW比較：メディア（＋ディレクトリ）ごとの最新の取得結果（2026-11-16 ユーザー指定）
+    api.get('/concept/kwgap', async (req, res, next) => {
+      try {
+        const media = String(req.query.media || '');
+        if (!okMedia(req.user, media) || !canView(req.user)) return res.status(403).json({ error: 'このメディアのコンセプトを見る権限がありません' });
+        const s = await col.doc(idOf(media)).collection('kwgaps').orderBy('at', 'desc').limit(40).get(), out = {};
+        s.docs.forEach(d => { const x = d.data(), k = x.sub || ''; if (!out[k]) out[k] = Object.assign({ id: d.id }, x, { at: iso(x.at) }); });
+        res.json({ results: Object.values(out) });
+      } catch (e) { next(e); }
     });
     // 構成シートの「ペルソナをコピー」（メディアから／ディレクトリから）
     api.get('/concept/personas', async (req, res, next) => {

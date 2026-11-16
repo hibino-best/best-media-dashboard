@@ -3987,7 +3987,7 @@ function openGuideCheck(r) {
 /* コンセプト・ペルソナ（メディア1つ＋ディレクトリごと）・サイトのガイドライン・競合サイト（Ahrefs。ボタンを押したときだけ）。
    ペルソナは構成シートの「ペルソナをコピー」（メディアから／ディレクトリから）で使う。ガイドラインは記事のガイドライン確認の項目になる */
 let CP = null;
-const CP_TABS = [['concept', 'コンセプト'], ['persona', 'ペルソナ'], ['guide', 'ガイドライン'], ['compete', '競合サイト']];
+const CP_TABS = [['concept', 'コンセプト'], ['persona', 'ペルソナ'], ['guide', 'ガイドライン'], ['compete', '競合サイト'], ['kwcmp', '競合サイトKW比較']];   /* 競合サイトKW比較（2026-11-16 ユーザー指定） */
 const CP_LONG = ['purpose', 'article_purpose', 'wants', 'concept', 'goal', 'quality'];
 const CP_PH = { purpose: 'このメディアは何のためにあるか', url: 'https://…', article_purpose: '記事を作る目的（集客・問い合わせ・ブランディングなど）', wants: '読者・会社がこのメディアに求めるもの', concept: 'メディアのコンセプト（一言で）', cv_tel: '0120-…', cv_form: 'https://…（問い合わせフォームのURL）', goal: '数値目標など（月間PV・問い合わせ件数など）', quality: '記事に求める品質（専門性・文字数・画像・監修など）' };
 const canConcept = () => hasCap('concept_view', () => !!me && !!me.perms && me.perms.articles !== 'none');
@@ -4032,6 +4032,130 @@ const GC_COLORS = ['cp-c2', 'cp-c4', 'cp-c3', 'cp-c5', 'cp-c7', 'cp-c6', 'cp-c0'
 const gcColor = i => GC_COLORS[i % GC_COLORS.length];
 /* 長い文は途切れさせない：中身に合わせて高さを伸ばす（2026-11-16 ユーザー指定） */
 function cpAutosize(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight + 2) + 'px'; }
+/* ---------- 競合サイトのグラフ（Ahrefs の Organic competitors のような散布図。2026-11-16 ユーザー指定） ---------- */
+function cpDrawBubbles() {
+  if (!window.Chart) return;
+  const marks = Object.fromEntries((CP.d.marks || []).map(m => [m.domain, m.mark]));
+  const targets = [''].concat(CP.subs.map(s => s.sub));
+  targets.forEach((sub, ti) => {
+    const res = (CP.d.competitors || []).find(x => (x.sub || '') === sub && x.method === 'overlap'); if (!res || !$('cp-bub-' + ti)) return;
+    const pts = res.list.filter(x => marks[x.domain] !== 'exclude' && x.common != null && x.traffic != null);
+    const maxR = Math.max(1, ...pts.map(x => x.rate || 0));
+    const c = css('--cp-orange') || '#d9822b';
+    const lbl = { id: 'cpLbl', afterDatasetsDraw(ch) { const g = ch.ctx; g.save(); g.font = '11px sans-serif'; g.fillStyle = css('--fg'); g.textAlign = 'center';
+      ch.getDatasetMeta(0).data.forEach((el, i) => { const x = pts[i]; g.fillText((marks[x.domain] === 'star' ? '★' : '') + (x.name || x.domain).slice(0, 14), el.x, el.y - el.options.radius - 4); }); g.restore(); } };
+    chart('cp-bub-' + ti, { type: 'bubble', plugins: [lbl],
+      data: { datasets: [{ label: '競合サイト', data: pts.map(x => ({ x: x.common, y: x.traffic, r: 6 + Math.round((x.rate || 0) / maxR * 22) })),
+        backgroundColor: pts.map(x => marks[x.domain] === 'star' ? c : c + '66'), borderColor: css('--surface'), borderWidth: 2, hoverBorderColor: css('--fg') }] },
+      options: { responsive: true, maintainAspectRatio: false, layout: { padding: { top: 30, right: 30, left: 10 } }, plugins: { legend: { display: false },
+        tooltip: { callbacks: { title: it => { const x = pts[it[0].dataIndex]; return (x.name || x.domain) + '（' + x.domain + '）'; },
+          label: it => { const x = pts[it.dataIndex]; return ['共通KW数：' + nf.format(x.common), 'オーガニックトラフィック：' + nf.format(x.traffic), 'KW重複率：' + (x.rate == null ? '—' : x.rate.toFixed(1) + '%'), 'DR：' + (x.dr == null ? '—' : x.dr)]; } } } },
+        scales: { x: { title: { display: true, text: '共通KW数', color: css('--muted') }, ticks: { color: css('--muted'), callback: v => nf.format(v) }, grid: { color: css('--grid') }, beginAtZero: true },
+          y: { title: { display: true, text: 'オーガニックトラフィック', color: css('--muted') }, ticks: { color: css('--muted'), callback: v => nf.format(v) }, grid: { color: css('--grid') }, beginAtZero: true, grace: '12%' } } } });
+  });
+}
+
+/* ---------- 競合サイトKW比較（2026-11-16 ユーザー指定） ----------
+   競合サイト（「競合サイト」タブで取ったもの）の順位がついているKWと、自メディア（ディレクトリ）の順位を並べる。
+   選んだKWはコンテンツ管理表（進行管理）に「新規・未着手」で追加できる */
+const cpNk = s => String(s || '').normalize('NFKC').replace(/[​-‍⁠﻿]/g, '').replace(/\s+/g, '').toLowerCase();
+async function cpLoadKg() {
+  const media = CP.media;
+  try { const r = await api('/concept/kwgap?media=' + encodeURIComponent(media)); if (!CP || CP.media !== media) return; CP.kg = Object.fromEntries((r.results || []).map(x => [x.sub || '', x])); }
+  catch (e) { if (CP) CP.kg = {}; toast('競合サイトKW比較を読み込めませんでした：' + e.message); }
+  if (CP && CP.tab === 'kwcmp') paintConcept();
+}
+const cpInItems = kw => { const k = cpNk(kw); return (ITEMS || []).some(r => r.media === CP.media && !r.deleted && cpNk(r.kw) === k); };
+function cpKgRows(sub) {
+  const r = CP.kg[sub]; if (!r) return [];
+  const ui = CP.kgUi[sub] || {}, q = cpNk(ui.q || ''), f = ui.f || 'all';
+  return r.list.filter(x => {
+    if (q && !cpNk(x.kw).includes(q)) return false;
+    const best = Math.min(99, ...Object.values(x.ranks || {}).filter(v => v != null));
+    if (f === 'notyet') return !cpInItems(x.kw);
+    if (f === 'lose') return !x.own || x.own.pos == null || x.own.pos > best;
+    if (f === 'out') return !x.own || x.own.pos == null;
+    return true;
+  });
+}
+function cpKwcmpHtml() {
+  const d = CP.d, ed = d.canEdit, marks = Object.fromEntries((d.marks || []).map(m => [m.domain, m.mark]));
+  CP.kgUi = CP.kgUi || {}; CP.kgSel = CP.kgSel || {};
+  if (!CP.kg) return '<p class="loading">読み込み中…</p>';
+  const rk = p => '<span class="rk ' + rankCls(p) + '">' + (p == null ? '圏外' : Math.round(p) + '位') + '</span>';
+  const targets = [{ sub: '', label: 'メディア全体：' + mediaLabel(CP.media) }].concat(CP.subs.map(s => ({ sub: s.sub, label: 'ディレクトリ：' + s.sub })));
+  return '<p class="note">競合サイトで順位がついているKWと、自メディアの順位をくらべます。くらべる競合サイトは「競合サイト」タブで取得したものから選びます（最大5つ）。Ahrefs から取るのは「取得」を押したときだけです（取ったKWの行数ぶんユニットを使います）。<br>KWにチェックを入れて「コンテンツ管理表に追加」を押すと、進行管理に「新規・未着手」で入ります（すでに管理表にあるKWは追加できません）。</p>'
+    + targets.map((t, ti) => {
+      if (t.sub && !cpSubShown(t.sub)) return '';
+      const ov = (d.competitors || []).find(x => (x.sub || '') === t.sub && x.method === 'overlap');
+      const r = CP.kg[t.sub], ui = CP.kgUi[t.sub] = CP.kgUi[t.sub] || {}, sel = CP.kgSel[t.sub] = CP.kgSel[t.sub] || new Set();
+      const cands = ov ? ov.list.filter(x => marks[x.domain] !== 'exclude').sort((a, b) => (marks[b.domain] === 'star') - (marks[a.domain] === 'star')) : [];
+      const chosen = ui.doms || (r ? r.domains.map(x => x.domain) : cands.filter(x => marks[x.domain] === 'star').map(x => x.domain).concat(cands.map(x => x.domain)).filter((v, i, a) => a.indexOf(v) === i).slice(0, 3));
+      ui.doms = chosen;
+      let h = '<div class="cp-dir cp-indigo cp-kg"><h3 class="cp-dir-h">' + esc(t.label) + '</h3><div class="cp-kg-in">';
+      if (!cands.length) h += '<p class="note">先に「競合サイト」タブで、このメディア（ディレクトリ）の「競合サイト」を取得してください。</p>';
+      else if (ed) h += '<div class="cp-kg-pick"><span class="note">くらべる競合サイト：</span>' + cands.map(x => '<label class="cp-kg-dom"><input type="checkbox" data-kgdom="' + ti + '" value="' + esc(x.domain) + '"' + (chosen.includes(x.domain) ? ' checked' : '') + '> ' + (marks[x.domain] === 'star' ? '★' : '') + esc(x.name || x.domain) + '</label>').join('')
+        + '<span class="row" style="gap:6px;align-items:center"><span class="note">1サイトあたり</span><select data-kglim="' + ti + '">' + [100, 300, 500].map(n => '<option value="' + n + '"' + (Number(ui.lim || (r && r.limit) || 100) === n ? ' selected' : '') + '>' + n + 'KW</option>').join('') + '</select><button class="btn sm primary" type="button" data-kgfetch="' + ti + '">取得（Ahrefs）</button></span></div>';
+      if (!r) return h + (cands.length ? '<p class="empty">まだ取得していません</p>' : '') + '</div></div>';
+      const rows = cpKgRows(t.sub), shown = rows.slice(0, 300), doms = r.domains;
+      h += '<p class="note">' + esc(String(r.at || '').slice(0, 16).replace('T', ' ')) + ' ' + esc(r.name || '') + 'が取得／' + nf.format(r.list.length) + 'KW／対象：' + esc(r.target || '') + '</p>'
+        + '<div class="row cp-kg-bar"><select data-kgf="' + ti + '">' + [['all', 'すべてのKW'], ['notyet', 'コンテンツ管理表にないKW'], ['lose', '自社が競合より下・圏外のKW'], ['out', '自社が圏外のKW']].map(([k, l]) => '<option value="' + k + '"' + ((ui.f || 'all') === k ? ' selected' : '') + '>' + l + '</option>').join('') + '</select>'
+        + '<input type="search" data-kgq="' + ti + '" placeholder="KWで絞り込み" value="' + esc(ui.q || '') + '">'
+        + '<span class="note">' + nf.format(rows.length) + 'KW' + (rows.length > shown.length ? '（上位' + shown.length + '件を表示）' : '') + '</span>'
+        + (canEditArticles() ? '<button class="btn sm primary" type="button" data-kgadd="' + ti + '"' + (sel.size ? '' : ' disabled') + '>選んだKWをコンテンツ管理表に追加（' + sel.size + '件）</button>' : '') + '</div>'
+        + '<div class="table-wrap cp-kg-wrap"><table class="am-table cp-kgtbl"><thead><tr>' + (canEditArticles() ? '<th class="c-ctr" style="width:34px"><input type="checkbox" data-kgall="' + ti + '" title="表示しているKWをまとめて選ぶ"></th>' : '') + '<th class="c-txt">KW</th><th class="c-num">検索Vol</th><th class="c-num">難易度</th><th class="c-ctr">管理表</th><th class="c-ctr cp-kg-own">自社</th>'
+        + doms.map(x => '<th class="c-ctr" title="' + esc(x.domain) + '">' + esc((x.name || x.domain).slice(0, 12)) + '</th>').join('') + '</tr></thead><tbody>'
+        + shown.map(x => { const inI = cpInItems(x.kw);
+          return '<tr' + (inI ? ' class="cp-kg-in-items"' : '') + '>' + (canEditArticles() ? '<td class="c-ctr"><input type="checkbox" data-kgsel="' + ti + '" value="' + esc(x.kw) + '"' + (sel.has(x.kw) ? ' checked' : '') + (inI ? ' disabled title="すでにコンテンツ管理表にあります"' : '') + '></td>' : '')
+            + '<td class="c-txt">' + esc(x.kw) + '</td><td class="c-num">' + (x.vol == null ? '<span class="note">—</span>' : nf.format(x.vol)) + '</td><td class="c-num">' + (x.kd == null ? '<span class="note">—</span>' : x.kd) + '</td>'
+            + '<td class="c-ctr">' + (inI ? '<span class="cp-kg-tag">対策中</span>' : '<span class="note">—</span>') + '</td>'
+            + '<td class="c-ctr cp-kg-own">' + (x.own && x.own.url ? '<a href="' + escUrl(x.own.url) + '" target="_blank" rel="noopener" title="' + esc(x.own.url) + '">' + rk(x.own.pos) + '</a>' : rk(x.own ? x.own.pos : null)) + '</td>'
+            + doms.map(c => '<td class="c-ctr">' + rk(x.ranks[c.domain]) + '</td>').join('') + '</tr>'; }).join('')
+        + '</tbody></table></div>';
+      return h + '</div></div>';
+    }).join('');
+}
+function bindKwcmp() {
+  const box = $('cp-body'); if (!box) return;
+  const tg = ti => Number(ti) ? CP.subs[Number(ti) - 1].sub : '';
+  const re = () => { const y = window.scrollY; paintConcept(); window.scrollTo(0, y); };
+  box.querySelectorAll('[data-kgdom]').forEach(el => el.onchange = () => { const sub = tg(el.dataset.kgdom), ui = CP.kgUi[sub];
+    const v = [...box.querySelectorAll('[data-kgdom="' + el.dataset.kgdom + '"]:checked')].map(x => x.value);
+    if (v.length > 5) { el.checked = false; return alert('くらべる競合サイトは5つまでです'); } ui.doms = v; });
+  box.querySelectorAll('[data-kglim]').forEach(el => el.onchange = () => { CP.kgUi[tg(el.dataset.kglim)].lim = Number(el.value); });
+  box.querySelectorAll('[data-kgf]').forEach(el => el.onchange = () => { CP.kgUi[tg(el.dataset.kgf)].f = el.value; re(); });
+  box.querySelectorAll('[data-kgq]').forEach(el => el.onchange = () => { CP.kgUi[tg(el.dataset.kgq)].q = el.value; re(); });
+  box.querySelectorAll('[data-kgsel]').forEach(el => el.onchange = () => { const sub = tg(el.dataset.kgsel), s = CP.kgSel[sub]; if (el.checked) s.add(el.value); else s.delete(el.value);
+    const b = box.querySelector('[data-kgadd="' + el.dataset.kgsel + '"]'); if (b) { b.disabled = !s.size; b.textContent = '選んだKWをコンテンツ管理表に追加（' + s.size + '件）'; } });
+  box.querySelectorAll('[data-kgall]').forEach(el => el.onchange = () => { const sub = tg(el.dataset.kgall), s = CP.kgSel[sub];
+    cpKgRows(sub).slice(0, 300).forEach(x => { if (cpInItems(x.kw)) return; if (el.checked) s.add(x.kw); else s.delete(x.kw); }); re(); });
+  box.querySelectorAll('[data-kgfetch]').forEach(b => b.onclick = async () => {
+    const ti = Number(b.dataset.kgfetch), sub = tg(ti), ui = CP.kgUi[sub], doms = ui.doms || [], lim = ui.lim || 100;
+    const dirUrl = ti ? (CP.subs[ti - 1].url || cpGuessUrl(sub)) : '';
+    if (!doms.length) return alert('くらべる競合サイトを選んでください（最大5つ）');
+    if (ti && !dirUrl) return alert('ディレクトリのURLを「競合サイト」タブで入れてください（記事URLから推定できませんでした）');
+    const ov = (CP.d.competitors || []).find(x => (x.sub || '') === sub && x.method === 'overlap'), names = ov ? ov.list.map(x => ({ domain: x.domain, name: x.name })) : [];
+    if (!confirm('競合サイト' + doms.length + 'つ（' + doms.join('、') + '）のKWと、自メディア' + (sub ? '（' + sub + '）' : '') + 'の順位を Ahrefs から取得します。\n1サイトあたり ' + lim + 'KW・自メディアは ' + Math.min(1000, lim * 5) + 'KW まで。\n\n取ったKWの行数ぶん Ahrefs のユニットを使います（最大 約' + nf.format(lim * doms.length + Math.min(1000, lim * 5)) + '行）。よろしいですか？')) return;
+    b.disabled = true; b.textContent = '取得中…';
+    try { const res = await apiSend('POST', '/concept/competitors', { media: CP.media, sub, method: 'kwgap', domains: doms, limit: lim, dirUrl, names });
+      CP.kg[sub] = res.result; CP.kgSel[sub] = new Set(); re(); toast('競合サイトKW比較を取得しました（' + res.result.list.length + 'KW）'); }
+    catch (e) { b.disabled = false; b.textContent = '取得（Ahrefs）'; alert('取得できませんでした：' + e.message); }
+  });
+  box.querySelectorAll('[data-kgadd]').forEach(b => b.onclick = async () => {
+    const ti = Number(b.dataset.kgadd), sub = tg(ti), s = CP.kgSel[sub], kws = [...s].filter(k => !cpInItems(k));
+    if (!kws.length) return;
+    if (!confirm(kws.length + '件のKWをコンテンツ管理表に追加します（種別「新規」・進行状況「未着手」' + (sub ? '・ディレクトリ「' + sub + '」' : '') + '）。\n\n' + kws.slice(0, 20).join('、') + (kws.length > 20 ? ' ほか' : '') + '\n\nよろしいですか？')) return;
+    b.disabled = true; b.textContent = '追加しています…';
+    const ng = []; let ok = 0;
+    for (const kw of kws) {
+      const body = { media: CP.media, kw, type: '新規', status: '未着手' }; if (sub) body.sub = sub;
+      try { const res = await apiSend('POST', '/article-items', body); ITEMS.push(Object.assign({}, body, { key: res.key, source: 'dashboard', editedBy: me.email })); s.delete(kw); ok++; }
+      catch (e) { ng.push(kw + '（' + e.message + '）'); }
+    }
+    re(); toast(ok + '件をコンテンツ管理表に追加しました');
+    if (ng.length) alert('追加できなかったKW：\n' + ng.join('\n'));
+  });
+}
 function paintConcept() {
   const d = CP.d, ed = d.canEdit, dis = ed ? '' : ' disabled', box = $('cp-body'); if (!box) return;
   if (!CP_TABS.some(t => t[0] === CP.tab)) CP.tab = 'concept';
@@ -4062,6 +4186,8 @@ function paintConcept() {
       + '<h3 class="am-h">参考リンク</h3>' + (ed ? (g.refs || []).map((x, i) => '<div class="row cp-gref"><input data-gr="' + i + '" data-gf="title" value="' + esc(x.title) + '" placeholder="名前"><input data-gr="' + i + '" data-gf="url" value="' + esc(x.url) + '" placeholder="https://…" style="flex:1"><button class="linkbtn" type="button" data-grdel="' + i + '">削除</button></div>').join('') + '<button class="btn sm" type="button" id="cp-gradd">＋ リンクを追加</button>'
         : '<ul>' + (g.refs || []).map(x => '<li><a href="' + escUrl(x.url) + '" target="_blank" rel="noopener">' + esc(x.title) + '</a></li>').join('') + '</ul>')
       + (ed ? '<div class="row" style="justify-content:flex-end;gap:8px;margin-top:10px">' + (d.guidelineDefault ? '' : '<button class="btn" type="button" id="cp-greset">初期値に戻す</button>') + '<button class="btn" type="button" id="cp-gcancel">変更を取り消す</button><button class="btn primary" type="button" id="cp-save-g">ガイドラインを保存</button></div>' : '');
+  } else if (CP.tab === 'kwcmp') {
+    body = cpKwcmpHtml();
   } else {
     const marks = Object.fromEntries((d.marks || []).map(m => [m.domain, m.mark]));
     const latest = (sub, method) => (d.competitors || []).find(x => (x.sub || '') === sub && x.method === method);
@@ -4072,8 +4198,8 @@ function paintConcept() {
       const nEx = list.filter(x => marks[x.domain] === 'exclude').length;
       if (!CP.showEx) list = list.filter(x => marks[x.domain] !== 'exclude');
       return '<p class="note">' + esc(String(res.at || '').slice(0, 16).replace('T', ' ')) + ' ' + esc(res.name || res.by || '') + 'が取得' + (res.kws && res.kws.length ? '／代表KW：' + esc(res.kws.join('、')) : '') + (res.target ? '／対象：' + esc(res.target) : '') + (nEx ? '／除外 ' + nEx + '件' : '') + '</p>'
-        + '<div class="table-wrap"><table class="am-table cp-ctbl"><thead><tr><th class="c-txt">サイト名</th><th class="c-txt">ドメイン</th><th class="c-num">DR</th><th class="c-num">オーガニックトラフィック</th><th class="c-num">' + (method === 'overlap' ? '共通KW数' : '上位に出たKW数') + '</th><th></th></tr></thead><tbody>'
-        + list.map(x => { const mk = marks[x.domain] || ''; return '<tr class="' + (mk === 'star' ? 'cp-star' : mk === 'exclude' ? 'cp-ex' : '') + '"><td class="c-txt">' + (mk === 'star' ? '★ ' : '') + esc(x.name || x.domain) + '</td><td class="c-txt"><a href="https://' + esc(x.domain) + '/" target="_blank" rel="noopener">' + esc(x.domain) + '</a></td><td class="c-num">' + nfmt(x.dr) + '</td><td class="c-num">' + nfmt(x.traffic) + '</td><td class="c-num">' + (method === 'overlap' ? nfmt(x.common) : nfmt(x.hits) + (x.best ? '<span class="note">（最高' + x.best + '位）</span>' : '')) + '</td>'
+        + '<div class="table-wrap"><table class="am-table cp-ctbl"><thead><tr><th class="c-txt">サイト名</th><th class="c-txt">ドメイン</th><th class="c-num">DR</th><th class="c-num">オーガニックトラフィック</th><th class="c-num">' + (method === 'overlap' ? '共通KW数' : '上位に出たKW数') + '</th>' + (method === 'overlap' ? '<th class="c-num" title="共通KW数 ÷ 自メディア（ディレクトリ）の順位がついているKW数">KW重複率</th>' : '') + '<th></th></tr></thead><tbody>'
+        + list.map(x => { const mk = marks[x.domain] || ''; return '<tr class="' + (mk === 'star' ? 'cp-star' : mk === 'exclude' ? 'cp-ex' : '') + '"><td class="c-txt">' + (mk === 'star' ? '★ ' : '') + esc(x.name || x.domain) + '</td><td class="c-txt"><a href="https://' + esc(x.domain) + '/" target="_blank" rel="noopener">' + esc(x.domain) + '</a></td><td class="c-num">' + nfmt(x.dr) + '</td><td class="c-num">' + nfmt(x.traffic) + '</td><td class="c-num">' + (method === 'overlap' ? nfmt(x.common) : nfmt(x.hits) + (x.best ? '<span class="note">（最高' + x.best + '位）</span>' : '')) + '</td>' + (method === 'overlap' ? '<td class="c-num">' + (x.rate == null ? '<span class="note">—</span>' : x.rate.toFixed(1) + '%') + '</td>' : '')
           + '<td class="c-ctr" style="white-space:nowrap">' + (ed ? '<button class="linkbtn" type="button" data-cpmark="' + esc(x.domain) + '" data-mk="star">' + (mk === 'star' ? '★解除' : '★重要') + '</button> <button class="linkbtn" type="button" data-cpmark="' + esc(x.domain) + '" data-mk="exclude">' + (mk === 'exclude' ? '除外を戻す' : '除外') + '</button>' : '') + '</td></tr>'; }).join('')
         + '</tbody></table></div>';
     };
@@ -4083,11 +4209,14 @@ function paintConcept() {
       + targets.map((t, ti) => { if (t.sub && !cpSubShown(t.sub)) return ''; const s = CP.subs.find(x => x.sub === t.sub), guess = t.sub ? cpGuessUrl(t.sub) : '';
         return '<div class="cp-ctarget cp-dir cp-orange"><h3 class="cp-dir-h">' + esc(t.label) + '</h3>'
           + (t.sub ? '<div class="row" style="gap:6px;align-items:center"><span class="note">ディレクトリのURL</span><input class="cp-durl" data-cpdurl="' + ti + '" value="' + esc(s.url || '') + '" placeholder="' + esc(guess || 'https://…/ディレクトリ/') + '"' + dis + ' style="flex:1;max-width:460px">' + (guess && !s.url ? '<span class="note">（空欄なら記事URLから推定：' + esc(guess) + '）</span>' : '') + '</div>' : '')
-          + '<div class="cp-cgrid">' + [['overlap', 'KWがかぶるサイト'], ['serp', '代表KWの検索上位']].map(([m, l]) => '<div class="cp-cbox"><div class="row" style="justify-content:space-between"><b>' + l + '</b>' + (ed ? '<button class="btn sm primary" type="button" data-cpfetch="' + ti + '" data-method="' + m + '">取得（Ahrefs）</button>' : '') + '</div>' + tbl(latest(t.sub, m), m) + '</div>').join('') + '</div></div>'; }).join('');
+          + '<div class="cp-cgrid">' + [['overlap', '競合サイト'], ['serp', '代表KWの検索上位']].map(([m, l]) => '<div class="cp-cbox"><div class="row" style="justify-content:space-between"><b>' + l + '</b>' + (ed ? '<button class="btn sm primary" type="button" data-cpfetch="' + ti + '" data-method="' + m + '">取得（Ahrefs）</button>' : '') + '</div>'
+            + (m === 'overlap' && latest(t.sub, m) && latest(t.sub, m).list.length ? '<div class="cp-bub"><canvas id="cp-bub-' + ti + '" role="img" aria-label="競合サイトのグラフ（横＝共通KW数、縦＝オーガニックトラフィック、円の大きさ＝KW重複率）"></canvas></div><p class="note cp-bub-n">横＝共通KW数　縦＝オーガニックトラフィック　円の大きさ＝KW重複率（★は濃い色）</p>' : '') + tbl(latest(t.sub, m), m) + '</div>').join('') + '</div></div>'; }).join('');
   }
   box.innerHTML = H('コンセプト <small>' + esc(mediaLabel(CP.media)) + '</small>', CP.tab === 'compete' ? ['Ahrefs'] : [], upd) + tabs + (ed ? '' : '<p class="note">見るだけです（編集は権限管理の「コンセプトの編集」がある人）。</p>') + '<div class="cp-body">' + body + '</div>';
   box.querySelectorAll('textarea.cp-auto').forEach(el => { cpAutosize(el); el.addEventListener('input', () => cpAutosize(el)); });
   bindConcept();
+  if (CP.tab === 'compete') cpDrawBubbles();
+  if (CP.tab === 'kwcmp') { if (!CP.kg) cpLoadKg(); else bindKwcmp(); }
 }
 function bindConcept() {
   const box = $('cp-body'), d = CP.d, err = e => alert('保存できませんでした：' + e.message);

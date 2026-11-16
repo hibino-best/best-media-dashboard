@@ -1394,7 +1394,7 @@ option.ol-lk-pillar { background: #dce8fb; color: #1a4fa8; } option.ol-lk-long {
 .cp-dir > .cp-pbox { border: 0; border-radius: 0; margin: 0; }
 .cp-dir.cp-ctarget > .row, .cp-dir.cp-ctarget > .cp-cgrid { margin: 8px 10px; }
 .cp-dir.cp-ctarget .cp-cbox { background: var(--surface); }
-.cp-dir.cp-ctarget > .cp-cgrid { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
+.cp-dir.cp-ctarget > .cp-cgrid { grid-template-columns: 1fr; }   /* 競合サイトの表（KW重複率まで）とグラフが入るよう1列（2026-11-16） */
 .cp-cm { --cpc: #1f7a63; --cpb: #e3f3ee; }
 .cp-c0 { --cpc: #2f6fd6; --cpb: #e6effc; }
 .cp-c1 { --cpc: #d9822b; --cpb: #fcf0e2; }
@@ -1421,3 +1421,19 @@ option.ol-lk-pillar { background: #dce8fb; color: #1a4fa8; } option.ol-lk-long {
 .gc-in { padding: 0 10px; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cp-blue { --cpb: #1a2b47; } :root:not([data-theme="light"]) .cp-green { --cpb: #163a2a; } :root:not([data-theme="light"]) .cp-orange { --cpb: #3d2c18; } }
 :root[data-theme="dark"] .cp-blue { --cpb: #1a2b47; } :root[data-theme="dark"] .cp-green { --cpb: #163a2a; } :root[data-theme="dark"] .cp-orange { --cpb: #3d2c18; }
+/* 競合サイトのグラフ・競合サイトKW比較（2026-11-16 ユーザー指定） */
+.cp-bub { position: relative; height: 300px; margin: 6px 0 2px; }
+.cp-bub-n { margin: 0 0 6px; font-size: 11px; }
+.cp-indigo { --cpc: #6b6fd8; --cpb: #ecedfc; }
+.cp-kg-in { padding: 8px 10px; }
+.cp-kg-pick { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; margin-bottom: 8px; }
+.cp-kg-dom { display: inline-flex; gap: 4px; align-items: center; font-size: 13px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+.cp-kg-bar { gap: 8px; align-items: center; flex-wrap: wrap; margin: 6px 0; }
+.cp-kg-bar input[type=search] { min-width: 200px; }
+.cp-kg-wrap { max-height: 70vh; overflow: auto; }
+.cp-kgtbl thead th { position: sticky; top: 0; z-index: 1; background: var(--surface); }
+.cp-kgtbl td.cp-kg-own, .cp-kgtbl th.cp-kg-own { background: color-mix(in srgb, var(--cpc, #6b6fd8) 10%, var(--surface)); }
+.cp-kgtbl tr.cp-kg-in-items td { opacity: .65; }
+.cp-kg-tag { font-size: 11px; padding: 1px 6px; border-radius: 4px; background: color-mix(in srgb, var(--good) 18%, var(--surface)); color: var(--good); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cp-indigo { --cpb: #25274a; } }
+:root[data-theme="dark"] .cp-indigo { --cpb: #25274a; }
