@@ -1,8 +1,15 @@
 {
-  "version": "1.574",
-  "updated": "2026-11-13",
+  "version": "1.575",
+  "updated": "2026-11-16",
   "note": "WEBアプリを更新するたびに、このファイル（version・updated・changelog と、変わった仕組み）も更新する",
   "changelog": [
+    {
+      "ver": "1.575",
+      "date": "2026-11-16",
+      "items": [
+        "クラウドの変更のPCへの自動取り込みを追加"
+      ]
+    },
     {
       "ver": "1.574",
       "date": "2026-11-13",
@@ -3944,6 +3951,16 @@
       "where": "scripts/err_check.ps1（材料は scripts/err_check_collect.js、指示は scripts/err_check_prompt.md、読み書きは scripts/err_check_fs.js）",
       "what": "構文・前回からのコードの差分・直近7日のログ（Cloud Run・Cloud Scheduler・GAS）・データの食い違いを集め、受付係が Supabase（err_checks）に入れて2人に渡す。2人は別々に点検し、指摘（err_findings）・使ったトークン（ai_cost_log）・実行（ai_runs）・読んだもの（ai_access_log）を残す。内ループ：指摘にユーザーが OK／却下（err_decisions）、OKしたものをチャットで直す。判断待ちはタスク通知に出る",
       "fail": "結果は scripts/logs に残る。gcloud・Claude Code・Codex アプリのログインが切れていると動かない。AIの報告を読めなかったときは点検の基準を進めない",
+      "edit": "scripts"
+    },
+    {
+      "id": "sync-cloud",
+      "when": "30分ごと・ログオン時（PCが動いているあいだ）",
+      "name": "クラウドの変更の取り込み",
+      "tool": "タスクスケジューラー＋git（PC）",
+      "where": "scripts/sync_cloud.ps1（登録は scripts/sync_cloud_setup.ps1 を1回）",
+      "what": "クラウド（claude.ai/code）で進めて GitHub のブランチ main-rre7tp に送った変更を、PCの今のブランチに早送りで取り込む。取り込んだら画面の右下に通知。デプロイはしない",
+      "fail": "PCに作業中の変更や GitHub に送っていないコミットがあるときは取り込まず、通知と scripts/logs/sync_cloud_*.log で知らせる（PCの変更は壊さない）",
       "edit": "scripts"
     }
   ],
