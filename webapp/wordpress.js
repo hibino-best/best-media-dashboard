@@ -208,6 +208,15 @@ module.exports = function wordpress({ PROJECT, db, query, T, admin, allowedMedia
     return { host, pages: posts.map(p => p.u), edges };
   }
 
+  /** 内部リンク構造を全メディアで読む（毎日3:40の wp-collect のあと。2026-11-16 ユーザー指定：WordPress の取得と同じ定期実行・ボタンなし）。メディアは並べて読む */
+  async function collectLinksAll(save) {
+    const list = (await listSettings()).filter(s => s.url);
+    return Promise.all(list.map(async s => {
+      try { const r = await postLinks(s.media); await save(s.media, r); await writeJobLog('内部リンク取得', s.media, 'OK', r.pages.length + '記事・' + r.edges.length + 'リンク'); return { media: s.media, ok: true, pages: r.pages.length, edges: r.edges.length }; }
+      catch (e) { await writeJobLog('内部リンク取得', s.media, 'ERROR', e.message).catch(() => {}); return { media: s.media, ok: false, error: e.message }; }
+    }));
+  }
+
   const termCache = new Map();
   /** そのメディアの WordPress のカテゴリ・タグ（公開APIから。1時間キャッシュ） */
   async function termsFor(media) {
@@ -493,5 +502,5 @@ module.exports = function wordpress({ PROJECT, db, query, T, admin, allowedMedia
   /** マイブロック（記事用コンテンツなど）の中の見出し（H2〜H4）（2026-11-13 ユーザー指定） */
   async function myBlockHeads(media, id) { const b = (await myBlockTexts(media)).find(x => String(x.id) === String(id)); return b ? b.heads || [] : null; }
 
-  return { routes, collectAll, ensureTables, titlesFor, postLinks, listAll, termsFor, myBlocksFor, postStructure, myBlockHeads, _test: { countStatus, countMonth, listMonth } };
+  return { routes, collectAll, ensureTables, titlesFor, postLinks, collectLinksAll, listAll, termsFor, myBlocksFor, postStructure, myBlockHeads, _test: { countStatus, countMonth, listMonth } };
 };

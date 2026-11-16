@@ -4422,22 +4422,16 @@ function paintLinks() {
   const dirs = [...new Set(items.map(x => x.sub))].sort((a, b) => (artSubs(LM.media) || []).indexOf(a) - (artSubs(LM.media) || []).indexOf(b));
   const shown = dirs.filter(s => !state.artSub || state.artSub === s);
   const d = m && m.at ? new Date(m.at) : null;
-  const last = m ? '前回の読み込み：<b>' + (d && !isNaN(d) ? ymdLocal(d) + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') : '') + '</b>　<b>' + esc(m.name || m.by || '') + '</b>　／　公開記事 ' + nf.format((m.pages || []).length) + '件・記事どうしのリンク ' + nf.format((m.edges || []).length) + '本' : 'まだ読み込んでいません';
+  const last = m ? '最終の読み込み：<b>' + (d && !isNaN(d) ? ymdLocal(d) + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') : '') + '</b>　<b>' + esc(m.name || m.by || '') + '</b>　／　公開記事 ' + nf.format((m.pages || []).length) + '件・記事どうしのリンク ' + nf.format((m.edges || []).length) + '本' : 'まだ読み込んでいません（次の毎日3:40の自動読み込みで入ります）';
   const unmatched = m ? (m.pages || []).filter(u => !items.some(x => x.url && lmUrlKey(x.url) === u)).length : 0;
   const legend = '<div class="lm-legend">' + [['pp', 'ピラーページ(親)'], ['pc', 'ピラーページ(子)'], ['lt', 'ロングテール'], ['kp', 'キラーページ(親)'], ['kc', 'キラーページ(子)'], ['no', 'ポジション未設定'], ['unpub', '未公開']].map(([k, l]) => '<span><span class="lm-dot lm-' + (k === 'unpub' ? 'lt lm-unpub' : k) + '"></span>' + l + '</span>').join('')
     + '<span><svg width="34" height="10"><path class="lm-e lm-link lm-both" d="M2,5 L32,5"></path></svg>両方向のリンク</span><span><svg width="34" height="10"><path class="lm-e lm-link lm-one" d="M2,5 L32,5"></path></svg>片方向のリンク</span></div>';
   box.innerHTML = H('内部リンク構造 <small>' + esc(mediaLabel(LM.media)) + '</small>', ['WordPress'])
-    + '<div class="lm-bar"><button class="btn sm primary" type="button" id="lm-load">WordPress から読み込む</button><span class="note">' + last + '</span></div>'
+    + '<div class="lm-bar"><span class="note">' + last + '</span><span class="note">（毎日3:40に WordPress の公開記事から自動で読み込みます）</span></div>'
     + '<p class="note">コンテンツ管理表の記事を、ポジション（ピラーページ・キラーページ・ロングテール）ごとに並べ、<b>公開記事の本文にある内部リンク</b>を線で結びます。未公開の記事はグレーです。並びは、つながっているピラーページの下に置いています（どこともつながっていないページは下にまとめます）。四角を押すと、そのページのリンク先・リンク元が出ます。'
     + (unmatched ? '<br>コンテンツ管理表に記事URLがない公開記事が ' + unmatched + '件あります（図には出ません）。' : '') + '</p>'
     + legend + lmDetail(items)
     + (shown.length ? shown.map(s => { const list = items.filter(x => x.sub === s); return '<div class="cp-dir lm-dir-box"><h3 class="cp-dir-h">' + esc(s ? 'ディレクトリ：' + s : 'ディレクトリなし') + ' <span class="note">' + list.length + '記事（公開 ' + list.filter(x => x.pub).length + '）</span></h3>' + lmSvg(s, list) + '</div>'; }).join('') : '<p class="empty">このメディアのコンテンツ管理表に記事がありません</p>');
-  $('lm-load').onclick = async () => {
-    if (!confirm(mediaLabel(LM.media) + ' の公開記事の本文を WordPress から読み、内部リンクを調べます（Ahrefs のユニットは使いません）。記事が多いと1〜2分かかります。よろしいですか？')) return;
-    const b = $('lm-load'); b.disabled = true; b.textContent = '読み込み中…';
-    try { const r = await apiSend('POST', '/link-structure', { media: LM.media }); LM.map = r.map; paintLinks(); toast('内部リンクを読み込みました（' + r.map.pages.length + '記事）'); }
-    catch (e) { b.disabled = false; b.textContent = 'WordPress から読み込む'; alert('読み込めませんでした：' + e.message); }
-  };
   box.querySelectorAll('[data-lmkey]').forEach(g => g.onclick = () => { LM.sel = LM.sel === g.dataset.lmkey ? null : g.dataset.lmkey; const y = window.scrollY; paintLinks(); window.scrollTo(0, y); });
   if ($('lm-unsel')) $('lm-unsel').onclick = () => { LM.sel = null; paintLinks(); };
 }

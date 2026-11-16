@@ -3,7 +3,7 @@
   "updated": "2026-11-16",
   "note": "WEBアプリを更新するたびに、このファイル（version・updated・changelog と、変わった仕組み）も更新する",
   "changelog": [
-    { "ver": "1.579", "date": "2026-11-16", "items": ["内部リンク構造の画面を追加・コンセプトのタブ名を調整"] },
+    { "ver": "1.579", "date": "2026-11-16", "items": ["内部リンク構造の画面を追加（毎日自動読み込み）"] },
     { "ver": "1.578", "date": "2026-11-16", "items": ["競合サイトのKW重複率・グラフ・KW比較タブを追加"] },
     { "ver": "1.577", "date": "2026-11-16", "items": ["コンセプトの入力欄・タブごとの色・ガイドライン確認を調整"] },
     {
@@ -3819,7 +3819,7 @@
       "name": "WordPressの記事数",
       "tool": "Cloud Scheduler「wp-collect」→ WEBアプリ",
       "where": "/tasks/wp-collect",
-      "what": "各サイトのWordPressから公開記事・リライト記事を数えて BigQuery（wp_monthly・wp_status）に入れる",
+      "what": "各サイトのWordPressから公開記事・リライト記事を数えて BigQuery（wp_monthly・wp_status）に入れる。続けて公開記事の本文から記事どうしの内部リンクを読み、Firestore link_maps に入れる（内部リンク構造の画面）",
       "fail": "結果は「収集ジョブ」に記録",
       "edit": "media"
     },
@@ -4085,7 +4085,7 @@
     },
     {
       "name": "link_maps",
-      "what": "内部リンク構造（コンテンツ作成）：メディアごとに、公開記事のURLと記事どうしのリンク（「読み込む」を押したときに WordPress の公開APIで本文を読む）"
+      "what": "内部リンク構造（コンテンツ作成）：メディアごとに、公開記事のURLと記事どうしのリンク（毎日3:40の wp-collect のあとに WordPress の公開APIで本文を読む）"
     },
     {
       "kind": "Firestore",
