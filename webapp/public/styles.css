@@ -1437,3 +1437,6 @@ option.ol-lk-pillar { background: #dce8fb; color: #1a4fa8; } option.ol-lk-long {
 .cp-kg-tag { font-size: 11px; padding: 1px 6px; border-radius: 4px; background: color-mix(in srgb, var(--good) 18%, var(--surface)); color: var(--good); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cp-indigo { --cpb: #25274a; } }
 :root[data-theme="dark"] .cp-indigo { --cpb: #25274a; }
+.cp-units { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 13px; padding: 6px 10px; margin: 0 0 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.cp-units-bar { display: inline-block; width: 160px; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.cp-units-bar > span { display: block; height: 100%; background: #6b6fd8; }

@@ -4033,6 +4033,20 @@ const gcColor = i => GC_COLORS[i % GC_COLORS.length];
 /* 長い文は途切れさせない：中身に合わせて高さを伸ばす（2026-11-16 ユーザー指定） */
 function cpAutosize(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight + 2) + 'px'; }
 /* ---------- 競合サイトのグラフ（Ahrefs の Organic competitors のような散布図。2026-11-16 ユーザー指定） ---------- */
+/* Ahrefs の今月のユニット（取得の前に容量を見て判断する。2026-11-16 ユーザー指定） */
+async function cpLoadUnits() {
+  CP.units = null; const media = CP.media;
+  try { const r = await api('/concept/ahrefs-units'); if (!CP || CP.media !== media) return; CP.units = r.units || false; } catch (e) { if (CP) CP.units = false; }
+  const el = $('cp-units'); if (el) el.outerHTML = cpUnitsHtml();
+}
+function cpUnitsHtml() {
+  const u = CP.units;
+  if (u === undefined || u === null) return '<p class="note cp-units" id="cp-units">Ahrefs のユニットを確認しています…</p>';
+  if (!u || u.limit == null || u.used == null) return '<p class="note cp-units" id="cp-units">Ahrefs のユニットの残りを確認できませんでした</p>';
+  const left = u.limit - u.used, pct = u.limit ? u.used / u.limit * 100 : 0;
+  return '<div class="cp-units" id="cp-units"><span>Ahrefs の今月のユニット：使用 <b>' + nf.format(u.used) + '</b> ／ 上限 ' + nf.format(u.limit) + '（残り <b>' + nf.format(left) + '</b>）' + (u.resetDate ? '<span class="note">　' + esc(String(u.resetDate).slice(0, 10)) + ' にリセット</span>' : '') + '</span>'
+    + '<span class="cp-units-bar"><span style="width:' + Math.min(100, pct).toFixed(1) + '%"></span></span><span class="note">' + pct.toFixed(1) + '% 使用</span></div>';
+}
 function cpDrawBubbles() {
   if (!window.Chart) return;
   const marks = Object.fromEntries((CP.d.marks || []).map(m => [m.domain, m.mark]));
@@ -4084,7 +4098,7 @@ function cpKwcmpHtml() {
   if (!CP.kg) return '<p class="loading">読み込み中…</p>';
   const rk = p => '<span class="rk ' + rankCls(p) + '">' + (p == null ? '圏外' : Math.round(p) + '位') + '</span>';
   const targets = [{ sub: '', label: 'メディア全体：' + mediaLabel(CP.media) }].concat(CP.subs.map(s => ({ sub: s.sub, label: 'ディレクトリ：' + s.sub })));
-  return '<p class="note">競合サイトで順位がついているKWと、自メディアの順位をくらべます。くらべる競合サイトは「競合サイト」タブで取得したものから選びます（最大5つ）。Ahrefs から取るのは「取得」を押したときだけです（取ったKWの行数ぶんユニットを使います）。<br>KWにチェックを入れて「コンテンツ管理表に追加」を押すと、進行管理に「新規・未着手」で入ります（すでに管理表にあるKWは追加できません）。</p>'
+  return cpUnitsHtml() + '<p class="note">競合サイトで順位がついているKWと、自メディアの順位をくらべます。くらべる競合サイトは「競合サイト」タブで取得したものから選びます（最大5つ）。Ahrefs から取るのは「取得」を押したときだけです（取ったKWの行数ぶんユニットを使います）。<br>KWにチェックを入れて「コンテンツ管理表に追加」を押すと、進行管理に「新規・未着手」で入ります（すでに管理表にあるKWは追加できません）。</p>'
     + targets.map((t, ti) => {
       if (t.sub && !cpSubShown(t.sub)) return '';
       const ov = (d.competitors || []).find(x => (x.sub || '') === t.sub && x.method === 'overlap');
@@ -4098,12 +4112,12 @@ function cpKwcmpHtml() {
         + '<span class="row" style="gap:6px;align-items:center"><span class="note">1サイトあたり</span><select data-kglim="' + ti + '">' + [100, 300, 500].map(n => '<option value="' + n + '"' + (Number(ui.lim || (r && r.limit) || 100) === n ? ' selected' : '') + '>' + n + 'KW</option>').join('') + '</select><button class="btn sm primary" type="button" data-kgfetch="' + ti + '">取得（Ahrefs）</button></span></div>';
       if (!r) return h + (cands.length ? '<p class="empty">まだ取得していません</p>' : '') + '</div></div>';
       const rows = cpKgRows(t.sub), shown = rows.slice(0, 300), doms = r.domains;
-      h += '<p class="note">' + esc(String(r.at || '').slice(0, 16).replace('T', ' ')) + ' ' + esc(r.name || '') + 'が取得／' + nf.format(r.list.length) + 'KW／対象：' + esc(r.target || '') + '</p>'
-        + '<div class="row cp-kg-bar"><select data-kgf="' + ti + '">' + [['all', 'すべてのKW'], ['notyet', 'コンテンツ管理表にないKW'], ['lose', '自社が競合より下・圏外のKW'], ['out', '自社が圏外のKW']].map(([k, l]) => '<option value="' + k + '"' + ((ui.f || 'all') === k ? ' selected' : '') + '>' + l + '</option>').join('') + '</select>'
+      h += '<p class="note">' + esc(String(r.at || '').slice(0, 16).replace('T', ' ')) + ' ' + esc(r.name || '') + 'が取得／' + nf.format(r.list.length) + 'KW／対象：' + esc(r.target || '') + (r.usedUnits != null ? '／使ったユニット ' + nf.format(r.usedUnits) : r.rows ? '／取った行数 ' + nf.format(r.rows) : '') + '</p>'
+        + '<div class="row cp-kg-bar"><select data-kgf="' + ti + '">' + [['all', 'すべてのKW'], ['notyet', 'コンテンツ管理表にないKW'], ['lose', mediaLabel(CP.media) + 'が競合より下・圏外のKW'], ['out', mediaLabel(CP.media) + 'が圏外のKW']].map(([k, l]) => '<option value="' + k + '"' + ((ui.f || 'all') === k ? ' selected' : '') + '>' + l + '</option>').join('') + '</select>'
         + '<input type="search" data-kgq="' + ti + '" placeholder="KWで絞り込み" value="' + esc(ui.q || '') + '">'
         + '<span class="note">' + nf.format(rows.length) + 'KW' + (rows.length > shown.length ? '（上位' + shown.length + '件を表示）' : '') + '</span>'
         + (canEditArticles() ? '<button class="btn sm primary" type="button" data-kgadd="' + ti + '"' + (sel.size ? '' : ' disabled') + '>選んだKWをコンテンツ管理表に追加（' + sel.size + '件）</button>' : '') + '</div>'
-        + '<div class="table-wrap cp-kg-wrap"><table class="am-table cp-kgtbl"><thead><tr>' + (canEditArticles() ? '<th class="c-ctr" style="width:34px"><input type="checkbox" data-kgall="' + ti + '" title="表示しているKWをまとめて選ぶ"></th>' : '') + '<th class="c-txt">KW</th><th class="c-num">検索Vol</th><th class="c-num">難易度</th><th class="c-ctr">管理表</th><th class="c-ctr cp-kg-own">自社</th>'
+        + '<div class="table-wrap cp-kg-wrap"><table class="am-table cp-kgtbl"><thead><tr>' + (canEditArticles() ? '<th class="c-ctr" style="width:34px"><input type="checkbox" data-kgall="' + ti + '" title="表示しているKWをまとめて選ぶ"></th>' : '') + '<th class="c-txt">KW</th><th class="c-num">検索Vol</th><th class="c-num">難易度</th><th class="c-ctr">管理表</th><th class="c-ctr cp-kg-own">' + esc(mediaLabel(CP.media)) + '</th>'
         + doms.map(x => '<th class="c-ctr" title="' + esc(x.domain) + '">' + esc((x.name || x.domain).slice(0, 12)) + '</th>').join('') + '</tr></thead><tbody>'
         + shown.map(x => { const inI = cpInItems(x.kw);
           return '<tr' + (inI ? ' class="cp-kg-in-items"' : '') + '>' + (canEditArticles() ? '<td class="c-ctr"><input type="checkbox" data-kgsel="' + ti + '" value="' + esc(x.kw) + '"' + (sel.has(x.kw) ? ' checked' : '') + (inI ? ' disabled title="すでにコンテンツ管理表にあります"' : '') + '></td>' : '')
@@ -4135,10 +4149,10 @@ function bindKwcmp() {
     if (!doms.length) return alert('くらべる競合サイトを選んでください（最大5つ）');
     if (ti && !dirUrl) return alert('ディレクトリのURLを「競合サイト」タブで入れてください（記事URLから推定できませんでした）');
     const ov = (CP.d.competitors || []).find(x => (x.sub || '') === sub && x.method === 'overlap'), names = ov ? ov.list.map(x => ({ domain: x.domain, name: x.name })) : [];
-    if (!confirm('競合サイト' + doms.length + 'つ（' + doms.join('、') + '）のKWと、自メディア' + (sub ? '（' + sub + '）' : '') + 'の順位を Ahrefs から取得します。\n1サイトあたり ' + lim + 'KW・自メディアは ' + Math.min(1000, lim * 5) + 'KW まで。\n\n取ったKWの行数ぶん Ahrefs のユニットを使います（最大 約' + nf.format(lim * doms.length + Math.min(1000, lim * 5)) + '行）。よろしいですか？')) return;
+    if (!confirm('競合サイト' + doms.length + 'つ（' + doms.join('、') + '）のKWと、自メディア' + (sub ? '（' + sub + '）' : '') + 'の順位を Ahrefs から取得します。\n1サイトあたり ' + lim + 'KW・自メディアは ' + Math.min(1000, lim * 5) + 'KW まで。\n\n取ったKWの行数ぶん Ahrefs のユニットを使います（最大 約' + nf.format(lim * doms.length + Math.min(1000, lim * 5)) + '行）。' + (CP.units && CP.units.limit != null ? '\n今月の残り：' + nf.format(CP.units.limit - CP.units.used) + 'ユニット' : '') + '\nよろしいですか？')) return;
     b.disabled = true; b.textContent = '取得中…';
     try { const res = await apiSend('POST', '/concept/competitors', { media: CP.media, sub, method: 'kwgap', domains: doms, limit: lim, dirUrl, names });
-      CP.kg[sub] = res.result; CP.kgSel[sub] = new Set(); re(); toast('競合サイトKW比較を取得しました（' + res.result.list.length + 'KW）'); }
+      CP.kg[sub] = res.result; CP.kgSel[sub] = new Set(); if (res.result.unitsAfter) CP.units = res.result.unitsAfter; re(); toast('競合サイトKW比較を取得しました（' + res.result.list.length + 'KW）'); }
     catch (e) { b.disabled = false; b.textContent = '取得（Ahrefs）'; alert('取得できませんでした：' + e.message); }
   });
   box.querySelectorAll('[data-kgadd]').forEach(b => b.onclick = async () => {
@@ -4204,7 +4218,7 @@ function paintConcept() {
         + '</tbody></table></div>';
     };
     const targets = [{ sub: '', label: 'メディア全体：' + mediaLabel(CP.media) }].concat(CP.subs.map(s => ({ sub: s.sub, label: 'ディレクトリ：' + s.sub })));
-    body = '<p class="note">Ahrefs から取るのは「取得」を押したときだけです（Ahrefs のユニットを使います）。上位10件・大手サイトも含みます（自社メディアは除く）。「★重要」「除外」はメディアごとに残ります。</p>'
+    body = cpUnitsHtml() + '<p class="note">Ahrefs から取るのは「取得」を押したときだけです（Ahrefs のユニットを使います）。上位10件・大手サイトも含みます（自社メディアは除く）。「★重要」「除外」はメディアごとに残ります。</p>'
       + '<label class="note"><input type="checkbox" id="cp-showex"' + (CP.showEx ? ' checked' : '') + '> 除外したサイトも表示</label>'
       + targets.map((t, ti) => { if (t.sub && !cpSubShown(t.sub)) return ''; const s = CP.subs.find(x => x.sub === t.sub), guess = t.sub ? cpGuessUrl(t.sub) : '';
         return '<div class="cp-ctarget cp-dir cp-orange"><h3 class="cp-dir-h">' + esc(t.label) + '</h3>'
@@ -4215,6 +4229,7 @@ function paintConcept() {
   box.innerHTML = H('コンセプト <small>' + esc(mediaLabel(CP.media)) + '</small>', CP.tab === 'compete' ? ['Ahrefs'] : [], upd) + tabs + (ed ? '' : '<p class="note">見るだけです（編集は権限管理の「コンセプトの編集」がある人）。</p>') + '<div class="cp-body">' + body + '</div>';
   box.querySelectorAll('textarea.cp-auto').forEach(el => { cpAutosize(el); el.addEventListener('input', () => cpAutosize(el)); });
   bindConcept();
+  if ((CP.tab === 'compete' || CP.tab === 'kwcmp') && CP.units === undefined) cpLoadUnits();
   if (CP.tab === 'compete') cpDrawBubbles();
   if (CP.tab === 'kwcmp') { if (!CP.kg) cpLoadKg(); else bindKwcmp(); }
 }
@@ -4265,7 +4280,7 @@ function bindConcept() {
     if (method === 'serp' && !kws.length) return alert('代表KWがありません（進行管理に検索KWがある記事がありません）');
     if (!confirm((method === 'overlap' ? 'KWがかぶるサイトを Ahrefs から取得します。\n対象：' + (ti ? dirUrl : d.siteUrl) : '代表KW（' + kws.length + '個）の検索上位を Ahrefs から取得します。\n' + kws.join('、')) + '\n\nAhrefs のユニットを使います。よろしいですか？')) return;
     b.disabled = true; b.textContent = '取得中…';
-    try { const res = await apiSend('POST', '/concept/competitors', { media: CP.media, sub, method, kws, dirUrl }); d.competitors = [res.result].concat((d.competitors || []).filter(x => !((x.sub || '') === sub && x.method === method))); paintConcept(); toast('競合サイトを取得しました（' + res.result.list.length + '件）'); }
+    try { const res = await apiSend('POST', '/concept/competitors', { media: CP.media, sub, method, kws, dirUrl }); d.competitors = [res.result].concat((d.competitors || []).filter(x => !((x.sub || '') === sub && x.method === method))); if (res.result.unitsAfter) CP.units = res.result.unitsAfter; paintConcept(); toast('競合サイトを取得しました（' + res.result.list.length + '件）'); }
     catch (e) { b.disabled = false; b.textContent = '取得（Ahrefs）'; alert('取得できませんでした：' + e.message); }
   });
 }

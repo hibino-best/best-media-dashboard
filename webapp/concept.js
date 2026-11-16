@@ -130,6 +130,13 @@ module.exports = function concept({ db, admin, allowedMedia, capOk, canEditArtic
     let last; for (const s of sels) { try { return await call(key, path, Object.assign({}, params, { select: s })); } catch (e) { last = e; if (e.status !== 400) throw e; } } throw last;
   }
   const date = () => new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  /** Ahrefs の今月のユニット（この呼び出しはユニットを使わない）。取得の前後で差を取り、実際に使った量を残す（2026-11-16 ユーザー指定：容量を見て判断したい） */
+  async function units(key) {
+    try { const u = (await call(key, 'subscription-info/limits-and-usage', {})).limits_and_usage || {};
+      const used = u.units_usage_workspace, limit = u.units_limit_workspace;
+      return { used: used == null ? null : Number(used), limit: limit == null ? null : Number(limit), resetDate: u.usage_reset_date || null };
+    } catch (e) { return null; }
+  }
   async function domainRating(key, h) {
     const s = await drCol.doc(h).get().catch(() => null), d = s && s.exists ? s.data() : null;
     if (d && d.at && Date.now() - Date.parse(d.at) < 30 * 86400000) return { dr: d.dr, units: 0 };
@@ -203,15 +210,18 @@ module.exports = function concept({ db, admin, allowedMedia, capOk, canEditArtic
       const ds = [...new Set((Array.isArray(domains) ? domains : []).map(hostOf).filter(Boolean))].filter(h => !isOwn(h)).slice(0, 5);
       if (!ds.length) throw Object.assign(new Error('くらべる競合サイトを選んでください（最大5つ）'), { status: 400 });
       const lim = [100, 300, 500].includes(Number(limit)) ? Number(limit) : 100;
+      const u0 = await units(key);
       const g = await byKwGap(key, target.replace(/^https?:\/\//, ''), !!sub, ds, lim);
       const names = {}; (names0 || []).forEach(x => { if (x && x.domain) names[hostOf(x.domain)] = txt(x.name, 80); });
-      const doc = { sub: sub || '', method, at: now(), by: user.email, name: user.name || user.email, domains: ds.map(d => ({ domain: d, name: names[d] || d })), list: g.list, limit: lim, target, kws: [], calls: g.units };
+      const doc = { sub: sub || '', method, at: now(), by: user.email, name: user.name || user.email, domains: ds.map(d => ({ domain: d, name: names[d] || d })), list: g.list, limit: lim, target, kws: [], calls: g.units, rows: g.units };
+      const u1 = await units(key); if (u0 && u1 && u0.used != null && u1.used != null) { doc.usedUnits = Math.max(0, u1.used - u0.used); doc.unitsAfter = u1; }
       const ref = col.doc(idOf(media));
       if (!(await ref.get()).exists) await ref.set({ media, version: 0 }, { merge: true });
       const add = await ref.collection('kwgaps').add(doc);   /* 行が多いので competitors とは別に置き、タブを開いたときだけ読む */
       await db.collection('access_logs').add({ uid: user.uid, email: user.email, name: user.name, view: '競合サイトKW比較を取得：' + media + (sub ? '／' + sub : '') + '（' + ds.join('、') + '）', at: now() });
       return Object.assign({ id: add.id }, doc, { at: new Date().toISOString() });
     }
+    const u0 = await units(key);
     if (method === 'overlap') {
       const target = sub ? String(dirUrl || '').trim() : siteUrls[media];
       if (!target || !/^https?:\/\//.test(target)) throw Object.assign(new Error(sub ? 'ディレクトリのURL（https://〜）を入れてから取得してください' : 'メディアのURLがわかりません'), { status: 400 });
@@ -230,6 +240,7 @@ module.exports = function concept({ db, admin, allowedMedia, capOk, canEditArtic
       x.name = await siteName(x.domain) || x.domain;
     }));
     const doc = { sub: sub || '', method, at: now(), by: user.email, name: user.name || user.email, list, kws: method === 'serp' ? kws : [], target: method === 'overlap' ? (sub ? dirUrl : siteUrls[media]) : '', calls: units + (method === 'serp' ? kws.length : 1) };
+    { const u1 = await units(key); if (u0 && u1 && u0.used != null && u1.used != null) { doc.usedUnits = Math.max(0, u1.used - u0.used); doc.unitsAfter = u1; } }
     const ref = col.doc(idOf(media));
     if (!(await ref.get()).exists) await ref.set({ media, version: 0 }, { merge: true });
     const add = await ref.collection('competitors').add(doc);
@@ -283,6 +294,14 @@ module.exports = function concept({ db, admin, allowedMedia, capOk, canEditArtic
         if (!['overlap', 'serp', 'kwgap'].includes(b.method)) return res.status(400).json({ error: '取得のしかたが正しくありません' });
         res.json({ result: await fetchCompetitors({ media, sub: txt(b.sub, 60).trim(), method: b.method, kws: b.kws, dirUrl: b.dirUrl, user: req.user, domains: b.domains, limit: b.limit, names: b.names }) });
       } catch (e) { res.status(e.status && e.status < 500 ? e.status : 400).json({ error: e.message }); }
+    });
+    // Ahrefs の今月のユニット（使わない呼び出し）。取得の前に画面で見て判断する（2026-11-16 ユーザー指定）
+    api.get('/concept/ahrefs-units', async (req, res, next) => {
+      try {
+        if (!canView(req.user)) return res.status(403).json({ error: '権限がありません' });
+        let key = ''; try { key = await ahrefsKey(); } catch (e) { key = ''; }
+        res.json({ units: key ? await units(key) : null });
+      } catch (e) { next(e); }
     });
     // 競合サイトKW比較：メディア（＋ディレクトリ）ごとの最新の取得結果（2026-11-16 ユーザー指定）
     api.get('/concept/kwgap', async (req, res, next) => {
