@@ -1441,3 +1441,10 @@ option.ol-lk-pillar { background: #dce8fb; color: #1a4fa8; } option.ol-lk-long {
 .cp-units-bar { display: inline-block; width: 160px; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
 .cp-units-bar > span { display: block; height: 100%; background: #6b6fd8; }
 .cp-gtbl textarea.cp-gdesc { width: 100%; box-sizing: border-box; min-height: 0; resize: none; overflow: hidden; line-height: 1.5; font: inherit; }   /* 長い説明も途切れさせない（2026-11-16） */
+/* 参考リンク（著作権など）を一番上に（2026-11-16 ユーザー指定） */
+.cp-refs { --cpc: #64748b; --cpb: #eef1f5; }
+.cp-refs-in { padding: 8px 10px; }
+.cp-refs-in ul { margin: 0; padding-left: 18px; }
+.gc-refs { font-size: 13px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; margin: 0 0 8px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cp-refs { --cpb: #222a33; } }
+:root[data-theme="dark"] .cp-refs { --cpb: #222a33; }
