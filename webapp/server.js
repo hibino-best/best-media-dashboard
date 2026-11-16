@@ -1818,6 +1818,31 @@ comp.adminRoutes(adminApi, () => MEDIA_ORDER.map(([k]) => k));
 // コンセプト（メディアの方針・ペルソナ・ガイドライン・競合サイト）（2026-11-13 ユーザー指定）
 const conceptMod = require('./concept')({ db, admin, allowedMedia, capOk, canEditArticles, ownsItem, ahrefsKey: () => ahr.loadKey(), siteUrls: require('./ahrefs').SITE_URLS || {}, medias: () => MEDIA_ORDER.map(([k]) => k) });
 conceptMod.routes(api);
+// 内部リンク構造（コンテンツ作成 → KW追従の下。2026-11-16 ユーザー指定）：公開記事の本文から記事どうしのリンクを読み、Firestore link_maps に1メディア1件で残す
+{
+  const lmRef = media => db.collection('link_maps').doc(require('crypto').createHash('sha1').update('links|' + media).digest('hex'));
+  const lmView = u => capOk(u, 'concept_view', x => !!x.perms && x.perms.articles !== 'none');
+  const lmIso = v => v && v.toDate ? v.toDate().toISOString() : v || null;
+  api.get('/link-structure', async (req, res, next) => {
+    try {
+      const media = String(req.query.media || '');
+      if (!media || !allowedMedia(req.user, media) || !lmView(req.user)) return res.status(403).json({ error: 'このメディアの内部リンク構造を見る権限がありません' });
+      const s = await lmRef(media).get(), d = s.exists ? s.data() : null;
+      res.json({ map: d ? Object.assign({}, d, { at: lmIso(d.at) }) : null });
+    } catch (e) { next(e); }
+  });
+  api.post('/link-structure', async (req, res) => {
+    try {
+      const media = String((req.body || {}).media || '');
+      if (!media || !allowedMedia(req.user, media) || !lmView(req.user)) return res.status(403).json({ error: 'このメディアの内部リンク構造を読み込む権限がありません' });
+      const r = await wp.postLinks(media);
+      const doc = Object.assign(r, { media, at: admin.firestore.FieldValue.serverTimestamp(), by: req.user.email, name: req.user.name || req.user.email, edges: r.edges.map(([a, b]) => a + '>' + b) });
+      await lmRef(media).set(doc);
+      await db.collection('access_logs').add({ uid: req.user.uid, email: req.user.email, name: req.user.name, view: '内部リンク構造を読み込み：' + media + '（' + r.pages.length + '記事・' + r.edges.length + 'リンク）', at: admin.firestore.FieldValue.serverTimestamp() });
+      res.json({ map: Object.assign({}, doc, { at: new Date().toISOString() }) });
+    } catch (e) { res.status(e.status && e.status < 500 ? e.status : 500).json({ error: e.message }); }
+  });
+}
 require('./outline')({ db, admin, query, T, allowedMedia, capOk, docIdOf, keyOfItem, WRITER_ROLES, comp }).routes(api);
 // Gmail からのメール送信（marketing@ だけ。連携はフル管理者だけ。2026-10-28 ユーザー指定）
 const gmail = require('./gmail')({ PROJECT, db, admin, isFullAdmin });

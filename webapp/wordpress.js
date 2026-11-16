@@ -186,6 +186,28 @@ module.exports = function wordpress({ PROJECT, db, query, T, admin, allowedMedia
     return value;
   }
 
+  /** 内部リンク構造（2026-11-16 ユーザー指定）：公開記事の本文から、同じサイトの記事へのリンクを読む。
+   *  公開APIだけ（認証なし）。返すのは記事URL（https・末尾/なし）と、リンク先の記事の番号の組（記事どうしのリンクだけ） */
+  async function postLinks(media) {
+    const s = await getSettings(media);
+    if (!s || !s.url) throw Object.assign(new Error('このメディアの WordPress の接続（URL）が登録されていません'), { status: 400 });
+    const base = checkUrl(s.url), host = new URL(base).hostname.replace(/^www\./, '');
+    const norm = u => { try { const x = new URL(u, base); if (x.hostname.replace(/^www\./, '') !== host) return ''; return (x.hostname.replace(/^www\./, '') + decodeURI(x.pathname)).replace(/\/+$/, ''); } catch (e) { return ''; } };
+    const posts = [];
+    for (let page = 1; page <= 40; page++) {
+      const qs = new URLSearchParams({ status: 'publish', per_page: '50', page: String(page), _fields: 'id,link,content' });
+      let res = await fetchR(base + '/wp-json/wp/v2/posts?' + qs, { headers: headersFor({}, false) });
+      if (res.status === 404) res = await fetchR(base + '/?rest_route=/wp/v2/posts&' + qs, { headers: headersFor({}, false) });
+      if (!res.ok) { if (page === 1) throw Object.assign(new Error('WordPress から記事を読めませんでした（' + res.status + '）'), { status: 400 }); break; }
+      (await res.json()).forEach(p => { const html = String((p.content && p.content.rendered) || ''); const hrefs = [...html.matchAll(/<a\b[^>]*\bhref=["']([^"'#]+)/gi)].map(m => norm(m[1].replace(/&amp;/g, '&'))).filter(Boolean); posts.push({ id: p.id, u: norm(p.link), hrefs }); });
+      if (page >= Number(res.headers.get('x-wp-totalpages') || 1)) break;
+    }
+    const idx = new Map(posts.map((p, i) => [p.u, i]));
+    const edges = [];
+    posts.forEach((p, i) => { const seen = new Set(); p.hrefs.forEach(h => { const j = idx.get(h); if (j != null && j !== i && !seen.has(j)) { seen.add(j); edges.push([i, j]); } }); });
+    return { host, pages: posts.map(p => p.u), edges };
+  }
+
   const termCache = new Map();
   /** そのメディアの WordPress のカテゴリ・タグ（公開APIから。1時間キャッシュ） */
   async function termsFor(media) {
@@ -471,5 +493,5 @@ module.exports = function wordpress({ PROJECT, db, query, T, admin, allowedMedia
   /** マイブロック（記事用コンテンツなど）の中の見出し（H2〜H4）（2026-11-13 ユーザー指定） */
   async function myBlockHeads(media, id) { const b = (await myBlockTexts(media)).find(x => String(x.id) === String(id)); return b ? b.heads || [] : null; }
 
-  return { routes, collectAll, ensureTables, titlesFor, listAll, termsFor, myBlocksFor, postStructure, myBlockHeads, _test: { countStatus, countMonth, listMonth } };
+  return { routes, collectAll, ensureTables, titlesFor, postLinks, listAll, termsFor, myBlocksFor, postStructure, myBlockHeads, _test: { countStatus, countMonth, listMonth } };
 };

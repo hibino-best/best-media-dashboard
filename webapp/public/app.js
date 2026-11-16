@@ -345,7 +345,7 @@ const ICO = {
   sim: 'M3 20h18M5 16l4-5 4 3 6-8M17 6h2v2', 'ai-sim': 'M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8zM19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z', simcmp: 'M4 20V10M10 20V4M16 20v-8M22 20H2M3 6l4-2',
   yoy: 'M4 12h16M4 6h10M4 18h7M18 4l3 3-3 3', mom: 'M5 12h14M12 5l7 7-7 7', range: 'M3 5h8v14H3zM13 5h8v14h-8z',
   area: 'M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
-  articles: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h5', artlist: 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01', 'am-list': 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01', 'am-monthly': 'M4 5h16v15H4zM4 9h16M8 3v4M16 3v4M8 13h3M8 16h6', 'am-press': 'M4 5h16v14H4zM8 9h8M8 13h5', 'am-concept': 'M12 3a6 6 0 0 0-3.5 10.9V17h7v-3.1A6 6 0 0 0 12 3zM9.5 20h5', 'am-progress': 'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z', 'am-settings': 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z', 'am-status': 'M4 20V10M10 20V4M16 20v-8M22 20H2', contracts: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h4M15 16l1.5 1.5L19 15', 'rw-active': 'M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', 'rv-monthly': 'M4 20V10M10 20V4M16 20v-8M22 20H2', 'rv-daily': 'M3 17l5-6 4 3 5-7 4 4M3 21h18', 'rv-yoy': 'M4 12h16M4 6h10M4 18h7M18 4l3 3-3 3', 'rv-range': 'M3 5h8v14H3zM13 5h8v14h-8z', 'rv-kintone': 'M4 4h16v16H4zM4 10h16M10 10v10', 'rv-area': 'M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z', 'rv-moshimo': 'M4 17l5-5 4 4 7-8M15 8h5v5', kw: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5', plan: 'M4 4h16v16H4zM8 15l3-3 2 2 4-5',
+  articles: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h5', artlist: 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01', 'am-list': 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01', 'am-monthly': 'M4 5h16v15H4zM4 9h16M8 3v4M16 3v4M8 13h3M8 16h6', 'am-press': 'M4 5h16v14H4zM8 9h8M8 13h5', 'am-concept': 'M12 3a6 6 0 0 0-3.5 10.9V17h7v-3.1A6 6 0 0 0 12 3zM9.5 20h5', 'am-progress': 'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z', 'am-settings': 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z', 'am-status': 'M4 20V10M10 20V4M16 20v-8M22 20H2', contracts: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h4M15 16l1.5 1.5L19 15', 'rw-active': 'M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', 'rv-monthly': 'M4 20V10M10 20V4M16 20v-8M22 20H2', 'rv-daily': 'M3 17l5-6 4 3 5-7 4 4M3 21h18', 'rv-yoy': 'M4 12h16M4 6h10M4 18h7M18 4l3 3-3 3', 'rv-range': 'M3 5h8v14H3zM13 5h8v14h-8z', 'rv-kintone': 'M4 4h16v16H4zM4 10h16M10 10v10', 'rv-area': 'M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z', 'rv-moshimo': 'M4 17l5-5 4 4 7-8M15 8h5v5', kw: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5', 'am-links': 'M5 12h4M15 6h4M15 18h4M9 12l6-6M9 12l6 6M3 10h2v4H3zM19 4h2v4h-2zM19 16h2v4h-2z', plan: 'M4 4h16v16H4zM8 15l3-3 2 2 4-5',
   users: 'M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0zM4 21c1-4 4-6 8-6s7 2 8 6', subs: 'M4 7h16v12H4zM8 3v4M16 3v4M4 11h16', logs: 'M5 4h14v16H5zM8 8h8M8 12h8M8 16h5',
   media: 'M4 6h16M4 12h16M4 18h10M18 16v6M15 19h6', targets: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM12 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2z', api: 'M9 7L4 12l5 5M15 7l5 5-5 5', jobs: 'M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z',
 };
@@ -362,7 +362,7 @@ ICO.system = 'M4 4h6v6H4zM14 4h6v6h-6zM9 14h6v6H9zM7 10v2h10v-2M12 12v2';
 ICO.expenses = 'M3 6h18v12H3zM3 10h18M7 15h3';
 ICO.staff = 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20c.7-3 3-5 6-5s5.3 2 6 5M17 11a2.5 2.5 0 1 0 0-5M21 19c-.4-2-1.7-3.4-3.5-4';
 ICO.roles = 'M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6zM9 12l2 2 4-4';
-const ARTICLE_VIEWS = [{ id: 'am-status', l: '制作状況' }, { id: 'am-progress', l: 'コンテンツ進行管理' }, { id: 'am-press', l: 'プレスリリース進行管理' }, { id: 'am-monthly', l: '月次進行管理' }, { id: 'am-concept', l: 'コンセプト' }, { id: 'kw', l: 'KW追従' }, { id: 'am-settings', l: 'カテゴリ・タグ・ブロック' }];   // 制作状況＝記事進捗＋制作状況＋記事一覧（2026-10-27 ユーザー指定）
+const ARTICLE_VIEWS = [{ id: 'am-status', l: '制作状況' }, { id: 'am-progress', l: 'コンテンツ進行管理' }, { id: 'am-press', l: 'プレスリリース進行管理' }, { id: 'am-monthly', l: '月次進行管理' }, { id: 'am-concept', l: 'コンセプト・競合' }, { id: 'kw', l: 'KW追従' }, { id: 'am-links', l: '内部リンク構造' }, { id: 'am-settings', l: 'カテゴリ・タグ・ブロック' }];   // 制作状況＝記事進捗＋制作状況＋記事一覧（2026-10-27 ユーザー指定）
 const CONTENT_NUM_VIEWS = ['articles', 'artlist', 'kw', 'am-status'];   // メディア数値から移した画面（右上のメディアは state.media を使う）
 /** 支出管理（ダッシュボード）：支出一覧は管理者・BEST役員・BEST社員、ほかは管理者だけ（2026-11-02 ユーザー指定） */
 const EXPENSE_VIEWS = [{ id: 'ex-list', l: '支出一覧' }, { id: 'ex-staff', l: 'BEST人件費' }, { id: 'ex-site', l: 'サイト制作・修正費' }, { id: 'ex-outsource', l: '業務委託費' }, { id: 'ex-press', l: 'プレスリリース費' }, { id: 'ex-tool', l: 'ツール利用費' }];   /* AI利用費はツール利用費にまとめた（2026-11-02 ユーザー指定） */
@@ -385,7 +385,7 @@ const canEditArticles = () => !!me && me.status === 'active' && (me.perms.media 
 const MEDIA_DASHES = ['articles', 'rewards', 'revenue'];   // 右上でメディアを選ぶダッシュボード
 const ADMIN_MEDIA_VIEWS = ['contracts', 'expenses', 'staff'];   // 管理メニューで右上のメディア（メディア累計あり）を使う画面（2026-10-14 ユーザー指定）
 const adminMedia = () => state.adminMedia || ALL;
-const dashViews = () => state.dash === 'ai' ? AI_VIEWS.filter(v => v.id !== 'ai-errcheck' || hasCap('ai_errcheck', () => false)) : state.dash === 'expenses' ? expenseViews() : state.dash === 'goals' ? WORK_VIEWS : state.dash === 'rewards' ? rewardViews() : state.dash === 'revenue' ? REVENUE_VIEWS : state.dash === 'articles' ? ARTICLE_VIEWS.filter(v => isWriterOnly() ? v.id === 'am-monthly' : (v.id !== 'am-progress' || canEditArticles()) && (v.id !== 'am-press' || canSeePress()) && (v.id !== 'am-monthly' || canEditArticles()) && (v.id !== 'am-settings' || isAdminArticles()) && (v.id !== 'am-concept' || canConcept())) : VIEWS.filter(v => !['sim', 'simcmp'].includes(v.id) || hasCap('sim_view', () => !noMoney()));   /* REsta社員はシミュレーションの予測を見る権限がないので、タブを出さない（2026-11-06 ユーザー指定：見る権限がないタブは非表示） */
+const dashViews = () => state.dash === 'ai' ? AI_VIEWS.filter(v => v.id !== 'ai-errcheck' || hasCap('ai_errcheck', () => false)) : state.dash === 'expenses' ? expenseViews() : state.dash === 'goals' ? WORK_VIEWS : state.dash === 'rewards' ? rewardViews() : state.dash === 'revenue' ? REVENUE_VIEWS : state.dash === 'articles' ? ARTICLE_VIEWS.filter(v => isWriterOnly() ? v.id === 'am-monthly' : (v.id !== 'am-progress' || canEditArticles()) && (v.id !== 'am-press' || canSeePress()) && (v.id !== 'am-monthly' || canEditArticles()) && (v.id !== 'am-settings' || isAdminArticles()) && (v.id !== 'am-concept' || canConcept()) && (v.id !== 'am-links' || canConcept())) : VIEWS.filter(v => !['sim', 'simcmp'].includes(v.id) || hasCap('sim_view', () => !noMoney()));   /* REsta社員はシミュレーションの予測を見る権限がないので、タブを出さない（2026-11-06 ユーザー指定：見る権限がないタブは非表示） */
 const ADMIN_GROUPS = { users: ['users', 'roles'], media: ['media', 'targets', 'people'] };
 const groupOf = id => Object.keys(ADMIN_GROUPS).find(g => ADMIN_GROUPS[g].includes(id));
 /** まとめた管理メニューの中のタブ（見られるものだけ） */
@@ -3992,7 +3992,7 @@ const CP_LONG = ['purpose', 'article_purpose', 'wants', 'concept', 'goal', 'qual
 const CP_PH = { purpose: 'このメディアは何のためにあるか', url: 'https://…', article_purpose: '記事を作る目的（集客・問い合わせ・ブランディングなど）', wants: '読者・会社がこのメディアに求めるもの', concept: 'メディアのコンセプト（一言で）', cv_tel: '0120-…', cv_form: 'https://…（問い合わせフォームのURL）', goal: '数値目標など（月間PV・問い合わせ件数など）', quality: '記事に求める品質（専門性・文字数・画像・監修など）' };
 const canConcept = () => hasCap('concept_view', () => !!me && !!me.perms && me.perms.articles !== 'none');
 function viewAmConcept() {
-  return { html: '<section class="panel" id="cp-body"><p class="loading">読み込み中…</p></section>', view: 'コンテンツ作成：コンセプト', after: async () => {
+  return { html: '<section class="panel" id="cp-body"><p class="loading">読み込み中…</p></section>', view: 'コンテンツ作成：コンセプト・競合', after: async () => {
     const mySeq = renderSeq;
     await loadItems(); if (mySeq !== renderSeq) return;
     const media = artMedia(); renderArtMediaSelect();
@@ -4244,7 +4244,7 @@ function paintConcept() {
           + '<div class="cp-cgrid">' + [['overlap', '競合サイト'], ['serp', '代表KWの検索上位']].map(([m, l]) => '<div class="cp-cbox"><div class="row" style="justify-content:space-between"><b>' + l + '</b>' + (ed ? '<button class="btn sm primary" type="button" data-cpfetch="' + ti + '" data-method="' + m + '"' + cpLockAttr(latest(t.sub, m)) + '>取得（Ahrefs）</button>' : '') + '</div>' + cpLastHtml(latest(t.sub, m))
             + (m === 'overlap' && latest(t.sub, m) && latest(t.sub, m).list.length ? '<div class="cp-bub"><canvas id="cp-bub-' + ti + '" role="img" aria-label="競合サイトのグラフ（横＝共通KW数、縦＝オーガニックトラフィック、円の大きさ＝KW重複率）"></canvas></div><p class="note cp-bub-n">横＝共通KW数　縦＝オーガニックトラフィック　円の大きさ＝KW重複率（★は濃い色）</p>' : '') + tbl(latest(t.sub, m), m) + '</div>').join('') + '</div></div>'; }).join('');
   }
-  box.innerHTML = H('コンセプト <small>' + esc(mediaLabel(CP.media)) + '</small>', CP.tab === 'compete' ? ['Ahrefs'] : [], upd) + tabs + (ed ? '' : '<p class="note">見るだけです（編集は権限管理の「コンセプトの編集」がある人）。</p>') + '<div class="cp-body">' + body + '</div>';
+  box.innerHTML = H('コンセプト・競合 <small>' + esc(mediaLabel(CP.media)) + '</small>', CP.tab === 'compete' ? ['Ahrefs'] : [], upd) + tabs + (ed ? '' : '<p class="note">見るだけです（編集は権限管理の「コンセプトの編集」がある人）。</p>') + '<div class="cp-body">' + body + '</div>';
   box.querySelectorAll('textarea.cp-auto').forEach(el => { cpAutosize(el); el.addEventListener('input', () => cpAutosize(el)); });
   bindConcept();
   if ((CP.tab === 'compete' || CP.tab === 'kwcmp') && CP.units === undefined) cpLoadUnits();
@@ -4302,6 +4302,144 @@ function bindConcept() {
     try { const res = await apiSend('POST', '/concept/competitors', { media: CP.media, sub, method, kws, dirUrl, force: ea.force }); d.competitors = [res.result].concat((d.competitors || []).filter(x => !((x.sub || '') === sub && x.method === method))); if (res.result.unitsAfter) CP.units = res.result.unitsAfter; paintConcept(); toast('競合サイトを取得しました（' + res.result.list.length + '件）'); }
     catch (e) { b.disabled = false; b.textContent = '取得（Ahrefs）'; alert('取得できませんでした：' + e.message); }
   });
+}
+
+// ---------- 内部リンク構造（コンテンツ作成 → KW追従の下。2026-11-16 ユーザー指定） ----------
+/* コンテンツ管理表のピラーページ（親・子）・キラーページ・ロングテールページが、どのページに内部リンクを張っているかを、ディレクトリごとの木の形で見せる。
+   リンクは公開記事の本文（WordPress の公開API）から「読み込む」を押したときに読む（link_maps）。未公開の記事はグレー。 */
+let LM = null;
+const lmUrlKey = u => { try { const x = new URL(/^https?:\/\//.test(u) ? u : 'https://' + u); return (x.hostname.replace(/^www\./, '') + decodeURI(x.pathname)).replace(/\/+$/, ''); } catch (e) { return ''; } };
+/** ポジション → 列（2＝ピラー(親)、3＝ピラー(子)・キラー(親)、4＝ロングテール・キラー(子)・未設定） */
+function lmLevel(pos) { const p = String(pos || ''); if (/ピラー/.test(p)) return /子/.test(p) ? 3 : 2; if (/キラー/.test(p)) return /子/.test(p) ? 4 : 3; return 4; }
+function lmKind(pos) { const p = String(pos || ''); if (/ピラー/.test(p)) return /子/.test(p) ? 'pc' : 'pp'; if (/キラー/.test(p)) return /子/.test(p) ? 'kc' : 'kp'; if (/ロングテール/.test(p)) return 'lt'; return 'no'; }
+const LM_KIND_L = { pp: 'ピラー(親)', pc: 'ピラー(子)', kp: 'キラー(親)', kc: 'キラー(子)', lt: 'ロングテール', no: 'ポジション未設定' };
+function viewAmLinks() {
+  return { html: '<section class="panel" id="lm-body"><p class="loading">読み込み中…</p></section>', view: 'コンテンツ作成：内部リンク構造', after: async () => {
+    const mySeq = renderSeq;
+    await loadItems(); if (mySeq !== renderSeq) return;
+    const media = artMedia(); renderArtMediaSelect();
+    const box = $('lm-body');
+    if (media === ALL) { box.innerHTML = H('内部リンク構造 <small>メディア累計</small>', []) + '<p class="empty">内部リンク構造はメディアごとです。右上でメディアを選んでください。</p>'; return; }
+    let r; try { r = await api('/link-structure?media=' + encodeURIComponent(media)); } catch (e) { if (mySeq === renderSeq) box.innerHTML = H('内部リンク構造', []) + '<p class="err">' + esc(e.message) + '</p>'; return; }
+    if (mySeq !== renderSeq) return;
+    LM = { media, map: r.map, sel: null };
+    paintLinks();
+  } };
+}
+/** 管理表の記事（リライトの行は除く。同じURLは1つ）と、読み込んだリンクを組み合わせる */
+function lmModel() {
+  const map = LM.map, items = [], byUrl = {};
+  (ITEMS || []).filter(x => x.media === LM.media && !x.deleted && x.kw && !/リライト/.test(x.type || '')).forEach(x => {
+    const u = x.url ? lmUrlKey(x.url) : ''; if (u && byUrl[u]) return;
+    const it = { key: x.key, no: x.no || '', kw: normKwStr(x.kw), pos: x.position || '', sub: x.sub || '', url: x.url || '', pub: olPublished(x), out: new Set(), inn: new Set() };
+    it.kind = lmKind(it.pos); it.lv = lmLevel(it.pos); items.push(it); if (u) byUrl[u] = it;
+  });
+  if (map && map.pages) {
+    const pg = map.pages.map(u => byUrl[u] || null);
+    (map.edges || []).forEach(e => { const [a, b] = String(e).split('>').map(Number), A = pg[a], B = pg[b]; if (A && B && A !== B) { A.out.add(B.key); B.inn.add(A.key); } });
+  }
+  /* 管理表のキラーページは親・子の区別がない（読み込みで「キラーページ(子)」も「キラーページ」になる）ので、リンクで決める：
+     ピラー(親)とつながっている、またはほかのキラーページとつながっていない → キラー(親)。キラー(親)とだけつながっている → キラー(子) */
+  const linked = (a, b) => a.out.has(b.key) || a.inn.has(b.key);
+  const ks = items.filter(x => /キラー/.test(x.pos) && !/子/.test(x.pos)), pps = items.filter(x => x.kind === 'pp');
+  const kp = ks.filter(k => k.sub && (pps.some(p => p.sub === k.sub && linked(p, k)) || !ks.some(o => o !== k && o.sub === k.sub && linked(o, k))));
+  ks.forEach(k => { const child = !kp.includes(k) && kp.some(p => p.sub === k.sub && linked(p, k)); k.kind = child ? 'kc' : 'kp'; k.lv = child ? 4 : 3; });
+  return items;
+}
+/** ディレクトリ1つ分の並び（行と座標）を決める */
+function lmLayout(list) {
+  const by = k => list.find(x => x.key === k), linked = (a, b) => a.out.has(b.key) || a.inn.has(b.key);
+  const L2 = list.filter(x => x.lv === 2), L3 = list.filter(x => x.lv === 3), L4 = list.filter(x => x.lv === 4);
+  const roots = L2.length ? L2 : [{ key: '_none', kw: '（ピラーページ(親)なし）', kind: 'none', lv: 2, pub: true, out: new Set(), inn: new Set(), virtual: true }];
+  const kids = new Map(roots.map(r => [r.key, []])), kids3 = new Map(L3.map(x => [x.key, []])), loose = [];
+  L3.forEach(x => { const p = roots.find(r => !r.virtual && linked(r, x)) || roots[0]; kids.get(p.key).push(x); });
+  L4.forEach(x => { const p = x.kind === 'kc' ? L3.find(c => linked(c, x) && c.kind === 'kp') : (L3.find(c => linked(c, x) && c.kind === 'pc') || L3.find(c => linked(c, x))); if (p) kids3.get(p.key).push(x); else { const r = roots.find(rr => !rr.virtual && linked(rr, x)); if (r) kids.get(r.key).push(x); else loose.push(x); } });
+  const rows = []; let y = 0; const pos = new Map(), RH = 46;
+  const place = (n, col, yy) => pos.set(n.key, { n, col, y: yy });
+  roots.forEach(r => {
+    const ys = [];
+    kids.get(r.key).forEach(c => {
+      if (c.lv === 4) { place(c, 4, y); ys.push(y); y += RH; return; }
+      const cs = kids3.get(c.key) || [], cy = [];
+      cs.forEach(g => { place(g, 4, y); cy.push(y); y += RH; });
+      if (!cs.length) { cy.push(y); y += RH; }
+      const yy = (cy[0] + cy[cy.length - 1]) / 2; place(c, 3, yy); ys.push(yy);
+    });
+    if (!ys.length) { ys.push(y); y += RH; }
+    place(r, 2, (ys[0] + ys[ys.length - 1]) / 2);
+  });
+  const looseY = y + (loose.length ? 30 : 0);
+  loose.forEach((x, i) => place(x, 4, looseY + i * RH));
+  const h = loose.length ? looseY + loose.length * RH : y;
+  return { pos, h: Math.max(h, RH), rootYs: roots.map(r => pos.get(r.key).y), loose: loose.length, looseY };
+}
+function lmSvg(dir, list) {
+  const L = lmLayout(list), CWS = [120, 120, 170, 170, 170], GAP = 34, NH = 38, top = 46;
+  const X = c => CWS.slice(0, c).reduce((a, w) => a + w + GAP, 0), NWc = c => CWS[c];
+  const H0 = L.h + top + 30, W = X(4) + CWS[4] + 50;
+  const midY = (L.rootYs[0] + L.rootYs[L.rootYs.length - 1]) / 2 + top;
+  const cls = n => n.virtual ? 'lm-n lm-none' : 'lm-n lm-' + n.kind + (n.pub ? '' : ' lm-unpub') + (LM.sel === n.key ? ' lm-sel' : '');
+  const trunc = (s, n) => s.length > n ? s.slice(0, n - 1) + '…' : s;
+  const node = (col, y, c, l1, l2, key, tip) => { const x = X(col), NW = NWc(col); return '<g class="' + c + '"' + (key ? ' data-lmkey="' + esc(key) + '"' : '') + ' transform="translate(' + x + ',' + (y - NH / 2) + ')"><title>' + esc(tip || l1) + '</title><rect width="' + NW + '" height="' + NH + '" rx="' + NH / 2 + '"></rect>'
+    + '<text x="' + NW / 2 + '" y="' + (l2 ? 15 : 23) + '" text-anchor="middle" class="lm-t1">' + esc(l1) + '</text>' + (l2 ? '<text x="' + NW / 2 + '" y="30" text-anchor="middle" class="lm-t2">' + esc(l2) + '</text>' : '') + '</g>'; };
+  const curve = (x1, y1, x2, y2, c) => { const mx = (x1 + x2) / 2; return '<path class="' + c + '" d="M' + x1 + ',' + y1 + ' C' + mx + ',' + y1 + ' ' + mx + ',' + y2 + ' ' + x2 + ',' + y2 + '"></path>'; };
+  let lines = '', nodes = '';
+  // 構造の線（メディア → ディレクトリ → ピラー(親)）
+  lines += curve(X(0) + NWc(0), midY, X(1), midY, 'lm-e lm-struct');
+  L.rootYs.forEach(y => { lines += curve(X(1) + NWc(1), midY, X(2), y + top, 'lm-e lm-struct'); });
+  // 記事どうしの内部リンク（どちら向きでも1本。両方向は太線、片方向は点線）
+  const done = new Set();
+  L.pos.forEach(({ n, col, y }) => { (n.out || new Set()).forEach(k => {
+    const t = L.pos.get(k); if (!t) return; const id = [n.key, k].sort().join('|'); if (done.has(id)) return; done.add(id);
+    const both = t.n.out && t.n.out.has(n.key), on = LM.sel && (LM.sel === n.key || LM.sel === k);
+    const c = 'lm-e lm-link' + (both ? ' lm-both' : ' lm-one') + (on ? ' lm-on' : LM.sel ? ' lm-dim' : '');
+    const [a, b] = col <= t.col ? [{ col, y }, t] : [t, { col, y }];
+    if (a.col === b.col) { const x = X(a.col) + NWc(a.col), dx = 30 + Math.min(60, Math.abs(a.y - b.y) / 6); lines += '<path class="' + c + '" d="M' + x + ',' + (a.y + top) + ' C' + (x + dx) + ',' + (a.y + top) + ' ' + (x + dx) + ',' + (b.y + top) + ' ' + x + ',' + (b.y + top) + '"></path>'; }
+    else lines += curve(X(a.col) + NWc(a.col), a.y + top, X(b.col), b.y + top, c);
+  }); });
+  nodes += node(0, midY, 'lm-n lm-media', trunc(mediaLabel(LM.media), 9), '', '', mediaLabel(LM.media));
+  nodes += node(1, midY, 'lm-n lm-dir', trunc(dir || '（ディレクトリなし）', 9), 'カテゴリ', '', dir);
+  L.pos.forEach(({ n, col, y }) => {
+    if (n.virtual) { nodes += node(col, y + top, cls(n), n.kw, '', ''); return; }
+    const lk = n.out.size + n.inn.size, l2 = (LM_KIND_L[n.kind] || '') + (n.pub ? '' : '・未公開') + (n.pub ? ' ↗' + n.out.size + ' ↙' + n.inn.size : '');
+    nodes += node(col, y + top, cls(n) + (n.pub && !lk ? ' lm-nolink' : ''), trunc('「' + n.kw + '」', 13), l2, n.key, (n.no ? 'No.' + n.no + ' ' : '') + n.kw + '\n' + LM_KIND_L[n.kind] + (n.pub ? '（公開中）' : '（未公開）') + '\nリンクを張っている先 ' + n.out.size + '件／リンクされている元 ' + n.inn.size + '件');
+  });
+  const lbl = L.loose ? '<text x="' + X(4) + '" y="' + (L.looseY + top - 22) + '" class="lm-lbl">ピラー・キラーとつながっていないページ（' + L.loose + '件）</text>' : '';
+  const heads = ['メディア', 'カテゴリ', 'ピラー(親)', 'ピラー(子)・キラー(親)', 'ロングテール・キラー(子)'].map((h, i) => '<text x="' + (X(i) + NWc(i) / 2) + '" y="12" text-anchor="middle" class="lm-head">' + h + '</text>').join('');
+  return '<div class="lm-svgwrap"><svg class="lm-svg" width="' + W + '" height="' + H0 + '" viewBox="0 0 ' + W + ' ' + H0 + '" role="img" aria-label="' + esc((dir || 'ディレクトリなし') + 'の内部リンク構造') + '">' + heads + lines + lbl + nodes + '</svg></div>';
+}
+function lmDetail(items) {
+  const n = items.find(x => x.key === LM.sel); if (!n) return '';
+  const nm = k => { const x = items.find(i => i.key === k); return x ? '<li><span class="lm-dot lm-' + x.kind + (x.pub ? '' : ' lm-unpub') + '"></span>' + (x.no ? 'No.' + esc(x.no) + ' ' : '') + esc(x.kw) + ' <span class="note">' + esc(LM_KIND_L[x.kind]) + (x.sub && x.sub !== n.sub ? '・' + esc(x.sub) : '') + '</span></li>' : ''; };
+  return '<div class="lm-detail"><div class="row" style="justify-content:space-between"><b>' + (n.no ? 'No.' + esc(n.no) + ' ' : '') + esc(n.kw) + ' <span class="note">' + esc(LM_KIND_L[n.kind]) + (n.pub ? '' : '・未公開') + '</span></b><button class="linkbtn" type="button" id="lm-unsel">閉じる</button></div>'
+    + (n.url ? '<p class="note"><a href="' + escUrl(n.url) + '" target="_blank" rel="noopener">' + esc(n.url) + '</a></p>' : '')
+    + '<div class="lm-dgrid"><div><h4>このページから張っているリンク（' + n.out.size + '）</h4><ul>' + ([...n.out].map(nm).join('') || '<li class="note">なし</li>') + '</ul></div>'
+    + '<div><h4>このページにリンクしているページ（' + n.inn.size + '）</h4><ul>' + ([...n.inn].map(nm).join('') || '<li class="note">なし</li>') + '</ul></div></div></div>';
+}
+function paintLinks() {
+  const box = $('lm-body'); if (!box || !LM) return;
+  const items = lmModel(), m = LM.map;
+  const dirs = [...new Set(items.map(x => x.sub))].sort((a, b) => (artSubs(LM.media) || []).indexOf(a) - (artSubs(LM.media) || []).indexOf(b));
+  const shown = dirs.filter(s => !state.artSub || state.artSub === s);
+  const d = m && m.at ? new Date(m.at) : null;
+  const last = m ? '前回の読み込み：<b>' + (d && !isNaN(d) ? ymdLocal(d) + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') : '') + '</b>　<b>' + esc(m.name || m.by || '') + '</b>　／　公開記事 ' + nf.format((m.pages || []).length) + '件・記事どうしのリンク ' + nf.format((m.edges || []).length) + '本' : 'まだ読み込んでいません';
+  const unmatched = m ? (m.pages || []).filter(u => !items.some(x => x.url && lmUrlKey(x.url) === u)).length : 0;
+  const legend = '<div class="lm-legend">' + [['pp', 'ピラーページ(親)'], ['pc', 'ピラーページ(子)'], ['lt', 'ロングテール'], ['kp', 'キラーページ(親)'], ['kc', 'キラーページ(子)'], ['no', 'ポジション未設定'], ['unpub', '未公開']].map(([k, l]) => '<span><span class="lm-dot lm-' + (k === 'unpub' ? 'lt lm-unpub' : k) + '"></span>' + l + '</span>').join('')
+    + '<span><svg width="34" height="10"><path class="lm-e lm-link lm-both" d="M2,5 L32,5"></path></svg>両方向のリンク</span><span><svg width="34" height="10"><path class="lm-e lm-link lm-one" d="M2,5 L32,5"></path></svg>片方向のリンク</span></div>';
+  box.innerHTML = H('内部リンク構造 <small>' + esc(mediaLabel(LM.media)) + '</small>', ['WordPress'])
+    + '<div class="lm-bar"><button class="btn sm primary" type="button" id="lm-load">WordPress から読み込む</button><span class="note">' + last + '</span></div>'
+    + '<p class="note">コンテンツ管理表の記事を、ポジション（ピラーページ・キラーページ・ロングテール）ごとに並べ、<b>公開記事の本文にある内部リンク</b>を線で結びます。未公開の記事はグレーです。並びは、つながっているピラーページの下に置いています（どこともつながっていないページは下にまとめます）。四角を押すと、そのページのリンク先・リンク元が出ます。'
+    + (unmatched ? '<br>コンテンツ管理表に記事URLがない公開記事が ' + unmatched + '件あります（図には出ません）。' : '') + '</p>'
+    + legend + lmDetail(items)
+    + (shown.length ? shown.map(s => { const list = items.filter(x => x.sub === s); return '<div class="cp-dir lm-dir-box"><h3 class="cp-dir-h">' + esc(s ? 'ディレクトリ：' + s : 'ディレクトリなし') + ' <span class="note">' + list.length + '記事（公開 ' + list.filter(x => x.pub).length + '）</span></h3>' + lmSvg(s, list) + '</div>'; }).join('') : '<p class="empty">このメディアのコンテンツ管理表に記事がありません</p>');
+  $('lm-load').onclick = async () => {
+    if (!confirm(mediaLabel(LM.media) + ' の公開記事の本文を WordPress から読み、内部リンクを調べます（Ahrefs のユニットは使いません）。記事が多いと1〜2分かかります。よろしいですか？')) return;
+    const b = $('lm-load'); b.disabled = true; b.textContent = '読み込み中…';
+    try { const r = await apiSend('POST', '/link-structure', { media: LM.media }); LM.map = r.map; paintLinks(); toast('内部リンクを読み込みました（' + r.map.pages.length + '記事）'); }
+    catch (e) { b.disabled = false; b.textContent = 'WordPress から読み込む'; alert('読み込めませんでした：' + e.message); }
+  };
+  box.querySelectorAll('[data-lmkey]').forEach(g => g.onclick = () => { LM.sel = LM.sel === g.dataset.lmkey ? null : g.dataset.lmkey; const y = window.scrollY; paintLinks(); window.scrollTo(0, y); });
+  if ($('lm-unsel')) $('lm-unsel').onclick = () => { LM.sel = null; paintLinks(); };
 }
 
 function viewAmSettings() {
@@ -6417,7 +6555,7 @@ function viewAiSim() {
 }
 const RENDER = { 'ai-errcheck': viewErrCheck, 'ai-sim': viewAiSim, simcmp: viewSimCompare, sim: viewSim, summary: viewSummary, monthly: viewMonthly, daily: viewDaily, yoy: () => viewPeriodCompare('yoy'), mom: () => viewPeriodCompare('mom'), range: viewRange,
   'ex-list': () => viewExpenses('list'), 'ex-staff': () => viewExpenses('staff'), 'ex-site': () => viewExpenses('site'), 'ex-outsource': () => viewExpenses('outsource'), 'ex-press': () => viewExpenses('press'), 'ex-tool': () => viewExpenses('tool'), 'ex-ai': () => viewExpenses('ai'),
-  area: viewArea, articles: viewArticles, artlist: viewArtList, 'am-list': viewAmList, 'am-status': viewProduction, 'am-progress': () => { const v = viewAmProgress(); return Object.assign({}, v, { html: v.html + '<section class="panel" id="press-body"><p class="loading">プレスリリースを読み込み中…</p></section>', after: async () => { await v.after(); await drawPressPanel(true); } }); }, 'am-press': () => ({ html: '<section class="panel" id="press-body"><p class="loading">読み込み中…</p></section>', view: 'プレスリリース進行管理', after: drawPressPanel }), 'am-monthly': viewAmMonthly, 'am-concept': viewAmConcept,   /* コンセプト（2026-11-13 ユーザー指定） */   /* コンテンツ進行管理の下の別の画面（2026-10-31 ユーザー指定） */ 'am-settings': viewAmSettings, outline: viewOutline, 'rw-active': viewRewardsAll, 'rw-mine': viewRewards, 'rw-me': viewRewardMe, 'rw-preview': viewRewardPreview, 'rw-batch': viewInvBatch, 'rw-finance': viewInvFinance, 'rw-check': viewRwCheck, 'rv-monthly': () => viewRevTotal('monthly'), 'rv-range': () => viewRevTotal('range'), 'rv-kintone': () => viewRev(state.rvKMode || 'monthly'), 'rv-moshimo': viewMoshimo, kw: viewKw, plan: viewPlan,
+  area: viewArea, articles: viewArticles, artlist: viewArtList, 'am-list': viewAmList, 'am-status': viewProduction, 'am-progress': () => { const v = viewAmProgress(); return Object.assign({}, v, { html: v.html + '<section class="panel" id="press-body"><p class="loading">プレスリリースを読み込み中…</p></section>', after: async () => { await v.after(); await drawPressPanel(true); } }); }, 'am-press': () => ({ html: '<section class="panel" id="press-body"><p class="loading">読み込み中…</p></section>', view: 'プレスリリース進行管理', after: drawPressPanel }), 'am-monthly': viewAmMonthly, 'am-concept': viewAmConcept, 'am-links': viewAmLinks,   /* 内部リンク構造（2026-11-16 ユーザー指定） */   /* コンセプト（2026-11-13 ユーザー指定） */   /* コンテンツ進行管理の下の別の画面（2026-10-31 ユーザー指定） */ 'am-settings': viewAmSettings, outline: viewOutline, 'rw-active': viewRewardsAll, 'rw-mine': viewRewards, 'rw-me': viewRewardMe, 'rw-preview': viewRewardPreview, 'rw-batch': viewInvBatch, 'rw-finance': viewInvFinance, 'rw-check': viewRwCheck, 'rv-monthly': () => viewRevTotal('monthly'), 'rv-range': () => viewRevTotal('range'), 'rv-kintone': () => viewRev(state.rvKMode || 'monthly'), 'rv-moshimo': viewMoshimo, kw: viewKw, plan: viewPlan,
   users: viewUsers, roles: viewRoles, system: viewSystem,
   subs: () => ({ html: '<section class="panel" id="ex-subs"><p class="loading">読み込み中…</p></section><section class="panel" id="adm-imp-site"></section><section class="panel" id="adm-imp-free"></section><section class="panel" id="adm-imp-prt"></section><section class="panel" id="adm-imp-press"></section><section class="panel" id="adm-imp-tool"></section>', view: '支出管理', after: async () => {
     /* 支出管理（旧：定額のサービス。2026-11-05 ユーザー指定）：定額のサービスと、支出情報の各タブと同じ請求の入力。どちらで入れても同じ支出（expense_invoices）になる */
