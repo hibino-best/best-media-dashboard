@@ -35,8 +35,24 @@ if (cmd === 'data') {
 const cx = codexExe(); if (!cx) { console.log('CODEX が見つかりません（Codex アプリが入っているか確認）'); process.exit(1); }
 const r = spawnSync(cx, ['exec', '--sandbox', 'read-only', '--skip-git-repo-check', '--ephemeral', '-C', ROOT, '-o', out, '-'], { input: prompt, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, timeout: 30 * 60 * 1000 });
 const md = fs.existsSync(out) ? fs.readFileSync(out, 'utf8') : '';
-if (!md) { console.log('CODEX から返事がありませんでした：' + String(r.stderr || r.error || '').slice(-500)); process.exit(1); }
+if (!md) {
+  console.log('CODEX から返事がありませんでした：' + String(r.stderr || r.error || '').slice(-500));
+  /* 確認できなかったことも Supabase に記録（2026-11-16） */
+  fs.writeFileSync(out, '（CODEX から返事がありませんでした。時間切れ・PCのスリープ・ログイン切れなど）\n');
+  const lf = out.replace(/\.md$/, '_run.log'); fs.writeFileSync(lf, String(r.stdout || '') + '\n' + String(r.stderr || ''));
+  const kind = cmd === 'data' ? 'data' : 'pre', ts = path.basename(out).replace(/^predeploy_/, '').replace(/\.md$/, '');
+  spawnSync(process.execPath, [path.join(__dirname, 'err_check_fs.js'), 'record', kind, kind + '_' + ts.slice(0, 8) + '_' + ts.slice(8, 12), out, lf, '確認できず'], { encoding: 'utf8' });
+  process.exit(1);
+}
 console.log(md);
 const m = [...md.matchAll(/```json\s*([\s\S]*?)```/g)].pop(); let j = null; try { j = m && JSON.parse(m[1]); } catch (e) { j = null; }
 console.log('\n→ 結果：' + out);
+/* Supabase の記録（AIエラーチェッカーの点検の記録・費用に入る。2026-11-13 ユーザー指定：これも Supabase に） */
+{
+  const lf = out.replace(/\.md$/, '_run.log'); fs.writeFileSync(lf, String(r.stdout || '') + '\n' + String(r.stderr || ''));
+  const kind = cmd === 'data' ? 'data' : 'pre', ts = path.basename(out).replace(/^predeploy_/, '').replace(/\.md$/, ''), rid = kind + '_' + ts.slice(0, 8) + '_' + ts.slice(8, 12);
+  const what = cmd === 'data' ? process.argv.slice(3).map(x => path.basename(x)).join('・') : '前回デプロイからの差分';
+  const rr = spawnSync(process.execPath, [path.join(__dirname, 'err_check_fs.js'), 'record', kind, rid, out, lf, what], { encoding: 'utf8' });
+  console.log(String(rr.stdout || '').trim() || 'Supabase に記録できませんでした：' + String(rr.stderr || '').trim());
+}
 process.exit(j && j.ok === true ? 0 : 2);

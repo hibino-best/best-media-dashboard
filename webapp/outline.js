@@ -89,8 +89,8 @@ module.exports = function ({ db, admin, query, T, allowedMedia, capOk, docIdOf, 
   async function itemOf(key) {
     if (key.startsWith('entry:')) { const s = await db.collection('article_entries').doc(key.slice(6)).get(); return s.exists && !s.data().deleted ? s.data() : null; }
     const media = key.split('|')[0];
-    const rows = await query('SELECT media, `no`, row_no, kw, writer, director, upload_owner, supervisor, writing_url FROM ' + T('article_items') + ' WHERE media = @m', { m: media });
-    const r = rows.find(x => keyOfItem(x) === key); if (!r) return null;
+    const rows = await query("SELECT media, IFNULL(sub, '') sub, `no`, row_no, kw, writer, director, upload_owner, supervisor, writing_url FROM " + T('article_items') + ' WHERE media = @m', { m: media });
+    const r = rows.find(x => keyOfItem(x, rows) === key); if (!r) return null;   /* 別ディレクトリの同じ記事No.を見分ける（2026-11-16） */
     const ov = await db.collection('article_overrides').doc(docIdOf(key)).get();
     if (ov.exists) Object.keys(ov.data()).filter(k => k.startsWith('f_')).forEach(k => { r[k.slice(2)] = ov.data()[k]; });
     return r;

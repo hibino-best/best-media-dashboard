@@ -13,7 +13,10 @@ module.exports = function errcheck({ supa, isFullAdmin, capOk, usdJpy }) {
     if (!(await ready())) return { count: 0, runs: [] };
     const [checks, finds, decs] = await Promise.all([supa.rest('GET', 'err_checks?select=run_id,at,status&order=at.desc&limit=20'), supa.rest('GET', 'err_findings?select=id,run_id,level&order=id.desc&limit=2000'), supa.rest('GET', 'err_decisions?select=finding_id&limit=5000')]);
     const done = new Set(decs.map(d => d.finding_id));
-    const runs = checks.map(c => { const f = finds.filter(x => x.run_id === c.run_id && !done.has(x.id)); return { run_id: c.run_id, at: c.at, status: c.status, open: f.length, high: f.filter(x => x.level === '高').length }; }).filter(r => r.open || r.status === 'incomplete');
+    /* 報告を読めなかった回（incomplete）は、同じ種類（週次／デプロイ前／データ修正前）のあとの点検が終わったら数えない（2026-11-16 AIエラーチェッカーの指摘 #4・#12） */
+    const kindOf = id => (String(id).match(/^(pre|data)_/) || [])[1] || 'weekly';
+    const superseded = c => checks.some(x => kindOf(x.run_id) === kindOf(c.run_id) && x.at > c.at && x.status !== 'incomplete' && x.status !== 'running');
+    const runs = checks.map(c => { const f = finds.filter(x => x.run_id === c.run_id && !done.has(x.id)); return { run_id: c.run_id, at: c.at, status: c.status, open: f.length, high: f.filter(x => x.level === '高').length }; }).filter(r => r.open || (r.status === 'incomplete' && !superseded(r)));
     return { count: runs.reduce((s, r) => s + (r.open || 1), 0), runs };
   }
   function routes(api) {
@@ -40,7 +43,7 @@ module.exports = function errcheck({ supa, isFullAdmin, capOk, usdJpy }) {
     api.get('/errcheck/:run', async (req, res, next) => {
       try {
         if (!ok(req.user)) return res.status(403).json({ error: '見る権限がありません' });
-        const run = String(req.params.run || ''); if (!/^\d{8}_\d{4}$/.test(run)) return res.status(400).json({ error: '指定が正しくありません' });
+        const run = String(req.params.run || ''); if (!/^((pre|data)_)?\d{8}_\d{4}$/.test(run)) return res.status(400).json({ error: '指定が正しくありません' });
         const [c] = await supa.rest('GET', 'err_checks?select=*&run_id=eq.' + run); if (!c) return res.status(404).json({ error: '見つかりません' });
         const finds = await supa.rest('GET', 'err_findings?select=*&run_id=eq.' + run + '&order=id.asc');
         const decs = finds.length ? await supa.rest('GET', 'err_decisions?select=*&finding_id=in.(' + finds.map(f => f.id).join(',') + ')&order=at.desc') : [];
@@ -56,7 +59,11 @@ module.exports = function errcheck({ supa, isFullAdmin, capOk, usdJpy }) {
         if (!id || !['ok', 'ng'].includes(decision)) return res.status(400).json({ error: '指定が正しくありません' });
         if (decision === 'ng' && !reason) return res.status(400).json({ error: '却下の理由を入れてください' });
         const [f] = await supa.rest('GET', 'err_findings?select=id,run_id&id=eq.' + id); if (!f) return res.status(404).json({ error: '指摘が見つかりません' });
-        await supa.rest('POST', 'err_decisions', [{ finding_id: id, run_id: f.run_id, decision, reason, decided_by: req.user.email || '' }], 'return=minimal');
+        /* 1つの指摘に判断は1件（判断し直したら上書き。2026-11-16 AIエラーチェッカーの指摘 #6） */
+        const row = { finding_id: id, run_id: f.run_id, decision, reason, decided_by: req.user.email || '', at: new Date().toISOString() };
+        const old = await supa.rest('GET', 'err_decisions?select=id&finding_id=eq.' + id + '&order=at.desc');
+        if (old.length) { await supa.rest('PATCH', 'err_decisions?id=eq.' + old[0].id, row, 'return=minimal'); if (old.length > 1) await supa.rest('DELETE', 'err_decisions?id=in.(' + old.slice(1).map(x => x.id).join(',') + ')', null, 'return=minimal'); }
+        else await supa.rest('POST', 'err_decisions', [row], 'return=minimal');
         res.json({ ok: true });
       } catch (e) { next(e); }
     });

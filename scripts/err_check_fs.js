@@ -6,6 +6,7 @@
 //   node scripts/err_check_fs.js start <実行ID> <材料のフォルダ>        … 実行を始める（材料を Supabase に入れる）
 //   node scripts/err_check_fs.js get <実行ID> <agent> <出力フォルダ>     … そのAIに渡す分だけを Supabase から書き出す（読んだ記録を残す）
 //   node scripts/err_check_fs.js save <実行ID> <agent> <報告.md> [<stream.jsonl>|<codexのログ>] … 報告と指摘・トークンを保存
+//   node scripts/err_check_fs.js record <pre|data> <実行ID> <報告.md> <codexのログ> <何を見たか>  … デプロイ前・データ修正前の CODEX の確認を記録（2026-11-13 ユーザー指定：これも Supabase に）
 //   node scripts/err_check_fs.js finish <実行ID>                        … 実行を終える（状態・合計。点検の基準を今のコードに）
 const { execSync } = require('child_process'), fs = require('fs'), path = require('path');
 const G = process.env.LOCALAPPDATA + '/Google/Cloud SDK/google-cloud-sdk/bin/gcloud.cmd', PROJECT = 'bestmedia-510909';
@@ -73,12 +74,23 @@ function findingsOf(md) {
     await sbFetch('POST', 'ai_cost_log', [{ ai: AGENTS[agent].provider, agent, model, run_id: 'err-' + run, loop: LOOP, task: 'AIエラーチェッカー ' + run, tokens_in: tin, tokens_out: tout, cache_read: cr, cache_write: cw, usd, note }], 'return=minimal').catch(e => console.error('ai_cost_log：' + e.message));
     return console.log('保存：' + agent + ' 指摘 ' + (f ? f.length : '（JSONを読めず）') + (note ? '　' + note : ''));
   }
+  if (cmd === 'record') {
+    const [kind, run, report, logf, what] = argv.slice(1), KIND = { pre: 'デプロイ前の確認', data: 'データ修正前の確認' }; if (!KIND[kind]) throw new Error('pre か data を指定');
+    const md = read(path.dirname(report), path.basename(report)), lt = logf && fs.existsSync(logf) ? read(path.dirname(logf), path.basename(logf)) : '', tm = [...lt.matchAll(/tokens used\s*\r?\n\s*([\d,]+)/g)].pop(), tin = tm ? Number(tm[1].replace(/,/g, '')) : null;
+    const f = findingsOf(md), at = new Date().toISOString(), rid = 'err-' + run;
+    await sbFetch('POST', 'err_checks', [{ run_id: run, loop: LOOP, status: f && f.length ? 'open' : f ? 'ok' : 'incomplete', ended_at: at, summary: { kind: KIND[kind], what: String(what || '').slice(0, 300) }, materials: {}, reports: { err_codex: { md: cut(md, 120000), parsed: !!f, count: f ? f.length : 0, note: 'CODEX（このPC・ChatGPTプラン。トークンは入出力の合計）' } }, note: f ? '' : '報告を読めなかったAI：err_codex' }], 'resolution=merge-duplicates,return=minimal');
+    if (f && f.length) await sbFetch('POST', 'err_findings', f.map(x => Object.assign({ run_id: run, by_agent: 'err_codex' }, x)), 'return=minimal');
+    await sbFetch('POST', 'ai_runs', [{ run_id: rid, ym: run.replace(/^[a-z]+_/, '').slice(0, 4) + '-' + run.replace(/^[a-z]+_/, '').slice(4, 6), loop: LOOP, status: f ? 'done' : 'error', ended_at: at, agents: { err_codex: { status: f ? 'done' : 'error', purpose: KIND[kind] } }, models: { err_codex: 'codex' }, tokens_in: tin, note: 'AIエラーチェッカー（' + KIND[kind] + '）' }], 'resolution=merge-duplicates,return=minimal').catch(e => console.error('ai_runs：' + e.message));
+    await sbFetch('POST', 'ai_access_log', [{ run_id: rid, agent: 'err_codex', by_agent: 'receptionist', tbl: kind === 'pre' ? 'コードの差分' : 'データ修正のスクリプトと試算', op: 'read', rows: null, cols: String(what || '').slice(0, 200), purpose: KIND[kind] }], 'return=minimal').catch(() => {});
+    await sbFetch('POST', 'ai_cost_log', [{ ai: 'openai', agent: 'err_codex', model: 'codex', run_id: rid, loop: LOOP, task: 'AIエラーチェッカー（' + KIND[kind] + '） ' + run, tokens_in: tin, usd: null, note: 'CODEX（このPC・ChatGPTプラン。トークンは入出力の合計）' }], 'return=minimal').catch(e => console.error('ai_cost_log：' + e.message));
+    return console.log('記録：' + run + '（' + KIND[kind] + '）指摘 ' + (f ? f.length : '（JSONを読めず）'));
+  }
   if (cmd === 'finish') {
     const run = argv[1];
     const c = (await sbFetch('GET', 'err_checks?select=summary,reports&run_id=eq.' + encodeURIComponent(run)))[0] || {};
     const n = (await sbFetch('GET', 'err_findings?select=id&run_id=eq.' + encodeURIComponent(run))).length, sum = c.summary || {};
     const failed = Object.keys(AGENTS).filter(a => !(c.reports || {})[a] || !(c.reports || {})[a].parsed);
-    const status = n || sum.syntaxErrors ? 'open' : failed.length ? 'incomplete' : 'ok';
+    const status = failed.length ? 'incomplete' : n || sum.syntaxErrors ? 'open' : 'ok';   /* 片方のAIの報告を読めなかったら、指摘があっても「報告を読めず」（2026-11-16 指摘 #12） */
     await sbFetch('PATCH', 'err_checks?run_id=eq.' + encodeURIComponent(run), { status, ended_at: new Date().toISOString(), note: failed.length ? '報告を読めなかったAI：' + failed.join('・') : '' }, 'return=minimal');
     const cost = await sbFetch('GET', 'ai_cost_log?select=tokens_in,tokens_out,cache_read,cache_write,usd&run_id=eq.err-' + encodeURIComponent(run)).catch(() => []);
     const s = k => cost.reduce((t, r) => t + (Number(r[k]) || 0), 0);

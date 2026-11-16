@@ -6068,7 +6068,7 @@ function viewErrCheck() {
     /* 点検の一覧 */
     const costOfRun = id => T.cost.filter(c => c.run_id === 'err-' + id);
     $('ec-list').innerHTML = H('点検の記録 <small>新しい順・行を押すと中身</small>', ['Supabase']) + (T.checks.length ? '<div class="table-wrap"><table class="am-table fx-table"><colgroup><col style="width:150px"><col style="width:130px"><col style="width:90px"><col style="width:80px"><col style="width:150px"><col style="width:110px"><col style="width:110px"></colgroup><thead><tr><th class="pm-name">点検した日時</th><th>状態</th><th>指摘</th><th>うち高</th><th>OK／却下／判断待ち</th><th>トークン</th><th>費用</th></tr></thead><tbody>'
-      + T.checks.map(c => { const S = ERR_ST[c.status] || ['—', 'off'], cr = costOfRun(c.run_id); return '<tr class="ol-lkrow' + (state.errRun === c.run_id ? ' on' : '') + '" data-ecrun="' + esc(c.run_id) + '"><th class="pm-name">' + esc(fmtJst(c.at)) + '</th><td class="c-ctr"><span class="pill ' + S[1] + '">' + S[0] + '</span></td><td class="c-ctr">' + (c.findings || 0) + '</td><td class="c-ctr">' + (c.high ? '<b class="v-minus">' + c.high + '</b>' : '0') + '</td><td class="c-ctr">' + c.ok + '／' + c.ng + '／<b>' + c.open + '</b></td><td class="c-num">' + tokFmt(tokOf(cr)) + '</td><td class="c-num">¥' + nf.format(Math.round(yenOf(cr))) + '</td></tr>'; }).join('')
+      + T.checks.map(c => { const S = c.status === 'open' && !c.open ? ['判断済み', 'ok'] : ERR_ST[c.status] || ['—', 'off'],   /* 全部判断したら「判断済み」（2026-11-16 指摘 #7） */ cr = costOfRun(c.run_id); return '<tr class="ol-lkrow' + (state.errRun === c.run_id ? ' on' : '') + '" data-ecrun="' + esc(c.run_id) + '"><th class="pm-name">' + esc(fmtJst(c.at)) + '<div class="note">' + esc((c.summary || {}).kind || '週次の点検') + '</div></th><td class="c-ctr"><span class="pill ' + S[1] + '">' + S[0] + '</span></td><td class="c-ctr">' + (c.findings || 0) + '</td><td class="c-ctr">' + (c.high ? '<b class="v-minus">' + c.high + '</b>' : '0') + '</td><td class="c-ctr">' + c.ok + '／' + c.ng + '／<b>' + c.open + '</b></td><td class="c-num">' + tokFmt(tokOf(cr)) + '</td><td class="c-num">¥' + nf.format(Math.round(yenOf(cr))) + '</td></tr>'; }).join('')
       + '</tbody></table></div>' : '<p class="empty">まだ点検していません。</p>');
     document.querySelectorAll('[data-ecrun]').forEach(tr => tr.onclick = () => { state.errRun = tr.dataset.ecrun; document.querySelectorAll('[data-ecrun]').forEach(x => x.classList.toggle('on', x === tr)); errDetail(T); });
     /* だれが何を読んだか */
@@ -6090,7 +6090,7 @@ async function errDetail(T) {
   if (state.errRun !== run) return;
   const c = d.check, ag = id => T.agents.find(a => a.id === id), lv = { 高: 'ng', 中: 'wait', 低: 'off' };
   const reps = c.reports || {}, sum = c.summary || {};
-  box.innerHTML = H(esc(fmtJst(c.at)) + ' の点検 <small>指摘 ' + d.findings.length + '件</small>', ['Supabase'])
+  box.innerHTML = H(esc(fmtJst(c.at)) + ' の' + esc((c.summary || {}).kind || '週次の点検') + ' <small>指摘 ' + d.findings.length + '件</small>', ['Supabase'])
     + '<p class="note">構文エラー ' + (sum.syntaxErrors || 0) + '件・変更したファイル ' + (sum.diffFiles || 0) + '・Cloud Run のエラー ' + (sum.logErrors || 0) + '件（500番台 ' + (sum.server5xx || 0) + '）・定期実行の失敗 ' + (sum.jobFailures || 0) + '件・GAS のエラー ' + (sum.gasErrors || 0) + '件・データの食い違い ' + (sum.dataIssues || 0) + '件' + (c.note ? '<br><span class="v-minus">' + esc(c.note) + '</span>' : '') + '</p>'
     + (d.findings.length ? d.findings.map(f => { const a = ag(f.by_agent), dd = f.decision;
       return '<div class="fb-item ec-find"><div class="row" style="gap:8px; align-items:center; flex-wrap:wrap"><span class="pill ' + (lv[f.level] || 'off') + '">' + esc(f.level) + '</span>' + (a ? aiMini(a) : esc(f.by_agent)) + '<span class="note">' + esc(f.area || '') + '</span><code>' + esc(f.where_at || '') + '</code>'
@@ -6101,7 +6101,7 @@ async function errDetail(T) {
     + '<details style="margin-top:10px"><summary>AIの報告（そのまま）</summary>' + T.agents.map(a => { const r = reps[a.id]; return '<h3 class="am-h">' + aiMini(a) + (r && r.note ? ' <span class="note">' + esc(r.note) + '</span>' : '') + '</h3><pre class="ec-pre">' + esc(r ? r.md : '（報告がありません）') + '</pre>'; }).join('') + '</details>'
     + '<p class="note">いまは内ループです：OKした指摘だけを、チャットで直します（直したら次の点検で消えたか確かめます）。却下した指摘と理由は、次の点検から2人に渡して同じ指摘をくり返させません。</p>';
   const act = async (id, decision) => { const reason = (document.querySelector('[data-ecr="' + id + '"]') || {}).value || ''; if (decision === 'ng' && !reason.trim()) return alert('却下の理由を入れてください');
-    try { await apiSend('POST', '/errcheck/decision', { finding_id: id, decision, reason }); toast(decision === 'ok' ? 'OKにしました（チャットで直します）' : '却下にしました'); TASK_COUNT = Math.max(0, TASK_COUNT - 1); renderNav(); errDetail(T); } catch (e) { alert(e.message); } };
+    try { await apiSend('POST', '/errcheck/decision', { finding_id: id, decision, reason }); toast(decision === 'ok' ? 'OKにしました（チャットで直します）' : '却下にしました'); loadTaskCount && loadTaskCount(); render();   /* 一覧・件数・判断待ちを描き直す（2026-11-16 指摘 #7） */ } catch (e) { alert(e.message); } };
   box.querySelectorAll('[data-ecok]').forEach(b => b.onclick = () => act(Number(b.dataset.ecok), 'ok'));
   box.querySelectorAll('[data-ecng]').forEach(b => b.onclick = () => act(Number(b.dataset.ecng), 'ng'));
 }
@@ -6560,15 +6560,25 @@ const mediaOfSlug = s => Object.keys(SITE_URLS).find(m => mediaSlug(m) === s) ||
 /** 記事 → URL の最後（記事No。No がない記事は e-／r- の記号） */
 /** URL に使う記事No：全角を半角にして、長音・ダッシュは「-」に（文字化けしないよう半角英数字だけ。2026-11-13 ユーザー指定） */
 const olIdAscii = v => String(v == null ? '' : v).normalize('NFKC').trim().replace(/[ー－‐―−–—]/g, '-').replace(/\s+/g, '');
-const outlineIdOf = r => /^[A-Za-z0-9._-]+$/.test(olIdAscii(r.no)) ? olIdAscii(r.no) : String(r.key || '').startsWith('entry:') ? 'e-' + r.key.slice(6) : 'r-' + String(r.key || '').replace(/^.*\|row/, '');
+/** キーの短い印（URL 用。英数字だけ）（2026-11-16） */
+const olKeyHash = k => { let h = 2166136261; for (const c of String(k)) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619) >>> 0; } return h.toString(36); };
+/* 別ディレクトリの同じ記事No.で、ディレクトリ付きのキー（|sub…）になった記事は「k-<印>」（記事No.だけでは見分けられないため。2026-11-16 AIエラーチェッカー #1・#10）。
+   記事No.が英数字にできない記事も、キーが「|row」でなければ「k-<印>」（前は r-メディア|no… になって開けなかった） */
+const outlineIdOf = r => { const k = String(r.key || '');
+  if (k.startsWith('entry:')) return /^[A-Za-z0-9._-]+$/.test(olIdAscii(r.no)) && !/\|sub/.test(k) ? olIdAscii(r.no) : 'e-' + k.slice(6);
+  if (/\|sub/.test(k)) return 'k-' + olKeyHash(k);
+  if (/^[A-Za-z0-9._-]+$/.test(olIdAscii(r.no))) return olIdAscii(r.no);
+  return /\|row/.test(k) ? 'r-' + k.replace(/^.*\|row/, '') : 'k-' + olKeyHash(k); };
 const outlinePath = r => '/app/' + mediaSlug(r.media) + '/outline/' + encodeURIComponent(outlineIdOf(r));
 const outlineUrl = r => location.origin + outlinePath(r);
 function findOutlineItem(media, id) {
   const L = ITEMS || [];
   if (/^e-/.test(id)) return L.find(x => x.key === 'entry:' + id.slice(2));
   if (/^r-/.test(id)) return L.find(x => x.key === media + '|row' + id.slice(2));
+  if (/^k-/.test(id)) return L.find(x => x.media === media && x.key && olKeyHash(x.key) === id.slice(2));
   const want = olIdAscii(id);   /* 前の全角のURL（1ー62 など）も同じ記事を開く */
-  return L.find(x => x.media === media && x.key && olIdAscii(x.no) === want);
+  const hit = L.filter(x => x.media === media && x.key && olIdAscii(x.no) === want);
+  return hit.find(x => !/\|sub/.test(x.key)) || hit[0];   /* 記事No.だけのURLは、今の記事（ディレクトリ付きでないキー）を開く */
 }
 let OL = null, OL_LAST_VIEW = null;
 function goOutline(path, push = true) {

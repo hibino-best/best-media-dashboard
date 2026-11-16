@@ -587,7 +587,7 @@ async function articleCounts() {
     const rows = await query("SELECT media, IFNULL(sub, '') sub, `no`, row_no, kw, type, status, CAST(upload_date AS STRING) upload_date FROM " + T('article_items')).catch(() => []);
     const ex = await articleExtras();
     const ov = Object.fromEntries(ex.overrides.map(o => [o.key, o]));
-    const items = dropDupSheetRows(rows.map(r => { const o = Object.assign({}, r), x = ov[keyOfItem(r)]; if (x) Object.keys(x).filter(k => k.startsWith('f_')).forEach(k => { o[k.slice(2)] = x[k]; }); return o; }), ex.entries, () => true)   /* 進行管理で追加した記事と同じシートの行は数えない */
+    const items = dropDupSheetRows(rows.map(r => { const o = Object.assign({}, r), x = ov[keyOfItem(r, rows)]; if (x) Object.keys(x).filter(k => k.startsWith('f_')).forEach(k => { o[k.slice(2)] = x[k]; }); return o; }), ex.entries, () => true)   /* 進行管理で追加した記事と同じシートの行は数えない */
       .concat(ex.entries.map(e => ({ media: e.media, sub: e.sub || '', type: e.type, status: e.status, upload_date: e.upload_date, deleted: e.deleted })));
     const byKey = {}, first = {};
     items.forEach(o => {
@@ -634,7 +634,7 @@ async function doneKeywords() {
   const rows = await query("SELECT media, IFNULL(sub, '') sub, `no`, row_no, kw, status, url, outline_url, writing_url FROM " + T('article_items')).catch(() => []);
   const ex = await articleExtras();
   const ov = Object.fromEntries(ex.overrides.map(o => [o.key, o]));
-  const items = rows.map(r => { const o = Object.assign({}, r), x = ov[keyOfItem(r)]; if (x) Object.keys(x).filter(k => k.startsWith('f_')).forEach(k => { o[k.slice(2)] = x[k]; }); return o; })
+  const items = rows.map(r => { const o = Object.assign({}, r), x = ov[keyOfItem(r, rows)]; if (x) Object.keys(x).filter(k => k.startsWith('f_')).forEach(k => { o[k.slice(2)] = x[k]; }); return o; })
     .concat(ex.entries.map(e => Object.assign({ sub: e.sub || '' }, e)));
   const has = (o, k) => !!String(o[k] || '').trim();
   const done = o => { const st = String(o.status || '').trim(); if (st) return st === '完了' || st === '最終化'; return has(o, 'url') && ((BLANK_DONE_DOCS[o.media] || {})[o.sub] || []).every(k => has(o, k)); };
@@ -649,7 +649,7 @@ async function kwArticles(media) {
   const rows = await query("SELECT media, IFNULL(sub, '') sub, `no`, row_no, kw, type, status, url, post_id, CAST(upload_date AS STRING) upload_date FROM " + T('article_items') + " WHERE media = @m", { m: media }).catch(() => []);
   const ex = await articleExtras();
   const ov = Object.fromEntries(ex.overrides.map(o => [o.key, o]));
-  const items = rows.map(r => { const o = Object.assign({}, r), x = ov[keyOfItem(r)]; if (x) Object.keys(x).filter(k => k.startsWith('f_')).forEach(k => { o[k.slice(2)] = x[k]; }); return o; })
+  const items = rows.map(r => { const o = Object.assign({}, r), x = ov[keyOfItem(r, rows)]; if (x) Object.keys(x).filter(k => k.startsWith('f_')).forEach(k => { o[k.slice(2)] = x[k]; }); return o; })
     .concat(ex.entries.filter(e => e.media === media).map(e => Object.assign({ sub: e.sub || '' }, e)));
   const t = await wp.titlesFor(media).catch(() => null);
   const norm = u => String(u || '').replace(/^https?:\/\//, '').replace(/[?#].*$/, '').replace(/\/+$/, '');
@@ -1017,15 +1017,35 @@ const CHARS_AUTO_STATUSES = ['記事執筆完了', '記事チェック中', '記
 const WRITER_ROLES = ['out_writer', 'free_writer'], WRITER_FIELDS = ['writing_url', 'chars', 'image_count', 'status', 'url', 'upload_date', 'copy_rate'];   /* copy_rate＝コピペ率（CCD）（2026-11-05 ユーザー指定） */
 const canArticleSettings = u => u.status === 'active' && (u.perms.media === 'admin' || u.perms.articles === 'admin');
 const canEditArticles = u => u.status === 'active' && (u.perms.media === 'admin' || ['admin', 'editor'].includes(u.perms.articles));
-const keyOfItem = r => r.media + '|' + (r.no ? 'no' + r.no : 'row' + r.row_no);
+/* 記事のキー（2026-11-16 AIエラーチェッカー #1・#10 ユーザーOK）：
+   別ディレクトリ（sub）の記事が同じ「メディア|No」を持つときは、今の記事（過去制作・BEST365移管・過去記事 以外。なければ行が上の記事）を今までのキーのまま、
+   ほかのディレクトリの記事は「|sub<ディレクトリ>」を付けたキーにする（今の構成シート・請求の記録・構成URL・画面で直した値は今の記事を指したまま）。
+   rows（同じメディアのシートの行すべて）を渡したときだけ見分ける。渡さないときは今までのキー */
+const PAST_SUBS = ['過去制作', 'BEST365移管', '過去記事'];
+const baseKeyOf = r => r.media + '|' + (r.no ? 'no' + r.no : 'row' + r.row_no);
+const KEYERS = new WeakMap();
+function keyerOf(rows) {
+  if (KEYERS.has(rows)) return KEYERS.get(rows);
+  const g = new Map(); rows.forEach(r => { const b = baseKeyOf(r); if (!g.has(b)) g.set(b, []); g.get(b).push(r); });
+  const m = new Map();
+  g.forEach((L, b) => {
+    const subs = new Set(L.map(r => String(r.sub || '')));
+    if (subs.size < 2) { L.forEach(r => m.set(r, b)); return; }
+    const main = L.slice().sort((x, y) => (PAST_SUBS.includes(String(x.sub || '')) - PAST_SUBS.includes(String(y.sub || ''))) || (Number(x.row_no) - Number(y.row_no)))[0];
+    const ms = String(main.sub || '');
+    L.forEach(r => m.set(r, String(r.sub || '') === ms ? b : b + '|sub' + String(r.sub || '')));
+  });
+  const f = r => m.get(r) || baseKeyOf(r); KEYERS.set(rows, f); return f;
+}
+const keyOfItem = (r, rows) => rows ? keyerOf(rows)(r) : baseKeyOf(r);
 /** 「自分が担当の記事だけ」の人：その記事が自分のものか（担当者に自分の名前がある、または自分が追加した記事） */
 async function ownsItem(user, key) {
   const names = user.personNames || [];
   const mine = o => ['writer', 'director', 'upload_owner', 'supervisor'].some(k => o[k] && names.includes(o[k]));
   if (key.startsWith('entry:')) { const snap = await db.collection('article_entries').doc(key.slice(6)).get(); return snap.exists && (snap.data().createdBy === user.email || mine(snap.data())); }
   const media = key.split('|')[0];
-  const rows = await query('SELECT media, `no`, row_no, writer, director, upload_owner, supervisor FROM ' + T('article_items') + ' WHERE media = @m', { m: media });
-  const r = rows.find(x => keyOfItem(x) === key);
+  const rows = await query("SELECT media, IFNULL(sub, '') sub, `no`, row_no, writer, director, upload_owner, supervisor FROM " + T('article_items') + ' WHERE media = @m', { m: media });
+  const r = rows.find(x => keyOfItem(x, rows) === key);
   if (!r) return false;
   const ov = await db.collection('article_overrides').doc(docIdOf(key)).get();
   if (ov.exists) ['writer', 'director', 'upload_owner', 'supervisor'].forEach(k => { if (ov.data()['f_' + k] !== undefined) r[k] = ov.data()['f_' + k]; });
@@ -1047,8 +1067,8 @@ async function currentWritingUrl(key) {
   const ov = await db.collection('article_overrides').doc(docIdOf(key)).get();
   if (ov.exists && ov.data().f_writing_url !== undefined) return ov.data().f_writing_url;
   const media = key.split('|')[0];
-  const rows = await query('SELECT media, `no`, row_no, writing_url FROM ' + T('article_items') + ' WHERE media = @m', { m: media });
-  const r = rows.find(x => keyOfItem(x) === key); return r ? r.writing_url : null;
+  const rows = await query("SELECT media, IFNULL(sub, '') sub, `no`, row_no, writing_url FROM " + T('article_items') + ' WHERE media = @m', { m: media });
+  const r = rows.find(x => keyOfItem(x, rows) === key); return r ? r.writing_url : null;
 }
 function cleanArticle(body) {
   const out = {};
@@ -1685,7 +1705,7 @@ api.get('/article-items', async (req, res, next) => {
         if (/^(request_date|upload_date|wp_published|wp_modified)$/.test(k)) return;
         o[k.replace(/_s$/, '')] = r[k];
       });
-      o.key = keyOfItem(o);
+      o.key = keyOfItem(r, rows);   /* 別ディレクトリの同じ記事No.を見分ける（2026-11-16） */
       const v = ov[o.key];
       if (v) {
         Object.keys(v).filter(k => k.startsWith('f_')).forEach(k => { o[k.slice(2)] = v[k]; });
@@ -1809,7 +1829,7 @@ require('./feedback')({ db, admin, isFullAdmin, capOk, gmail, pendingWork: () =>
 async function contractsWithArticles(ym) {
   const rows = await cached('article-items', TEN_MIN, () => query("SELECT * EXCEPT(imported_at), CAST(request_date AS STRING) request_date_s, CAST(upload_date AS STRING) upload_date_s, CAST(wp_published AS STRING) wp_published_s, CAST(wp_modified AS STRING) wp_modified_s, FORMAT_TIMESTAMP('%Y-%m-%d %H:%M', imported_at, 'Asia/Tokyo') imported FROM " + T('article_items') + ' ORDER BY media, row_no')).catch(() => []);
   const ex = await articleExtras(), ov = Object.fromEntries(ex.overrides.map(o => [o.key, o]));
-  const items = rows.map(r => { const o = {}; Object.keys(r).forEach(k => { if (!/^(request_date|upload_date|wp_published|wp_modified)$/.test(k)) o[k.replace(/_s$/, '')] = r[k]; }); const v = ov[keyOfItem(o)]; if (v) Object.keys(v).filter(k => k.startsWith('f_')).forEach(k => { o[k.slice(2)] = v[k]; }); return o; }).filter(o => !o.deleted)
+  const items = rows.map(r => { const o = {}; Object.keys(r).forEach(k => { if (!/^(request_date|upload_date|wp_published|wp_modified)$/.test(k)) o[k.replace(/_s$/, '')] = r[k]; }); const v = ov[keyOfItem(r, rows)]; if (v) Object.keys(v).filter(k => k.startsWith('f_')).forEach(k => { o[k.slice(2)] = v[k]; }); return o; }).filter(o => !o.deleted)
     .concat(ex.entries.filter(e => !e.deleted).map(e => Object.assign({ media: e.media }, e)));
   const today = todayJst(), cs = await activeContracts(), norm = s => String(s || '').replace(/[\s　]/g, ''), ids = new Set();
   for (const o of items.filter(o => o.upload_date && String(o.upload_date).startsWith(ym) && String(o.upload_date) <= today)) {

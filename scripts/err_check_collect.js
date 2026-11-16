@@ -77,7 +77,10 @@ const gcl = args => { try { return execSync('"' + G + '" ' + args, { encoding: '
     const D = [];
     const F = ['writer', 'director', 'upload_owner', 'supervisor', 'image_owner'];
     const q = await fetch('https://bigquery.googleapis.com/bigquery/v2/projects/' + PROJECT + '/queries', { method: 'POST', headers: H, body: JSON.stringify({ useLegacySql: false, maxResults: 30000, query: 'SELECT media, sub, `no`, row_no, ' + F.join(', ') + ' FROM best_media.article_items' }) }).then(r => r.json());
-    const rows = (q.rows || []).map(r => { const v = r.f.map(x => x.v), o = { media: v[0], sub: v[1], no: v[2], key: v[0] + '|' + (v[2] ? 'no' + v[2] : 'row' + v[3]) }; F.forEach((f, i) => { o[f] = v[4 + i]; }); return o; });
+    const rows = (q.rows || []).map(r => { const v = r.f.map(x => x.v), o = { media: v[0], sub: v[1] || '', no: v[2], row_no: v[3], base: v[0] + '|' + (v[2] ? 'no' + v[2] : 'row' + v[3]) }; F.forEach((f, i) => { o[f] = v[4 + i]; }); return o; });
+    /* 記事のキー（webapp/server.js の keyerOf と同じ。2026-11-16）：別ディレクトリで同じ記事No.なら、今の記事（過去制作・BEST365移管・過去記事 以外）は今までのキー、ほかは |sub<ディレクトリ> */
+    { const PAST = ['過去制作', 'BEST365移管', '過去記事'], g = {}; rows.forEach(r => { (g[r.base] = g[r.base] || []).push(r); });
+      Object.values(g).forEach(L => { if (new Set(L.map(r => r.sub)).size < 2) { L.forEach(r => { r.key = r.base; }); return; } const main = L.slice().sort((x, y) => (PAST.includes(x.sub) - PAST.includes(y.sub)) || (Number(x.row_no) - Number(y.row_no)))[0]; L.forEach(r => { r.key = r.sub === main.sub ? r.base : r.base + '|sub' + r.sub; r.shared = true; }); }); }
     const ovs = await all('article_overrides'), ovByKey = {}; ovs.forEach(o => { if (o.key) ovByKey[o.key] = o; });
     const ens = (await all('article_entries')).filter(e => !e.deleted);
     const names = new Set((await all('contracts')).map(c => String(c.name || '').trim()).concat((await all('staff')).map(s => String(s.name || '').trim())));
@@ -88,11 +91,10 @@ const gcl = args => { try { return execSync('"' + G + '" ' + args, { encoding: '
     rows.map(eff).filter(Boolean).concat(ens).forEach(x => F.forEach(f => { const v = String(x[f] || '').trim(); if (!v || names.has(v) || linked.has((x.media || '') + '|' + v) || linked.has('|' + v)) return; const k = x.media + '｜' + v; un[k] = (un[k] || 0) + 1; }));
     const unL = Object.entries(un).sort((a, b) => b[1] - a[1]);
     D.push('## 担当者名がどの契約・社員にも当たらず、担当者の紐づけもない：' + unL.length + '種類'); unL.slice(0, 60).forEach(([k, n]) => D.push('- ' + k + '：' + n + '件'));
-    // (2) 別ディレクトリの記事が同じ保存先（メディア|No）を共有していて、画面で直した値がある（片方を直すともう片方も変わる）
-    const byKey = {}; rows.forEach(r => { (byKey[r.key] = byKey[r.key] || []).push(r); });
-    const shared = Object.entries(byKey).filter(([k, L]) => L.length > 1 && new Set(L.map(r => r.sub || '')).size > 1 && ovByKey[k] && Object.keys(ovByKey[k]).some(x => x.startsWith('f_')));
-    D.push('', '## 別ディレクトリの記事が同じ保存先（メディア|No）を共有し、画面で直した値がある：' + shared.length + '件');
-    shared.slice(0, 40).forEach(([k, L]) => D.push('- ' + k + '（' + L.map(r => r.sub || '（なし）').join('・') + '）直した項目：' + Object.keys(ovByKey[k]).filter(x => x.startsWith('f_')).map(x => x.slice(2)).join('、')));
+    // (2) 別ディレクトリの同じ記事No.（2026-11-16 からキーを分けた）：ディレクトリ付きのキーの記事に、画面で直した値がまだ移されていない（前は今の記事と保存先を共有していた）
+    const shared = rows.filter(r => r.shared && r.key !== r.base && ovByKey[r.base] && Object.keys(ovByKey[r.base]).some(x => x.startsWith('f_')) && !ovByKey[r.key]);
+    D.push('', '## 別ディレクトリの同じ記事No.で、前に共有していた画面の修正がまだ移されていない記事：' + shared.length + '件');
+    shared.slice(0, 40).forEach(r => D.push('- ' + r.key + '（今の記事の修正：' + Object.keys(ovByKey[r.base]).filter(x => x.startsWith('f_')).map(x => x.slice(2)).join('、') + '）'));
     // (3) 保存先に key・media がない
     const broken = ovs.filter(o => !o.key || !o.media);
     D.push('', '## 画面で直した値の保存先に key・media がない：' + broken.length + '件'); broken.slice(0, 20).forEach(o => D.push('- ' + o._id));

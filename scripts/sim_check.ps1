@@ -20,13 +20,14 @@ if ($LASTEXITCODE -ne 0) { "表がまだないため、AIは動かさずに終�
 New-Item -ItemType Directory -Force (Split-Path $done) | Out-Null
 # AIチーム（2026-11-06 ユーザー指定）：実行を始めて run_id をもらう。編集長（指揮官）のモデルは Supabase ai_agents（画面で変えられる）
 [Console]::OutputEncoding = [Text.Encoding]::UTF8
+$OutputEncoding = New-Object System.Text.UTF8Encoding $false   # 外部プログラム（claude）に日本語と「"」をそのまま渡す（2026-11-16 AIエラーチェッカーの指摘 #2・#3）
 $start = & $node $fsjs start $ym | ConvertFrom-Json
 $env:SIM_RUN_ID = $start.run_id
 "run_id $($start.run_id)／編集長のモデル $($start.commanderModel)" | Out-File $log -Encoding utf8 -Append
 $prompt = (Get-Content (Join-Path $PSScriptRoot 'sim_check_prompt.md') -Raw -Encoding utf8) + "`n対象の月：$ym`n"
 # 実行記録（stream-json）を残し、このループで使ったトークンだけを finish でエージェントごとに数える
 $stream = Join-Path $logDir ('sim_check_stream_' + (Get-Date -Format 'yyyyMMdd_HHmm') + '.jsonl')
-& "$env:USERPROFILE\.local\bin\claude.exe" -p $prompt `
+$prompt | & "$env:USERPROFILE\.local\bin\claude.exe" -p `
   --model $start.commanderModel `
   --output-format stream-json --verbose `
   --permission-mode acceptEdits `

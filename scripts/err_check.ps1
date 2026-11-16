@@ -6,6 +6,7 @@
 # 記録は scripts\logs\err_check_YYYYMMDD.log、材料は scripts\err_check\runs\<実行ID>\
 $ErrorActionPreference = 'Continue'
 [Console]::OutputEncoding = [Text.Encoding]::UTF8
+$OutputEncoding = New-Object System.Text.UTF8Encoding $false   # 外部プログラム（claude・codex）に日本語と「"」をそのまま渡す（2026-11-16 AIエラーチェッカーの指摘 #2・#3）
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 $node = 'C:\Program Files\nodejs\node.exe'
@@ -24,7 +25,7 @@ $base = Get-Content (Join-Path $PSScriptRoot 'err_check_prompt.md') -Raw -Encodi
 # --- エラチェ・クロード指揮官（Claude Code。読むだけの道具だけ） ---
 & $node $fsjs get $id err_claude (Join-Path $dir 'err_claude') 2>&1 | Out-File $log -Encoding utf8 -Append
 $stream = Join-Path $dir 'err_claude_stream.jsonl'
-& "$env:USERPROFILE\.local\bin\claude.exe" -p ($base + "`n点検の材料のフォルダ：scripts/err_check/runs/$id/err_claude`n") --output-format stream-json --verbose --allowedTools "Read" "Grep" "Glob" 2>&1 | Out-File $stream -Encoding utf8
+($base + "`n点検の材料のフォルダ：scripts/err_check/runs/$id/err_claude`n") | & "$env:USERPROFILE\.local\bin\claude.exe" -p --output-format stream-json --verbose --allowedTools "Read" "Grep" "Glob" 2>&1 | Out-File $stream -Encoding utf8
 "Claude Code 終了コード $LASTEXITCODE" | Out-File $log -Encoding utf8 -Append
 $clmd = Join-Path $dir 'err_claude.md'; '' | Out-File $clmd -Encoding utf8
 & $node $fsjs save $id err_claude $clmd $stream 2>&1 | Out-File $log -Encoding utf8 -Append

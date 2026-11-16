@@ -241,7 +241,8 @@ module.exports = function sim({ db, query, T, todayJst, allowedMedia, isFullAdmi
           saved = await supa.rest('GET', 'ai_agents?select=*');
           const miss = TEAM.filter(a => !saved.some(s => s.id === a.id));   /* はじめは上限＝いまの範囲 */
           if (miss.length) { await supa.upsert('ai_agents', miss.map(a => ({ id: a.id, char: a.char, position: a.position, provider: a.provider, kind: a.kind, parent: a.parent, model: a.model, scope: a.ceiling, active: true, updated_by: 'system' })), 'id'); saved = await supa.rest('GET', 'ai_agents?select=*'); }
-          [runs, cost, access] = await Promise.all([supa.rest('GET', 'ai_runs?select=*&order=started_at.desc&limit=60'), supa.rest('GET', 'ai_cost_log?select=*&order=at.desc&limit=2000'), supa.rest('GET', 'ai_access_log?select=*&order=at.desc&limit=500')]);
+          /* AIエラーチェッカーの実行（run_id が err- で始まる）はシミュレーションに入れない（2026-11-13：同じ表を使っていて「LIVE 答え合わせ中」と出たため） */
+          [runs, cost, access] = await Promise.all([supa.rest('GET', 'ai_runs?select=*&or=(run_id.is.null,run_id.not.like.err-*)&order=started_at.desc&limit=60'), supa.rest('GET', 'ai_cost_log?select=*&or=(run_id.is.null,run_id.not.like.err-*)&order=at.desc&limit=2000'), supa.rest('GET', 'ai_access_log?select=*&or=(run_id.is.null,run_id.not.like.err-*)&order=at.desc&limit=500')]);
         }
         const agents = TEAM.map(a => { const s = saved.find(x => x.id === a.id) || {}; return Object.assign({}, a, { model: s.model || a.model, scope: s.scope && Object.keys(s.scope).length ? s.scope : a.ceiling, active: s.active !== false, updatedBy: s.updated_by || '', updatedAt: s.updated_at || null,
           connected: a.provider === 'claude' ? true : !!(keys[a.provider] && keys[a.provider].key) }); });
