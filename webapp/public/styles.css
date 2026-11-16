@@ -1440,3 +1440,4 @@ option.ol-lk-pillar { background: #dce8fb; color: #1a4fa8; } option.ol-lk-long {
 .cp-units { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 13px; padding: 6px 10px; margin: 0 0 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
 .cp-units-bar { display: inline-block; width: 160px; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
 .cp-units-bar > span { display: block; height: 100%; background: #6b6fd8; }
+.cp-gtbl textarea.cp-gdesc { width: 100%; box-sizing: border-box; min-height: 0; resize: none; overflow: hidden; line-height: 1.5; font: inherit; }   /* 長い説明も途切れさせない（2026-11-16） */
